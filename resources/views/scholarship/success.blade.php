@@ -65,6 +65,15 @@
             justify-content: center;
             gap: 20px;
             margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
         }
 
         .action-btn {
@@ -89,12 +98,130 @@
         }
 
         .track-btn {
-            background-color: #1e5631;
-            color: white;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white !important;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none !important;
+        }
+
+        .track-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
 
         .track-btn:hover {
-            background-color: #164023;
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+            text-decoration: none !important;
+        }
+
+        .track-btn:hover:before {
+            left: 100%;
+        }
+
+        .track-btn i {
+            font-size: 18px;
+            margin-right: 8px;
+            color: white !important;
+        }
+
+        .track-btn * {
+            color: white !important;
+        }
+
+        .track-btn:visited {
+            color: white !important;
+        }
+
+        /* Pulsing animation for track button */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(46, 125, 50, 0.5);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            }
+        }
+
+        .track-btn {
+            animation: pulse 2s infinite;
+        }
+
+        .track-btn:hover {
+            animation: none;
+        }
+
+        /* Call to action section */
+        .cta-section {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .cta-description {
+            font-size: 14px;
+            color: #1b5e20;
+            margin-bottom: 0;
+        }
+
+        .cta-icon {
+            font-size: 20px;
+            color: #4caf50;
         }
 
         .next-steps {
@@ -260,12 +387,25 @@
                 </ul>
             </div>
 
+            <!-- Call to Action Section -->
+            <div class="cta-section">
+                <div class="cta-content">
+                    <div class="cta-title">
+                        <i class="fas fa-bell cta-icon"></i>
+                        Stay Updated on Your Application!
+                    </div>
+                    <div class="cta-description">
+                        Click the "Track Your Application Status" button below to monitor your application progress in real-time.
+                    </div>
+                </div>
+            </div>
+
             <div class="action-buttons">
-                <a href="{{ route('scholarship.application') }}" class="action-btn back-btn">
+                <a href="{{ route('student.dashboard') }}" class="action-btn back-btn">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </a>
                 <a href="{{ route('scholarship.tracker', ['id' => session('application_id', 'SCH-'.rand(10000, 99999))]) }}" class="action-btn track-btn">
-                    <i class="fas fa-search"></i> Track Application
+                    <i class="fas fa-search"></i> Track Your Application Status
                 </a>
             </div>
         </div>

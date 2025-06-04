@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Student Dashboard - St. Paul University Philippines</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -704,6 +705,57 @@
             max-height: 500px;
             padding: 0 25px 15px 25px;
         }
+
+        /* Student ID Validation Styles */
+        .student-id-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 8px 12px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-id-error:before {
+            content: "⚠️";
+            font-size: 14px;
+        }
+
+        .student-id-success {
+            color: #155724;
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 8px 12px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-id-success:before {
+            content: "✅";
+            font-size: 14px;
+        }
+
+        input[name="student_id"].error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+            background-color: #fff5f5;
+        }
+
+        input[name="student_id"].valid {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+            background-color: #f8fff8;
+        }
+
+
 
         .faq-answer p {
             margin: 0 0 10px 0;
@@ -2824,17 +2876,20 @@
             // Add form submission validation
             const forms = document.querySelectorAll('form[action*="scholarship.submit"]');
             forms.forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', async function(e) {
                     const studentIdInput = this.querySelector('input[name="student_id"]');
-                    if (studentIdInput && !validateStudentID(studentIdInput)) {
-                        e.preventDefault();
-                        return false;
+                    if (studentIdInput) {
+                        const isValid = await validateStudentID(studentIdInput);
+                        if (!isValid) {
+                            e.preventDefault();
+                            return false;
+                        }
                     }
                 });
             });
         }
 
-        function validateStudentID(input) {
+        async function validateStudentID(input) {
             const studentId = input.value.trim();
             const errorContainer = getOrCreateErrorContainer(input);
             const successContainer = getOrCreateSuccessContainer(input);
@@ -2856,7 +2911,8 @@
             }
 
             // Check for duplicate IDs
-            if (!checkDuplicateID(studentId, input, errorContainer)) {
+            const isDuplicateValid = await checkDuplicateID(studentId, input, errorContainer);
+            if (!isDuplicateValid) {
                 return false;
             }
 
@@ -2865,40 +2921,35 @@
             return true;
         }
 
-        function checkDuplicateID(studentId, input, errorContainer) {
-            // Simulate AJAX call to check for duplicate IDs
-            // In a real application, you would make an AJAX request to your server
+        async function checkDuplicateID(studentId, input, errorContainer) {
+            try {
+                // Make AJAX call to check for duplicate IDs in the database
+                const response = await fetch('/api/check-student-id', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ student_id: studentId })
+                });
 
-            // For demonstration, let's simulate some existing IDs
-            const existingIDs = ['2023-123456', '2023-789012', '2024-111111', '2024-222222'];
+                const data = await response.json();
 
-            if (existingIDs.includes(studentId)) {
-                showIDError(input, errorContainer, 'This Student ID has already been used for a scholarship application. Each student can only apply once.');
-                return false;
-            }
-
-            // If you want to make a real AJAX call, uncomment and modify this:
-            /*
-            fetch('/check-student-id', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ student_id: studentId })
-            })
-            .then(response => response.json())
-            .then(data => {
                 if (data.exists) {
-                    showIDError(input, errorContainer, 'This Student ID has already been used for a scholarship application.');
+                    const scholarshipType = data.scholarship_type ? ` (${data.scholarship_type})` : '';
+                    const applicationDate = data.application_date ? ` on ${data.application_date}` : '';
+                    const applicationId = data.application_id ? ` (ID: ${data.application_id})` : '';
+                    showIDError(input, errorContainer,
+                        `This Student ID has already been used for a scholarship application${scholarshipType}${applicationDate}${applicationId}. Each student can only apply once per scholarship type.`);
+                    return false;
                 }
-            })
-            .catch(error => {
-                console.error('Error checking student ID:', error);
-            });
-            */
 
-            return true;
+                return true;
+            } catch (error) {
+                console.error('Error checking student ID:', error);
+                // On error, allow submission but log the issue
+                return true;
+            }
         }
 
         function getOrCreateErrorContainer(input) {

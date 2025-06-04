@@ -11,36 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ScholarshipController extends Controller
 {
-    public function showApplicationForm()
-    {
-        // Get the authenticated student
-        $student = \Illuminate\Support\Facades\Auth::user();
 
-        // Check if student has any active approved scholarship
-        $hasActiveScholarship = ScholarshipApplication::where('student_id', $student->student_id)
-            ->where('status', 'Approved')
-            ->where('is_active', true)
-            ->exists();
-
-        // Check if student has any pending applications
-        $hasPendingApplication = ScholarshipApplication::where('student_id', $student->student_id)
-            ->whereIn('status', ['Pending Review', 'Under Committee Review', 'Decision Made'])
-            ->exists();
-
-        // Check if it's renewal period
-        $isRenewalPeriod = config('scholarship.renewal_period', false);
-
-        // Determine if student can apply
-        $canApply = (!$hasActiveScholarship && !$hasPendingApplication) || $isRenewalPeriod;
-
-        return view('scholarship.application-form', [
-            'student' => $student,
-            'canApply' => $canApply,
-            'hasActiveScholarship' => $hasActiveScholarship,
-            'hasPendingApplication' => $hasPendingApplication,
-            'isRenewalPeriod' => $isRenewalPeriod
-        ]);
-    }
 
     public function submitApplication(Request $request)
     {
@@ -151,6 +122,24 @@ class ScholarshipController extends Controller
             return back()->withErrors($e->errors())->withInput();
         }
 
+        // Check for duplicate student ID submissions
+        $existingApplication = ScholarshipApplication::where('student_id', $request->student_id)->first();
+        if ($existingApplication) {
+            Log::warning('Duplicate student ID submission attempt', [
+                'student_id' => $request->student_id,
+                'existing_application_id' => $existingApplication->application_id,
+                'existing_scholarship_type' => $existingApplication->scholarship_type,
+                'new_scholarship_type' => $request->scholarship_type
+            ]);
+
+            return back()->withErrors([
+                'student_id' => 'This Student ID has already been used for a scholarship application (' .
+                               ucfirst($existingApplication->scholarship_type) . ' on ' .
+                               $existingApplication->created_at->format('M d, Y') . '). ' .
+                               'Each student can only apply once per scholarship type.'
+            ])->withInput();
+        }
+
         // Generate a unique application ID
         $applicationId = 'SCH-' . strtoupper(Str::random(2)) . rand(10000, 99999);
 
@@ -251,13 +240,39 @@ class ScholarshipController extends Controller
 
     public function showSuccess()
     {
-        // If there's no application ID in the session, redirect to the application form
+        // If there's no application ID in the session, redirect to the student dashboard
         if (!session('application_id')) {
-            return redirect()->route('scholarship.application')
+            return redirect()->route('student.dashboard')
                 ->with('error', 'No application found. Please submit an application first.');
         }
 
         return view('scholarship.success');
+    }
+
+    public function checkStudentId(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|string'
+        ]);
+
+        $studentId = $request->input('student_id');
+
+        // Check if this student ID already exists in scholarship applications
+        $existingApplication = ScholarshipApplication::where('student_id', $studentId)->first();
+
+        if ($existingApplication) {
+            return response()->json([
+                'exists' => true,
+                'scholarship_type' => ucfirst($existingApplication->scholarship_type),
+                'application_date' => $existingApplication->created_at->format('M d, Y'),
+                'application_id' => $existingApplication->application_id,
+                'status' => $existingApplication->status
+            ]);
+        }
+
+        return response()->json([
+            'exists' => false
+        ]);
     }
 }
 

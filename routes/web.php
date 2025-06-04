@@ -62,7 +62,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     })->name('student.applications');
 
     // Scholarship routes
-    Route::get('/scholarship/application', [ScholarshipController::class, 'showApplicationForm'])->name('scholarship.application');
     Route::post('/scholarship/submit', [ScholarshipController::class, 'submitApplication'])->name('scholarship.submit');
     Route::get('/scholarship/success', [ScholarshipController::class, 'showSuccess'])->name('scholarship.success');
 
@@ -104,6 +103,9 @@ Route::prefix('api/scholarship')->group(function () {
     Route::get('/department-course-mapping', [ScholarshipDataController::class, 'getDepartmentCourseMapping']);
     Route::get('/subjects/{courseName}/{yearLevel}/{semester}', [ScholarshipDataController::class, 'getSubjects']);
 });
+
+// API route for checking duplicate student IDs
+Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
 
 
 
