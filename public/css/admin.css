@@ -1,0 +1,399 @@
+/* Admin Dashboard Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* University Header */
+.university-header {
+    background-color: #1e5631;
+    color: white;
+    padding: 15px 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.university-logo-title {
+    display: flex;
+    align-items: center;
+}
+
+.university-logo {
+    height: 60px;
+    margin-right: 15px;
+}
+
+.university-title h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.university-title h2 {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 5px 0 0;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn i {
+    margin-right: 5px;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Dashboard Banner */
+.dashboard-banner {
+    background-color: #f0f0f0;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.banner-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.dashboard-banner h2 {
+    font-size: 16px;
+    color: #1e5631;
+    margin: 0;
+}
+
+/* Admin Container */
+.admin-container {
+    display: flex;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.profile-image i {
+    font-size: 24px;
+    color: #1e5631;
+}
+
+.profile-info h3 {
+    font-size: 16px;
+    margin: 0 0 5px;
+}
+
+.profile-info p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-item i {
+    margin-right: 10px;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover {
+    background-color: #f5f5f5;
+}
+
+.nav-item.active {
+    background-color: #e6f7e9;
+    color: #1e5631;
+    font-weight: 500;
+}
+
+/* Main Content */
+.admin-content {
+    flex-grow: 1;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+.date-filter {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #e6f7e9;
+    color: #27ae60;
+    border: 1px solid #c3e6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .admin-container {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .admin-profile {
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+    .admin-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .university-logo-title {
+        margin-bottom: 15px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-header h1 {
+        margin-bottom: 10px;
+    }
+
+    .admin-nav {
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-right: 0;
+    }
+}
+
+/* Table Styles */
+.table-container {
+    overflow-x: auto;
+}
+
+.applications-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.applications-table th {
+    text-align: left;
+    padding: 12px 15px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+
+.applications-table td {
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+.applications-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a, .pagination li span {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #1e5631;
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+.pagination li.active span {
+    background-color: #1e5631;
+    color: white;
+    border-color: #1e5631;
+}
+
+.pagination li a:hover {
+    background-color: #f5f5f5;
+}
+
+/* Filter Controls */
+.filter-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Status Badges */
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status.pending {
+    background-color: #fff8e1;
+    color: #f39c12;
+}
+
+.status.review {
+    background-color: #e3f2fd;
+    color: #2196f3;
+}
+
+.status.approved {
+    background-color: #e6f7e9;
+    color: #27ae60;
+}
+
+.status.rejected {
+    background-color: #fde8e8;
+    color: #e74c3c;
+}
+
+/* Action Buttons */
+.action-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #1e5631;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: #164023;
+}
+
+
