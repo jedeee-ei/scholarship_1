@@ -29,10 +29,19 @@
     outline: none;
 }
 
-.tab-btn.active,
 .tab-btn:hover {
     background-color: #1e5631;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(30, 86, 49, 0.3);
+}
+
+.tab-btn.active {
+    background-color: #1e5631;
+    color: white;
+    box-shadow: 0 0 15px rgba(30, 86, 49, 0.4);
+    border: 2px solid #2d7a3e;
+    font-weight: 600;
 }
 
 /* Student Table Container */
@@ -347,7 +356,8 @@
     backdrop-filter: blur(2px);
 }
 
-.modal[style*="display: block"] {
+.modal[style*="display: block"],
+.modal.modal-show {
     display: block !important;
 }
 

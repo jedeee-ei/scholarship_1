@@ -22,34 +22,24 @@
         <div class="date">{{ date('F d, Y') }}</div>
     </div>
 
-    @if (isset($scholarshipName))
-        <div class="filter-info">
-            <div class="filter-badge">
-                <i class="fas fa-filter"></i>
-                Showing grantees for: <strong>{{ $scholarshipName }}</strong>
-                <a href="{{ route('admin.students') }}" class="clear-filter">
-                    <i class="fas fa-times"></i> Show All Grantees
-                </a>
-            </div>
-        </div>
-    @endif
+
 
     <!-- Grantee Categories -->
     <div class="student-categories">
         <div class="category-tabs">
             <button class="tab-btn {{ !isset($scholarshipTypeFilter) ? 'active' : '' }}"
-                onclick="showStudentCategory('all')">All Grantees</button>
+                onclick="showStudentCategory('all', this)">All Grantees</button>
             <button class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'ched' ? 'active' : '' }}"
-                onclick="showStudentCategory('ched')">CHED Grantees</button>
+                onclick="showStudentCategory('ched', this)">CHED Grantees</button>
             <button
-                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'presidents' ? 'active' : '' }}"
-                onclick="showStudentCategory('presidents')">Institutional Grantees</button>
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'academic' ? 'active' : '' }}"
+                onclick="showStudentCategory('academic', this)">Academic Grantees</button>
             <button
                 class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'employees' ? 'active' : '' }}"
-                onclick="showStudentCategory('employees')">Employee Grantees</button>
+                onclick="showStudentCategory('employees', this)">Employee Grantees</button>
             <button
                 class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'private' ? 'active' : '' }}"
-                onclick="showStudentCategory('private')">Private Grantees</button>
+                onclick="showStudentCategory('private', this)">Private Grantees</button>
         </div>
     </div>
 
@@ -63,8 +53,8 @@
                             CHED Grantees
                         @break
 
-                        @case('presidents')
-                            Institutional Grantees
+                        @case('academic')
+                            Academic Grantees
                         @break
 
                         @case('employees')
@@ -151,7 +141,7 @@
 @endsection
 
 <!-- Edit Grantee Modal -->
-<div id="editStudentModal" class="modal">
+<div id="editStudentModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Edit Grantee Information</h2>
@@ -233,7 +223,7 @@
                         <select id="scholarshipType" name="scholarship_type" required onchange="updateFormFields()">
                             <option value="">Select Benefactor Type</option>
                             <option value="ched">CHED Benefactor</option>
-                            <option value="presidents">Institutional Benefactor</option>
+                            <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
                             <option value="private">Private Benefactor</option>
                         </select>
@@ -318,7 +308,7 @@
                         <select id="scholarshipTypeSelect" required>
                             <option value="">Select Benefactor Type</option>
                             <option value="ched">CHED Benefactor</option>
-                            <option value="presidents">Institutional Benefactor</option>
+                            <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
                             <option value="private">Private Benefactor</option>
                         </select>
@@ -356,14 +346,7 @@
     <script>
         // Add event listener when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Add backup event listener for Add Student button
-            const addBtn = document.querySelector('button[onclick="showAddStudentForm()"]');
-            if (addBtn) {
-                addBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showAddStudentForm();
-                });
-            }
+            // Remove the duplicate event listener - button already has onclick attribute
 
             // Test function to manually populate courses
             window.testCoursePopulation = function() {
@@ -468,14 +451,23 @@
                     });
                 }
             }, 1000);
-        });
 
-        // Initialize page with correct active tab based on filter
-        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize page with correct active tab based on filter
             @if (isset($scholarshipTypeFilter))
                 // If there's a scholarship type filter, activate the corresponding tab
                 const filterType = '{{ $scholarshipTypeFilter }}';
+                console.log('Initializing with filter type:', filterType);
                 activateTabByType(filterType);
+
+                // Also ensure the correct tab is visually highlighted
+                setTimeout(() => {
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab) {
+                        console.log('Active tab found:', activeTab.textContent);
+                        // Add a subtle visual indicator that this tab is filtered
+                        activeTab.style.boxShadow = '0 0 10px rgba(30, 86, 49, 0.3)';
+                    }
+                }, 100);
             @endif
         });
 
@@ -490,7 +482,7 @@
                 const btnText = btn.textContent.toLowerCase();
                 if (
                     (scholarshipType === 'ched' && btnText.includes('ched')) ||
-                    (scholarshipType === 'presidents' && btnText.includes('institutional')) ||
+                    (scholarshipType === 'academic' && btnText.includes('academic')) ||
                     (scholarshipType === 'employees' && btnText.includes('employee')) ||
                     (scholarshipType === 'private' && btnText.includes('private'))
                 ) {
@@ -499,7 +491,7 @@
                     // Update table title
                     const titles = {
                         'ched': 'CHED Grantees',
-                        'presidents': 'Institutional Grantees',
+                        'academic': 'Academic Grantees',
                         'employees': 'Employee Grantees',
                         'private': 'Private Grantees'
                     };
@@ -516,52 +508,35 @@
         }
 
         // Student management functions
-        function showStudentCategory(category) {
-            // Update active tab
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        let isTabSwitching = false;
 
-            // Update table title
-            const titles = {
-                'all': 'All Grantees',
-                'ched': 'CHED Grantees',
-                'presidents': 'Institutional Grantees',
-                'employees': 'Employee Grantees',
-                'private': 'Private Grantees'
-            };
-            document.getElementById('categoryTitle').textContent = titles[category];
+        function showStudentCategory(category, clickedButton) {
+            // Prevent rapid clicking
+            if (isTabSwitching) {
+                return;
+            }
 
-            // Show/hide import button - only show for "All Grantees"
-            const importBtn = document.getElementById('importBtn');
-            if (importBtn) {
-                if (category === 'all') {
-                    importBtn.style.display = 'block';
-                } else {
-                    importBtn.style.display = 'none';
+            isTabSwitching = true;
+
+            // Build the URL with the appropriate scholarship type parameter
+            let url = "{{ route('admin.students') }}";
+
+            if (category !== 'all') {
+                // Map category to scholarship type parameter
+                const categoryMap = {
+                    'ched': 'ched',
+                    'academic': 'academic',
+                    'employees': 'employees',
+                    'private': 'private'
+                };
+
+                if (categoryMap[category]) {
+                    url += '?scholarship_type=' + categoryMap[category];
                 }
             }
 
-            // Filter table rows
-            const rows = document.querySelectorAll('#studentsTableBody tr[data-type]');
-            rows.forEach(row => {
-                if (category === 'all') {
-                    row.style.display = '';
-                } else {
-                    const rowType = row.getAttribute('data-type');
-                    const categoryMap = {
-                        'ched': 'ched',
-                        'presidents': 'institutional',
-                        'employees': 'employee',
-                        'private': 'private'
-                    };
-
-                    if (rowType === categoryMap[category]) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
+            // Redirect to the URL with the scholarship type filter
+            window.location.href = url;
         }
 
         // Import functions
@@ -798,6 +773,7 @@
 
             if (modal) {
                 modal.style.display = 'block';
+                modal.classList.add('modal-show');
                 console.log('Modal opened successfully');
 
                 // Test course population after modal opens
@@ -812,14 +788,16 @@
                         console.log('Both selects found, testing population...');
                         populateCoursesDirectly('SITE');
                     }
-                }, 500);
+                }, 100);
             } else {
                 console.error('Modal not found!');
             }
         }
 
         function closeAddStudentModal() {
-            document.getElementById('addStudentModal').style.display = 'none';
+            const modal = document.getElementById('addStudentModal');
+            modal.style.display = 'none';
+            modal.classList.remove('modal-show');
             document.getElementById('addStudentForm').reset();
             document.getElementById('dynamicFields').innerHTML = '';
         }
@@ -909,10 +887,10 @@
                     `;
                     break;
 
-                case 'presidents':
+                case 'academic':
                     fieldsHTML = `
                         <div class="form-section">
-                            <h3>Institutional Scholarship Information</h3>
+                            <h3>Academic Scholarship Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="educationStage">Education Stage *</label>

@@ -61,6 +61,7 @@ class ScholarshipApplication extends Model
         'employee_position',
         'scholarship_name',
         'other_scholarship',
+        'documents',
         'status',
     ];
 
@@ -87,7 +88,3 @@ class ScholarshipApplication extends Model
         });
     }
 }
-
-
-
-

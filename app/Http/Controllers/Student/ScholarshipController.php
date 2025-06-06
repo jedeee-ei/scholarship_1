@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ScholarshipApplicationRequest;
 
 class ScholarshipController extends Controller
@@ -31,50 +32,9 @@ class ScholarshipController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email',
-            'contact_number' => 'required|string'
+            'contact_number' => 'required|string',
+            'documents.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120' // 5MB max per file
         ]);
-
-        // Check for duplicates
-        $existingApplication = ScholarshipApplication::where('student_id', $request->student_id)
-            ->where('scholarship_type', $request->scholarship_type)
-            ->first();
-
-        if ($existingApplication) {
-            return back()->withErrors([
-                'student_id' => "This Student ID has already been used for this scholarship type."
-            ])->withInput();
-        }
-
-        // Generate application ID
-        $applicationId = 'SCH-' . strtoupper(Str::random(2)) . rand(10000, 99999);
-
-        // Create application
-        $application = new ScholarshipApplication();
-        $application->application_id = $applicationId;
-        $application->scholarship_type = $request->scholarship_type;
-        $application->status = 'Pending Review';
-        $application->student_id = $request->student_id;
-        $application->first_name = $request->first_name;
-        $application->last_name = $request->last_name;
-        $application->middle_name = $request->middle_name;
-        $application->email = $request->email;
-        $application->contact_number = $request->contact_number;
-        $application->sex = $request->sex;
-        $application->birthdate = $request->birthdate;
-
-        // Save application
-        $application->save();
-
-        // Set session data
-        session(['application_id' => $applicationId]);
-        session(['scholarship_type' => ucfirst($request->scholarship_type) . ' Scholarship']);
-
-        Log::info('Application created successfully', ['application_id' => $applicationId]);
-
-        return redirect()->route('scholarship.success');
-
-        // Validation is automatically handled by ScholarshipApplicationRequest
-        Log::info('Validation passed for scholarship application');
 
         // Enhanced duplicate checking with specific scholarship type validation
         $existingApplication = ScholarshipApplication::where('student_id', $request->student_id)
@@ -94,8 +54,7 @@ class ScholarshipController extends Controller
                 'ched' => 'CHED Scholarship',
                 'presidents' => 'Institutional Scholarship',
                 'institutional' => 'Institutional Scholarship',
-                'employees' => 'Employee\'s Scholarship',
-                'private' => 'Private Scholarship'
+                'employees' => 'Employee\'s Scholarship'
             ];
 
             $scholarshipName = $scholarshipTypeNames[$request->scholarship_type] ?? ucfirst($request->scholarship_type);
@@ -105,36 +64,6 @@ class ScholarshipController extends Controller
                     $existingApplication->created_at->format('M d, Y') . ". " .
                     "Status: {$existingApplication->status}. " .
                     "Each student can only apply once per scholarship type."
-            ])->withInput();
-        }
-
-        // Check for any pending applications for this student
-        $pendingApplication = ScholarshipApplication::where('student_id', $request->student_id)
-            ->whereIn('status', ['Pending Review', 'Under Committee Review'])
-            ->first();
-
-        if ($pendingApplication) {
-            Log::warning('Student has pending application', [
-                'student_id' => $request->student_id,
-                'pending_application_id' => $pendingApplication->application_id,
-                'pending_scholarship_type' => $pendingApplication->scholarship_type,
-                'pending_status' => $pendingApplication->status
-            ]);
-
-            $scholarshipTypeNames = [
-                'ched' => 'CHED Scholarship',
-                'presidents' => 'Institutional Scholarship',
-                'institutional' => 'Institutional Scholarship',
-                'employees' => 'Employee\'s Scholarship',
-                'private' => 'Private Scholarship'
-            ];
-
-            $pendingScholarshipName = $scholarshipTypeNames[$pendingApplication->scholarship_type] ?? ucfirst($pendingApplication->scholarship_type);
-
-            return back()->withErrors([
-                'student_id' => "You have a pending {$pendingScholarshipName} application " .
-                    "(Application ID: {$pendingApplication->application_id}). " .
-                    "Please wait for the current application to be processed before submitting a new one."
             ])->withInput();
         }
 
@@ -188,12 +117,49 @@ class ScholarshipController extends Controller
             'address' => 'address',
         ];
 
+        // Log all form data for debugging
+        Log::info('Form data received:', $request->all());
+
         // Fill in all the fields from the request
         foreach ($fieldMap as $formField => $dbField) {
             if ($request->has($formField)) {
                 $application->$dbField = $request->$formField;
+                Log::info("Setting {$dbField} = " . $request->$formField);
             }
         }
+
+        // Handle document uploads
+        $documents = [];
+        if ($request->hasFile('documents')) {
+            foreach ($request->file('documents') as $index => $file) {
+                if ($file->isValid()) {
+                    // Generate unique filename
+                    $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
+
+                    // Store file in private storage
+                    $path = $file->storeAs('scholarship_documents/' . $applicationId, $filename, 'local');
+
+                    // Add document info to array
+                    $documents[] = [
+                        'original_name' => $file->getClientOriginalName(),
+                        'filename' => $filename,
+                        'path' => $path,
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
+                        'uploaded_at' => now()->toISOString()
+                    ];
+
+                    Log::info("Document uploaded: {$filename}", [
+                        'path' => $path,
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ]);
+                }
+            }
+        }
+
+        // Store documents array in the application
+        $application->documents = $documents;
 
         try {
             // Save the application
@@ -207,8 +173,7 @@ class ScholarshipController extends Controller
                 'ched' => 'CHED Scholarship',
                 'presidents' => 'President\'s and Dean\'s Lister Scholarship',
                 'institutional' => 'Institutional Scholarship',
-                'employees' => 'Employees Scholar',
-                'private' => 'Private Scholarship'
+                'employees' => 'Employees Scholar'
             ];
 
             session(['scholarship_type' => $scholarshipTypes[$request->scholarship_type] ?? $request->scholarship_type]);

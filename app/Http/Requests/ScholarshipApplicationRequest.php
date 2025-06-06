@@ -132,10 +132,12 @@ class ScholarshipApplicationRequest extends FormRequest
     {
         return [
             'scholarship_name' => 'required|string|max:255',
-            'other_scholarship' => 'required|string|max:1000',
+            'other_scholarship' => 'nullable|string|max:1000',
             'address' => 'required|string|max:500',
         ];
     }
+
+
 
     /**
      * Get custom error messages

@@ -119,8 +119,8 @@
                         <select id="scholarshipType" name="type" required>
                             <option value="">Select Type</option>
                             <option value="ched">CHED</option>
-                            <option value="institutional">Institutional</option>
-                            <option value="employee">Employee</option>
+                            <option value="academic">Academic</option>
+                            <option value="employees">Employee</option>
                             <option value="private">Private</option>
                         </select>
                     </div>
@@ -271,14 +271,17 @@
             const modal = document.getElementById('addScholarshipModal');
             if (modal) {
                 modal.style.display = 'block';
-                console.log('Modal display set to block'); // Debug log
+                modal.classList.add('modal-show');
+                console.log('Modal opened successfully'); // Debug log
             } else {
                 console.error('Modal not found!');
             }
         }
 
         function closeAddScholarshipModal() {
-            document.getElementById('addScholarshipModal').style.display = 'none';
+            const modal = document.getElementById('addScholarshipModal');
+            modal.style.display = 'none';
+            modal.classList.remove('modal-show');
             document.getElementById('addScholarshipForm').reset();
         }
 
@@ -365,15 +368,19 @@
                 document.getElementById('currentYear').textContent = currentYear;
                 document.getElementById('nextYear').textContent = nextYear;
 
-                // Show modal
-                document.getElementById('updateSemesterYearModal').style.display = 'block';
+                // Show modal with CSS check
+                const modal = document.getElementById('updateSemesterYearModal');
+                modal.style.display = 'block';
+                modal.classList.add('modal-show');
             } catch (error) {
                 console.error('Error fetching current semester/year:', error);
             }
         }
 
         function closeUpdateSemesterYearModal() {
-            document.getElementById('updateSemesterYearModal').style.display = 'none';
+            const modal = document.getElementById('updateSemesterYearModal');
+            modal.style.display = 'none';
+            modal.classList.remove('modal-show');
             // Reset selections
             document.querySelectorAll('input[name="updateType"]').forEach(radio => radio.checked = false);
             document.querySelectorAll('.update-option-card').forEach(card => card.classList.remove('selected'));
@@ -736,7 +743,7 @@
 @endpush
 
 <!-- Custom Confirmation Modal -->
-<div id="confirmModal" class="modal">
+<div id="confirmModal" class="modal" style="display: none;">
     <div class="modal-content confirmation-modal">
         <div class="modal-header">
             <h2 id="confirmTitle">Confirm Action</h2>

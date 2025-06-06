@@ -117,6 +117,10 @@ Route::get('/admin/applications/data', [DashboardController::class, 'getApplicat
 Route::get('/admin/applications/{id}/detail', [DashboardController::class, 'getApplicationDetail'])->name('admin.application.detail');
 Route::post('/admin/applications/{id}/status', [DashboardController::class, 'updateApplicationStatus'])->name('admin.application.update-status');
 
+// Document management routes
+Route::get('/admin/applications/{application}/documents/{document}/download', [DashboardController::class, 'downloadDocument'])->name('admin.application.document.download');
+Route::get('/admin/applications/{application}/documents/{document}/view', [DashboardController::class, 'viewDocument'])->name('admin.application.document.view');
+
 // API routes for scholarship data
 Route::prefix('api/scholarship')->group(function () {
     Route::get('/departments', [ScholarshipDataController::class, 'getDepartments']);

@@ -8,9 +8,14 @@ use App\Models\Scholarship;
 use App\Models\ArchivedStudent;
 use App\Models\SystemSetting;
 use App\Models\Announcement;
+use App\Models\Grantee;
+use App\Services\GranteeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -240,41 +245,69 @@ class DashboardController extends Controller
         ]);
 
         $newStatus = $request->status;
+        $oldStatus = $application->status;
 
-        // Update the status
-        $application->status = $newStatus;
-        $application->save();
+        try {
+            DB::beginTransaction();
 
-        // Handle status-specific actions
-        if ($newStatus === 'Approved') {
-            // Application approved - will now appear in Students tab
-            $message = 'Application approved successfully. Student has been moved to the Students tab.';
+            // Handle status-specific actions
+            if ($newStatus === 'Approved' && $oldStatus !== 'Approved') {
+                // Create grantee record using GranteeService
+                $granteeService = new GranteeService();
+                $adminUser = Auth::user();
+                $approvedBy = $adminUser ? $adminUser->name : 'Admin';
 
-            // You can add additional logic here like:
-            // - Send approval email to student
-            // - Create student record
-            // - Update scholarship slot counts
+                // Create grantee from application
+                $grantee = $granteeService->createGranteeFromApplication($application, $approvedBy);
 
-        } elseif ($newStatus === 'Rejected') {
-            // Application rejected - will be removed from Applications list
-            $message = 'Application rejected. Student will be notified via the tracker.';
+                // Delete the application from scholarship_applications table
+                $application->delete();
 
-            // You can add additional logic here like:
-            // - Send rejection email to student
-            // - Log rejection reason
-            // - Update application statistics
+                $message = 'Application approved successfully. Student has been moved to the Grantees tab and removed from applications.';
 
-        } else {
-            $message = 'Application status updated successfully.';
-        }
+                Log::info('Application approved and moved to grantees', [
+                    'application_id' => $application->application_id,
+                    'grantee_id' => $grantee->grantee_id,
+                    'approved_by' => $approvedBy
+                ]);
+            } elseif ($newStatus === 'Rejected' && $oldStatus !== 'Rejected') {
+                // Update status to rejected
+                $application->status = $newStatus;
+                $application->save();
 
-        // Redirect based on the new status
-        if (in_array($newStatus, ['Approved', 'Rejected'])) {
-            // Redirect to applications list since this application will no longer be visible
-            return redirect()->route('admin.applications')->with('success', $message);
-        } else {
-            // Stay on the same page for other status updates
-            return redirect()->back()->with('success', $message);
+                $message = 'Application rejected. Student will be notified via the tracker.';
+
+                Log::info('Application rejected', [
+                    'application_id' => $application->application_id,
+                    'rejected_by' => Auth::user() ? Auth::user()->name : 'Admin'
+                ]);
+            } else {
+                // For other status updates (Pending Review, Under Committee Review)
+                $application->status = $newStatus;
+                $application->save();
+                $message = 'Application status updated successfully.';
+            }
+
+            DB::commit();
+
+            // Redirect based on the new status
+            if (in_array($newStatus, ['Approved', 'Rejected'])) {
+                // Redirect to applications list since this application will no longer be visible
+                return redirect()->route('admin.applications')->with('success', $message);
+            } else {
+                // Stay on the same page for other status updates
+                return redirect()->back()->with('success', $message);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Error updating application status', [
+                'application_id' => $application->application_id,
+                'new_status' => $newStatus,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->with('error', 'An error occurred while updating the application status. Please try again.');
         }
     }
 
@@ -395,15 +428,15 @@ class DashboardController extends Controller
     {
         $category = $request->get('category', 'all');
 
-        // Get approved scholarship applications as grantees
-        $query = ScholarshipApplication::where('status', 'Approved');
+        // Get grantees from the grantees table
+        $query = Grantee::query();
 
         // Filter by scholarship type if not 'all'
         if ($category !== 'all') {
             // Map category names to database values
             $typeMap = [
                 'ched' => 'ched',
-                'presidents' => 'presidents', // presidents scholarship type
+                'academic' => 'academic', // academic scholarship type
                 'employees' => 'employees',
                 'private' => 'private'
             ];
@@ -413,18 +446,19 @@ class DashboardController extends Controller
             }
         }
 
-        $applications = $query->orderBy('created_at', 'desc')->get();
+        $grantees = $query->orderBy('approved_date', 'desc')->get();
 
-        // Transform applications to student format
-        $students = $applications->map(function ($app) {
+        // Transform grantees to student format
+        $students = $grantees->map(function ($grantee) {
             return [
-                'id' => $app->student_id,
-                'name' => $app->first_name . ' ' . $app->last_name,
-                'course' => $app->course ?: 'N/A',
-                'scholarship_type' => $this->formatScholarshipType($app->scholarship_type),
-                'status' => 'Active', // All approved applications are considered active
-                'gwa' => $app->gwa ?: 'N/A',
-                'application_id' => $app->application_id
+                'id' => $grantee->student_id,
+                'name' => $grantee->first_name . ' ' . $grantee->last_name,
+                'course' => $grantee->course ?: 'N/A',
+                'scholarship_type' => $this->formatScholarshipType($grantee->scholarship_type),
+                'status' => $grantee->status,
+                'gwa' => $grantee->current_gwa ?: $grantee->gwa ?: 'N/A',
+                'application_id' => $grantee->application_id,
+                'grantee_id' => $grantee->grantee_id
             ];
         });
 
@@ -438,7 +472,7 @@ class DashboardController extends Controller
     {
         $types = [
             'ched' => 'CHED',
-            'presidents' => 'Institutional',
+            'academic' => 'Academic',
             'employees' => 'Employee',
             'private' => 'Private'
         ];
@@ -582,8 +616,8 @@ class DashboardController extends Controller
         $currentAcademicYear = SystemSetting::get('current_academic_year', $defaultAcademicYear);
         $currentSemester = SystemSetting::get('current_semester', $defaultSemester);
 
-        // Get approved scholarship applications as students
-        $query = ScholarshipApplication::where('status', 'Approved');
+        // Get grantees from the grantees table
+        $query = Grantee::query();
 
         // Filter by scholarship type if provided (support both 'type' and 'scholarship_type' parameters)
         $scholarshipTypeFilter = $request->get('type') ?: $request->get('scholarship_type');
@@ -591,21 +625,22 @@ class DashboardController extends Controller
             $query->where('scholarship_type', $scholarshipTypeFilter);
         }
 
-        $students = $query->orderBy('created_at', 'desc')
+        $students = $query->orderBy('approved_date', 'desc')
             ->get()
-            ->map(function ($app) use ($currentSemester, $currentAcademicYear) {
+            ->map(function ($grantee) use ($currentSemester, $currentAcademicYear) {
                 return [
-                    'id' => $app->student_id,
-                    'name' => $app->first_name . ' ' . $app->last_name,
-                    'course' => $app->course ?: 'N/A',
-                    'scholarship_type' => $this->formatScholarshipType($app->scholarship_type),
-                    'status' => 'Active',
-                    'gwa' => $app->gwa ?: 'N/A',
-                    'application_id' => $app->application_id,
-                    'department' => $app->department,
-                    'year_level' => $app->year_level,
-                    'email' => $app->email,
-                    'contact_number' => $app->contact_number,
+                    'id' => $grantee->student_id,
+                    'name' => $grantee->first_name . ' ' . $grantee->last_name,
+                    'course' => $grantee->course ?: 'N/A',
+                    'scholarship_type' => $this->formatScholarshipType($grantee->scholarship_type),
+                    'status' => $grantee->status,
+                    'gwa' => $grantee->current_gwa ?: $grantee->gwa ?: 'N/A',
+                    'application_id' => $grantee->application_id,
+                    'grantee_id' => $grantee->grantee_id,
+                    'department' => $grantee->department,
+                    'year_level' => $grantee->year_level,
+                    'email' => $grantee->email,
+                    'contact_number' => $grantee->contact_number,
                     'current_semester' => $currentSemester,
                     'current_academic_year' => $currentAcademicYear
                 ];
@@ -754,7 +789,7 @@ class DashboardController extends Controller
             // Validate the request
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'type' => 'required|string|in:ched,institutional,employee,private',
+                'type' => 'required|string|in:ched,academic,employees,private',
                 'semester' => 'required|string|in:1st Semester,2nd Semester',
                 'academic_year' => 'required|string|max:20',
                 'description' => 'nullable|string|max:1000'
@@ -989,7 +1024,7 @@ class DashboardController extends Controller
             ],
             'by_type' => [
                 'ched' => ScholarshipApplication::where('scholarship_type', 'ched')->count(),
-                'presidents' => ScholarshipApplication::where('scholarship_type', 'presidents')->count(),
+                'academic' => ScholarshipApplication::where('scholarship_type', 'academic')->count(),
                 'employees' => ScholarshipApplication::where('scholarship_type', 'employees')->count(),
                 'private' => ScholarshipApplication::where('scholarship_type', 'private')->count(),
             ]
@@ -1742,5 +1777,52 @@ class DashboardController extends Controller
             'success' => true,
             'message' => 'Announcement deleted successfully'
         ]);
+    }
+
+    /**
+     * Download a document from an application
+     */
+    public function downloadDocument($applicationId, $documentIndex)
+    {
+        $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
+
+        if (!$application->documents || !isset($application->documents[$documentIndex])) {
+            abort(404, 'Document not found');
+        }
+
+        $document = $application->documents[$documentIndex];
+
+        if (!isset($document['path']) || !Storage::exists($document['path'])) {
+            abort(404, 'Document file not found');
+        }
+
+        $filename = $document['original_name'] ?? 'document_' . ($documentIndex + 1);
+
+        return Storage::download($document['path'], $filename);
+    }
+
+    /**
+     * View a document from an application
+     */
+    public function viewDocument($applicationId, $documentIndex)
+    {
+        $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
+
+        if (!$application->documents || !isset($application->documents[$documentIndex])) {
+            abort(404, 'Document not found');
+        }
+
+        $document = $application->documents[$documentIndex];
+
+        if (!isset($document['path']) || !Storage::exists($document['path'])) {
+            abort(404, 'Document file not found');
+        }
+
+        $file = Storage::get($document['path']);
+        $mimeType = Storage::mimeType($document['path']);
+
+        return response($file, 200)
+            ->header('Content-Type', $mimeType)
+            ->header('Content-Disposition', 'inline; filename="' . ($document['original_name'] ?? 'document') . '"');
     }
 }
