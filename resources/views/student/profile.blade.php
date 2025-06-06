@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -267,6 +268,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="university-header">
@@ -281,8 +283,8 @@
                 <a href="/student/dashboard" class="action-link">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a href="/student/applications" class="action-link">
-                    <i class="fas fa-clipboard-list"></i> My Applications
+                <a href="{{ route('scholarship.tracker') }}" class="action-link">
+                    <i class="fas fa-search"></i> Track Application
                 </a>
                 <a href="/student/profile" class="action-link active">
                     <i class="fas fa-user-circle"></i> My Profile
@@ -302,21 +304,13 @@
         </div>
 
         <div class="profile-container">
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
 
-            @if(session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
 
             <div class="profile-tabs">
-                <a href="#personal" class="active" id="personal-tab" onclick="switchTab('personal'); return false;">Personal Information</a>
-                <a href="#security" id="security-tab" onclick="switchTab('security'); return false;">Security Settings</a>
+                <a href="#personal" class="active" id="personal-tab"
+                    onclick="switchTab('personal'); return false;">Personal Information</a>
+                <a href="#security" id="security-tab" onclick="switchTab('security'); return false;">Security
+                    Settings</a>
             </div>
 
             <div class="tab-content">
@@ -329,13 +323,15 @@
                             <div class="col-md-6">
                                 <div class="form-row">
                                     <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" name="name" value="Student User" required>
+                                    <input type="text" class="form-control" name="name" value="Student User"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-row">
                                     <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" name="email" value="student@spup.edu.ph" required>
+                                    <input type="email" class="form-control" name="email"
+                                        value="student@spup.edu.ph" required>
                                 </div>
                             </div>
                         </div>
@@ -344,7 +340,8 @@
                             <div class="student-id-field">
                                 <div class="form-row">
                                     <label class="form-label">Student ID</label>
-                                    <input type="text" class="form-control" name="student_id" value="2024-001" required>
+                                    <input type="text" class="form-control" name="student_id" value="2024-001"
+                                        required>
                                 </div>
                             </div>
                         </div>
@@ -404,5 +401,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>

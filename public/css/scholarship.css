@@ -44,7 +44,7 @@ body {
 .university-title h1 {
     font-size: 20px;
     margin: 0;
-    color: #1e5631;
+    color: #052F11;
 }
 
 .university-title h2 {
@@ -62,7 +62,7 @@ body {
 .logout-btn {
     display: inline-flex;
     align-items: center;
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
     padding: 8px 15px;
     border-radius: 4px;
@@ -76,7 +76,7 @@ body {
 }
 
 .logout-btn:hover {
-    background-color: #164023;
+    background-color: #052F11;
 }
 
 @media (max-width: 768px) {
@@ -140,7 +140,7 @@ body {
 }
 
 .form-header h1 {
-    color: #1e5631;
+    color: #052F11;
     font-size: 28px;
     margin: 0;
     padding: 0;
@@ -173,9 +173,9 @@ body {
 }
 
 .tab-btn.active {
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
-    border-color: #1e5631;
+    border-color: #052F11;
 }
 
 .tab-btn:hover:not(.active) {
@@ -212,7 +212,7 @@ body {
 
 /* Form header styling */
 .form-header h1 {
-    color: #1e5631;
+    color: #052F11;
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
@@ -262,9 +262,9 @@ body {
 }
 
 .tab-btn.active {
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
-    border-color: #1e5631;
+    border-color: #052F11;
 }
 
 .tab-btn.add-more {
@@ -327,9 +327,9 @@ input[type="tel"]:focus,
 input[type="date"]:focus,
 select:focus {
     outline: none;
-    border-color: #1e5631;
+    border-color: #052F11;
     background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.1);
+    box-shadow: 0 0 0 3px rgba(5, 47, 17, 0.1);
 }
 
 input::placeholder {
@@ -381,9 +381,9 @@ input::placeholder {
 
 /* Selected state - green fill */
 .radio-label input:checked + .radio-custom {
-    background-color: #1e5631;
+    background-color: #052F11;
     border-color: #fff;
-    box-shadow: 0 0 0 2px #1e5631;
+    box-shadow: 0 0 0 2px #052F11;
 }
 
 /* Inner dot for selected state */
@@ -475,7 +475,7 @@ select {
 
 .submit-btn {
     padding: 0.85rem 3.5rem;
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
     border: none;
     border-radius: 8px;
@@ -484,19 +484,19 @@ select {
     cursor: pointer;
     text-transform: uppercase;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(30, 86, 49, 0.2);
+    box-shadow: 0 4px 6px rgba(5, 47, 17, 0.2);
     letter-spacing: 0.5px;
 }
 
 .submit-btn:hover {
-    background-color: #154a1c;
+    background-color: #052F11;
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(30, 86, 49, 0.25);
+    box-shadow: 0 6px 12px rgba(5, 47, 17, 0.25);
 }
 
 .submit-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(30, 86, 49, 0.2);
+    box-shadow: 0 2px 4px rgba(5, 47, 17, 0.2);
 }
 
 /* Error styling */
@@ -622,7 +622,7 @@ hr {
     left: 0;
     width: 0;
     height: 3px;
-    background-color: #1e5631;
+    background-color: #052F11;
     transition: width 0.3s ease;
 }
 
@@ -734,7 +734,7 @@ hr {
 }
 
 .form-header h1 {
-    color: #1e5631;
+    color: #052F11;
     font-size: 1.6rem;
     display: flex;
     align-items: center;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -118,7 +119,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
 
@@ -153,9 +154,11 @@
             0% {
                 box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
             }
+
             50% {
                 box-shadow: 0 4px 25px rgba(46, 125, 50, 0.5);
             }
+
             100% {
                 box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
             }
@@ -193,8 +196,13 @@
         }
 
         @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .cta-content {
@@ -283,12 +291,14 @@
         }
     </style>
 </head>
+
 <body>
     <!-- University Header -->
     <header class="university-header">
         <div class="header-content">
             <div class="university-logo-title">
-                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo" class="university-logo">
+                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
+                    class="university-logo">
                 <div class="university-title">
                     <h1>St. Paul University Philippines</h1>
                     <h2>OFFICE OF THE REGISTRAR</h2>
@@ -317,18 +327,18 @@
             <h1 class="success-title">Application Submitted Successfully!</h1>
             <p class="success-message">
                 Your scholarship application has been received and is now being processed.
-                You will receive updates on your application status via email and SMS.
+                You will receive updates on your application status via email
             </p>
 
             <div class="application-details">
                 <div class="detail-row">
                     <div class="detail-label">Application ID:</div>
-                    <div class="detail-value">{{ session('application_id', 'SCH-'.rand(10000, 99999)) }}</div>
+                    <div class="detail-value">{{ session('application_id', 'Not Available') }}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">Scholarship Type:</div>
                     <div class="detail-value">
-                        @if(session('scholarship_type') == 'ched')
+                        @if (session('scholarship_type') == 'ched')
                             CHED Scholarship
                         @elseif(session('scholarship_type') == 'presidents')
                             Institutional Scholarship
@@ -359,7 +369,8 @@
                         <div class="step-content">
                             <div class="step-title">Initial Review</div>
                             <div class="step-description">
-                                Your application will be reviewed by the Scholarship Committee to ensure all requirements are met.
+                                Your application will be reviewed by the Scholarship Committee to ensure all
+                                requirements are met.
                                 This typically takes 3-5 business days.
                             </div>
                         </div>
@@ -369,7 +380,8 @@
                         <div class="step-content">
                             <div class="step-title">Committee Evaluation</div>
                             <div class="step-description">
-                                If your application passes the initial review, it will be forwarded to the Scholarship Committee for evaluation.
+                                If your application passes the initial review, it will be forwarded to the Scholarship
+                                Committee for evaluation.
                                 This process may take 1-2 weeks.
                             </div>
                         </div>
@@ -379,7 +391,8 @@
                         <div class="step-content">
                             <div class="step-title">Decision Notification</div>
                             <div class="step-description">
-                                You will be notified of the committee's decision via email and SMS. If approved, you will receive further instructions
+                                You will be notified of the committee's decision via email and SMS. If approved, you
+                                will receive further instructions
                                 on the next steps to complete your scholarship process.
                             </div>
                         </div>
@@ -395,7 +408,8 @@
                         Stay Updated on Your Application!
                     </div>
                     <div class="cta-description">
-                        Click the "Track Your Application Status" button below to monitor your application progress in real-time.
+                        Click the "Track Your Application Status" button below to monitor your application progress in
+                        real-time.
                     </div>
                 </div>
             </div>
@@ -404,9 +418,12 @@
                 <a href="{{ route('student.dashboard') }}" class="action-btn back-btn">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </a>
-                <a href="{{ route('scholarship.tracker', ['id' => session('application_id', 'SCH-'.rand(10000, 99999))]) }}" class="action-btn track-btn">
-                    <i class="fas fa-search"></i> Track Your Application Status
-                </a>
+                @if (session('application_id'))
+                    <a href="{{ route('scholarship.tracker', ['id' => session('application_id')]) }}"
+                        class="action-btn track-btn">
+                        <i class="fas fa-search"></i> Track Your Application Status
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -416,9 +433,11 @@
             console.log('Success page loaded');
 
             // Store application ID in local storage for easy tracking
-            localStorage.setItem('lastApplicationId', '{{ session('application_id', 'SCH-'.rand(10000, 99999)) }}');
+            @if (session('application_id'))
+                localStorage.setItem('lastApplicationId', '{{ session('application_id') }}');
+            @endif
         });
     </script>
 </body>
-</html>
 
+</html>

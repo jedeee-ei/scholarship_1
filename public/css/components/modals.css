@@ -1,0 +1,439 @@
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #1e5631;
+    box-shadow: 0 0 0 2px rgba(30, 86, 49, 0.1);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+}
+
+.form-group small a {
+    color: #1e5631;
+    text-decoration: none;
+}
+
+.form-group small a:hover {
+    text-decoration: underline;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #1e5631;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #164023;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Export Options */
+.export-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.export-option {
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.export-option:hover {
+    border-color: #1e5631;
+    background-color: #f8f9fa;
+}
+
+.export-option i {
+    font-size: 32px;
+    color: #1e5631;
+    margin-bottom: 10px;
+}
+
+.export-option h4 {
+    margin: 10px 0 5px;
+    color: #333;
+    font-size: 16px;
+}
+
+.export-option p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Settings Sections */
+.settings-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.settings-section h4 {
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 15px;
+    }
+
+    .export-options {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .modal-footer button:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* File Input Styling */
+input[type="file"] {
+    padding: 8px !important;
+    border: 2px dashed #ddd !important;
+    background-color: #f9f9f9;
+}
+
+input[type="file"]:hover {
+    border-color: #1e5631 !important;
+    background-color: #f0f8f0;
+}
+
+/* Loading States */
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Import Modal Specific Styles */
+.import-instructions {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.import-instructions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.import-instructions li {
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.form-group label input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+
+.form-section h3 {
+    color: #1e5631;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 8px;
+}
+
+/* File input styling for import */
+input[type="file"] {
+    padding: 12px !important;
+    border: 2px dashed #1e5631 !important;
+    background-color: #f8f9fa;
+    border-radius: 8px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover {
+    background-color: #e8f5e8;
+    border-color: #164023 !important;
+}
+
+input[type="file"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.1);
+}
+
+/* Progress indicator for import */
+.import-progress {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e3f2fd;
+    border-radius: 5px;
+    border-left: 4px solid #2196f3;
+}
+
+.import-progress.show {
+    display: block;
+}
+
+.progress-text {
+    color: #1976d2;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #2196f3;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Import info styling */
+.import-info {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.import-info p {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-weight: 500;
+}
+
+.import-info ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.import-info li {
+    margin-bottom: 5px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.import-info a {
+    color: #1e5631;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.import-info a:hover {
+    text-decoration: underline;
+}
+
+/* Selected file display */
+#selectedFileName {
+    color: #1e5631;
+    font-weight: 600;
+}
+
+/* Hidden file input */
+#hiddenFileInput {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+}

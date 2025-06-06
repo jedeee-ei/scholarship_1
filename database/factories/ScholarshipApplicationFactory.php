@@ -19,7 +19,7 @@ class ScholarshipApplicationFactory extends Factory
     {
         $scholarshipTypes = ['ched', 'presidents', 'employees', 'private'];
         $statuses = ['Pending Review', 'Under Committee Review', 'Approved', 'Rejected'];
-        
+
         return [
             'application_id' => 'SCH-' . strtoupper(substr(uniqid(), -6)),
             'scholarship_type' => fake()->randomElement($scholarshipTypes),
@@ -30,16 +30,20 @@ class ScholarshipApplicationFactory extends Factory
             'sex' => fake()->randomElement(['Male', 'Female']),
             'birthdate' => fake()->date(),
             'education_stage' => 'College',
-            'department' => fake()->randomElement(['SITE', 'SASTE', 'SBAHM']),
+            'department' => fake()->randomElement(['SITE', 'SASTE', 'SBAHM', 'SNAHS']),
             'course' => fake()->randomElement([
-                'BS Information Technology', 
-                'BS Psychology', 
-                'BS Accountancy'
+                'Bachelor of Science in Information Technology',
+                'Bachelor of Science in Computer Science',
+                'Bachelor of Science in Civil Engineering',
+                'Bachelor of Science in Psychology',
+                'Bachelor of Elementary Education',
+                'Bachelor of Science in Business Administration',
+                'Bachelor of Science in Nursing'
             ]),
             'year_level' => fake()->randomElement(['1st Year', '2nd Year', '3rd Year', '4th Year']),
             'gwa' => fake()->randomFloat(2, 1, 1.5),
             'semester' => fake()->randomElement(['1st Semester', '2nd Semester']),
-            'academic_year' => '2023-2024',
+            'academic_year' => '2024-2025',
             'email' => fake()->email(),
             'contact_number' => fake()->phoneNumber(),
             'status' => fake()->randomElement($statuses),
@@ -53,7 +57,7 @@ class ScholarshipApplicationFactory extends Factory
      */
     public function pending(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Pending Review',
         ]);
     }
@@ -63,7 +67,7 @@ class ScholarshipApplicationFactory extends Factory
      */
     public function approved(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Approved',
         ]);
     }
@@ -73,7 +77,7 @@ class ScholarshipApplicationFactory extends Factory
      */
     public function rejected(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Rejected',
         ]);
     }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1e5631;
-            --primary-dark: #154a1c;
-            --primary-light: rgba(30, 86, 49, 0.1);
+            --primary-color: #052F11;
+            --primary-dark: #052F11;
+            --primary-light: rgba(5, 47, 17, 0.1);
             --text-color: #333;
             --light-gray: #f5f5f5;
             --border-color: #ddd;
@@ -42,8 +43,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header-section {
@@ -190,11 +198,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-card">
             <div class="header-section">
-                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo" class="login-logo">
+                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
+                    class="login-logo">
                 <h1 class="university-name">St. Paul University Philippines</h1>
                 <h2 class="office-name">Office of the Registrar</h2>
             </div>
@@ -220,14 +230,14 @@
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email"
-                               placeholder="{{ $type === 'administrator' ? 'Admin Email (admin@spup.edu.ph)' : 'Student Email (student@spup.edu.ph)' }}"
-                               value="{{ old('email') }}" required>
+                            placeholder="{{ $type === 'administrator' ? 'Admin Email (admin@spup.edu.ph)' : 'Student Email (student@spup.edu.ph)' }}"
+                            value="{{ old('email') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password"
-                               placeholder="Enter your password" required>
+                        <input type="password" id="password" name="password" placeholder="Enter your password"
+                            required>
                     </div>
 
                     <button type="submit" class="login-submit-btn">
@@ -236,8 +246,10 @@
 
                     <div class="form-footer">
                         <div class="back-options">
-                            <a href="{{ route('login') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Login Options</a>
-                            <a href="{{ route('welcome') }}" class="back-link"><i class="fas fa-home"></i> Back to Website</a>
+                            <a href="{{ route('login') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to
+                                Login Options</a>
+                            <a href="{{ route('welcome') }}" class="back-link"><i class="fas fa-home"></i> Back to
+                                Website</a>
                         </div>
                     </div>
                 </form>
@@ -247,5 +259,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
 
+</html>

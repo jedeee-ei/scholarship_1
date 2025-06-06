@@ -12,9 +12,15 @@ use Illuminate\Support\Facades\Auth;
 // });
 
 
-Route::get('/welcome', function () { return view('layouts.welcome');})->name('welcome');
-Route::get('/splashscreen', function () { return view('layouts.splashscreen');});
-Route::get('/login', function () {return view('layouts.login'); })->name('login');
+Route::get('/welcome', function () {
+    return view('layouts.welcome');
+})->name('welcome');
+Route::get('/splashscreen', function () {
+    return view('layouts.splashscreen');
+});
+Route::get('/login', function () {
+    return view('layouts.login');
+})->name('login');
 
 Route::get('/logout', function () {
     // If using Laravel's built-in auth
@@ -45,30 +51,25 @@ Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout
 // Student routes
 Route::middleware(['auth', 'student'])->group(function () {
     // Student dashboard route
-    Route::get('/student/dashboard', function () {
-        return view('student.dashboard');
-    })->name('student.dashboard');
+    Route::get('/student/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])->name('student.dashboard');
 
     Route::get('/student/profile', function () {
         return view('student.profile');
     })->name('student.profile');
 
-    // Add applications route
-    Route::get('/student/applications', function () {
-        $applications = \App\Models\ScholarshipApplication::where('student_id', Auth::user()->student_id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('student.applications', compact('applications'));
-    })->name('student.applications');
+
 
     // Scholarship routes
     Route::post('/scholarship/submit', [ScholarshipController::class, 'submitApplication'])->name('scholarship.submit');
+
     Route::get('/scholarship/success', [ScholarshipController::class, 'showSuccess'])->name('scholarship.success');
+    Route::post('/student/check-duplicate', [ScholarshipController::class, 'checkDuplicate'])->name('student.check-duplicate');
 
     // Scholarship Application Tracker - remove ownership middleware for now to test
     Route::get('/scholarship/tracker', [ScholarshipTrackerController::class, 'showTracker'])->name('scholarship.tracker');
     Route::post('/scholarship/track', [ScholarshipTrackerController::class, 'trackApplication'])->name('scholarship.track');
 });
+
 
 // Admin routes without authentication
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -76,8 +77,24 @@ Route::get('/applications', [DashboardController::class, 'applications'])->name(
 Route::get('/applications/{id}', [DashboardController::class, 'viewApplication'])->name('admin.application.view');
 Route::post('/applications/{id}/status', [DashboardController::class, 'updateStatus'])->name('admin.application.status');
 
+// New admin page routes
+Route::get('/admin/students', [DashboardController::class, 'students'])->name('admin.students');
+Route::post('/students/{id}/update', [DashboardController::class, 'updateStudent'])->name('admin.student.update');
+Route::get('/admin/scholarships', [DashboardController::class, 'scholarships'])->name('admin.scholarships');
+Route::post('/admin/scholarships/add', [DashboardController::class, 'addScholarship'])->name('admin.scholarship.add');
+Route::post('/admin/scholarships/update-semester', [DashboardController::class, 'updateSemester'])->name('admin.scholarship.update-semester');
+Route::post('/admin/scholarships/update-year', [DashboardController::class, 'updateAcademicYear'])->name('admin.scholarship.update-year');
+Route::get('/admin/announcements', [DashboardController::class, 'announcements'])->name('admin.announcements');
+Route::post('/admin/announcements/store', [DashboardController::class, 'storeAnnouncement'])->name('admin.announcements.store');
+Route::put('/admin/announcements/{id}', [DashboardController::class, 'updateAnnouncement'])->name('admin.announcements.update');
+Route::delete('/admin/announcements/{id}', [DashboardController::class, 'deleteAnnouncement'])->name('admin.announcements.delete');
+
+Route::get('/admin/archived-students', [DashboardController::class, 'archivedStudents'])->name('admin.archived-students');
+Route::get('/admin/archived-scholarships', [DashboardController::class, 'archivedScholarships'])->name('admin.archived-scholarships');
+Route::get('/admin/reports', [DashboardController::class, 'reports'])->name('admin.reports');
+Route::get('/admin/settings', [DashboardController::class, 'settings'])->name('admin.settings');
+
 // New admin functionality routes
-Route::post('/admin/scholarships/add', [DashboardController::class, 'addScholarship'])->name('admin.scholarships.add');
 Route::post('/admin/students/import', [DashboardController::class, 'bulkImportStudents'])->name('admin.students.import');
 Route::post('/admin/settings/update', [DashboardController::class, 'updateSettings'])->name('admin.settings.update');
 Route::get('/admin/applications/export', [DashboardController::class, 'exportApplications'])->name('admin.applications.export');
@@ -95,6 +112,11 @@ Route::get('/admin/students/category/{category}', [DashboardController::class, '
 Route::post('/admin/students/add', [DashboardController::class, 'addStudent'])->name('admin.students.add');
 Route::get('/admin/students/export', [DashboardController::class, 'exportStudents'])->name('admin.students.export');
 
+// Applications management routes
+Route::get('/admin/applications/data', [DashboardController::class, 'getApplicationsData'])->name('admin.applications.data');
+Route::get('/admin/applications/{id}/detail', [DashboardController::class, 'getApplicationDetail'])->name('admin.application.detail');
+Route::post('/admin/applications/{id}/status', [DashboardController::class, 'updateApplicationStatus'])->name('admin.application.update-status');
+
 // API routes for scholarship data
 Route::prefix('api/scholarship')->group(function () {
     Route::get('/departments', [ScholarshipDataController::class, 'getDepartments']);
@@ -104,27 +126,38 @@ Route::prefix('api/scholarship')->group(function () {
     Route::get('/subjects/{courseName}/{yearLevel}/{semester}', [ScholarshipDataController::class, 'getSubjects']);
 });
 
+// API routes for dashboard analytics
+Route::prefix('api/admin')->group(function () {
+    Route::get('/chart-data', [DashboardController::class, 'getChartDataApi']);
+    Route::get('/analytics-summary', [DashboardController::class, 'getAnalyticsSummary']);
+});
+
 // API route for checking duplicate student IDs
 Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
+Route::post('/api/check-duplicate-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
 
+// API route for loading subjects (used by student dashboard)
+Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard']);
 
+// CSRF token refresh route
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+});
 
+// Session keep-alive route
+Route::post('/keep-alive', function () {
+    return response()->json(['status' => 'alive', 'csrf_token' => csrf_token()]);
+});
 
+// Get current semester/year route
+Route::get('/admin/current-semester-year', [DashboardController::class, 'getCurrentSemesterYear']);
 
+// Dashboard action routes
+Route::post('/admin/bulk-import', [DashboardController::class, 'bulkImport'])->name('admin.bulk-import');
+Route::get('/admin/download-template', [DashboardController::class, 'downloadTemplate'])->name('admin.download-template');
+Route::get('/admin/export/{type}', [DashboardController::class, 'exportData'])->name('admin.export');
+Route::post('/admin/settings', [DashboardController::class, 'saveSettings'])->name('admin.settings');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Student import routes
+Route::post('/admin/import-students', [DashboardController::class, 'importStudents'])->name('admin.import-students');
+Route::get('/admin/download-student-template', [DashboardController::class, 'downloadStudentTemplate'])->name('admin.download-student-template');

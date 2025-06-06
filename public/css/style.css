@@ -50,7 +50,7 @@ body {
 .logo-text {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #1e5631;
+    color: #052F11;
 }
 
 .logo-text small {
@@ -77,13 +77,13 @@ body {
 }
 
 .nav-link:hover, .nav-link.active {
-    background: #1e5631;
+    background: #052F11;
     color: white;
 }
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #1e5631 0%, #2d7a3d 100%);
+    background: linear-gradient(135deg, #052F11 0%, #052F11 100%);
     color: white;
     padding: 4rem 0;
     text-align: center;
@@ -144,7 +144,7 @@ body {
 
 .section-title {
     font-size: 2rem;
-    color: #1e5631;
+    color: #052F11;
     margin-bottom: 1.5rem;
     text-align: center;
 }
@@ -173,7 +173,7 @@ body {
 .card-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #1e5631, #2d7a3d);
+    background: linear-gradient(135deg, #052F11, #052F11);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -184,13 +184,13 @@ body {
 }
 
 .card h3 {
-    color: #1e5631;
+    color: #052F11;
     margin-bottom: 1rem;
     font-size: 1.3rem;
 }
 
 .card h4 {
-    color: #1e5631;
+    color: #052F11;
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
 }
@@ -202,7 +202,7 @@ body {
 
 /* Buttons */
 .btn {
-    background: linear-gradient(135deg, #1e5631, #2d7a3d);
+    background: linear-gradient(135deg, #052F11, #052F11);
     color: white;
     padding: 12px 30px;
     border: none;
@@ -218,7 +218,7 @@ body {
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(30, 86, 49, 0.4);
+    box-shadow: 0 5px 15px rgba(5, 47, 17, 0.4);
 }
 
 .btn-secondary {
@@ -235,7 +235,7 @@ body {
 }
 
 .services-buttons h3 {
-    color: #1e5631;
+    color: #052F11;
     margin-bottom: 1rem;
 }
 
@@ -260,7 +260,7 @@ body {
 }
 
 .info-item h4 {
-    color: #1e5631;
+    color: #052F11;
     margin-bottom: 0.5rem;
 }
 
@@ -271,7 +271,7 @@ body {
 
 /* Footer */
 .footer {
-    background: #1e5631;
+    background: #052F11;
     color: white;
     text-align: center;
     padding: 2rem 0;

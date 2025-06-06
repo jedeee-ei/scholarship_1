@@ -6,59 +6,52 @@ use Illuminate\Http\Request;
 use App\Models\ScholarshipApplication;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 class ScholarshipTrackerController extends Controller
 {
     public function showTracker(Request $request)
     {
         $applicationId = $request->query('id');
         $application = null;
-        $student = auth()->user();
+        $student = Auth::user();
 
-        if ($applicationId && $student) {
-            // First try to find application that belongs to the authenticated student
-            $application = ScholarshipApplication::where('application_id', $applicationId)
-                ->where('student_id', $student->student_id)
-                ->first();
+        // Get all applications for the logged-in user
+        $userApplications = collect();
+        if ($student && $student->student_id) {
+            $userApplications = ScholarshipApplication::where('student_id', $student->student_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
 
-            // If not found and we're in development/testing mode, show any application
-            // This helps with testing when student IDs don't match
-            if (!$application && config('app.debug', false)) {
-                $application = ScholarshipApplication::where('application_id', $applicationId)->first();
-
-                // Add a flag to indicate this is a test/debug view
-                if ($application) {
-                    $application->is_debug_view = true;
-                }
-            }
+        if ($applicationId) {
+            // Find application by ID - allow any student to track any application for now
+            $application = ScholarshipApplication::where('application_id', $applicationId)->first();
         }
 
         return view('scholarship.tracker', [
             'application' => $application,
             'applicationId' => $applicationId,
-            'student' => $student
+            'student' => $student,
+            'userApplications' => $userApplications
         ]);
     }
 
     public function trackApplication(Request $request)
     {
         $applicationId = $request->input('application_id');
-        $student = auth()->user();
+        $student = Auth::user();
 
         if (!$student) {
             return response()->json(['found' => false, 'error' => 'Not authenticated']);
         }
 
-        // Only allow tracking applications that belong to the authenticated student
-        $application = ScholarshipApplication::where('application_id', $applicationId)
-            ->where('student_id', $student->student_id)
-            ->first();
+        // Find application by ID - allow tracking any application for now
+        $application = ScholarshipApplication::where('application_id', $applicationId)->first();
 
         if (!$application) {
             return response()->json(['found' => false]);
         }
-
-        // Define the steps in the application process
-        $steps = ['Submitted', 'Initial Review', 'Committee Review', 'Decision', 'Notification'];
 
         // Determine current step based on status
         $currentStep = 0;
@@ -75,22 +68,14 @@ class ScholarshipTrackerController extends Controller
 
             case 'Under Committee Review':
                 $currentStep = 2; // Committee Review
-                $progress = 40;
+                $progress = 60;
                 $statusTitle = 'Under Committee Review';
                 $statusMessage = 'Your application is currently being reviewed by the Scholarship Committee.';
                 $statusNote = 'This process typically takes 2-3 weeks. You may be contacted for additional information if needed.';
                 break;
 
-            case 'Decision Made':
-                $currentStep = 3; // Decision
-                $progress = 60;
-                $statusTitle = 'Decision Made';
-                $statusMessage = 'The Scholarship Committee has made a decision on your application.';
-                $statusNote = 'You will be notified of the decision soon.';
-                break;
-
             case 'Approved':
-                $currentStep = 4; // Notification
+                $currentStep = 3; // Notification
                 $progress = 100;
                 $statusTitle = 'Application Approved';
                 $statusMessage = 'Congratulations! Your scholarship application has been approved.';
@@ -98,7 +83,7 @@ class ScholarshipTrackerController extends Controller
                 break;
 
             case 'Rejected':
-                $currentStep = 4; // Notification
+                $currentStep = 3; // Notification
                 $progress = 100;
                 $statusTitle = 'Application Not Approved';
                 $statusMessage = 'We regret to inform you that your scholarship application was not approved at this time.';
@@ -152,8 +137,3 @@ class ScholarshipTrackerController extends Controller
         return response()->json($data);
     }
 }
-
-
-
-
-

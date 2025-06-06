@@ -1,0 +1,80 @@
+/* Breadcrumb Component Styles */
+.breadcrumb-nav {
+    margin-bottom: 0;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #1e5631;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    background-color: rgba(30, 86, 49, 0.1);
+    color: #1e5631;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #333;
+    font-weight: 500;
+    padding: 4px 8px;
+}
+
+.breadcrumb-separator {
+    margin: 0 8px;
+    color: #ccc;
+    font-size: 12px;
+}
+
+.breadcrumb i {
+    font-size: 12px;
+}
+
+.breadcrumb-item.active i {
+    color: #1e5631;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .breadcrumb {
+        font-size: 12px;
+    }
+    
+    .breadcrumb-separator {
+        margin: 0 4px;
+    }
+    
+    .breadcrumb-link span,
+    .breadcrumb-item.active span {
+        display: none;
+    }
+    
+    .breadcrumb-link,
+    .breadcrumb-item.active {
+        padding: 4px;
+    }
+}

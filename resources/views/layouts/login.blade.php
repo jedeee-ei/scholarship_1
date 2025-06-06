@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: green;
-            --primary-dark: green;
-            --primary-light: rgba(128, 0, 0, 0.1);
+            --primary-color: #052F11;
+            --primary-dark: #052F11;
+            --primary-light: rgba(5, 47, 17, 0.1);
             --text-color: #333;
             --light-gray: #f5f5f5;
             --border-color: #ddd;
@@ -170,11 +171,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-card">
             <div class="header-section">
-                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo" class="login-logo">
+                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
+                    class="login-logo">
                 <h1 class="university-name">St. Paul University Philippines</h1>
                 <h2 class="office-name">Office of the Registrar</h2>
             </div>
@@ -183,7 +186,8 @@
             <div id="login-selection" class="login-section">
                 <h3 class="login-title">Select Login Type</h3>
                 <div class="login-buttons">
-                    <a href="{{ route('login.form', ['type' => 'administrator']) }}" class="login-btn administrator-btn">
+                    <a href="{{ route('login.form', ['type' => 'administrator']) }}"
+                        class="login-btn administrator-btn">
                         <div class="btn-icon"><i class="fas fa-user-tie"></i></div>
                         <div class="btn-text">
                             <h4>Administrator</h4>
@@ -200,7 +204,8 @@
                     </a>
                 </div>
                 <div class="back-to-website">
-                    <a href="{{ route('welcome') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Website</a>
+                    <a href="{{ route('welcome') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to
+                        Website</a>
                 </div>
             </div>
         </div>
@@ -224,6 +229,5 @@
         });
     </script>
 </body>
+
 </html>
-
-

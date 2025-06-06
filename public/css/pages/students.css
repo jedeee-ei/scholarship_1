@@ -1,0 +1,672 @@
+/* Students Page Specific Styles */
+
+/* Student Categories */
+.student-categories {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    border: 2px solid #1e5631;
+    background-color: white;
+    color: #1e5631;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+    background-color: #1e5631;
+    color: white;
+}
+
+/* Student Table Container */
+.student-table-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    background-color: #f8f9fa;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.table-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2e7d32, #388e3c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.export-btn {
+    background-color: #1e5631;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.export-btn:hover {
+    background-color: #164023;
+}
+
+/* Students Table */
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.students-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
+}
+
+.students-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.students-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px;
+    color: #999;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 5px 8px;
+    margin: 0 2px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    background-color: #1e5631;
+    color: white;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-btn:hover {
+    background-color: #164023;
+    color: white;
+    text-decoration: none;
+}
+
+.action-btn.view {
+    background-color: #17a2b8;
+}
+
+.action-btn.view:hover {
+    background-color: #138496;
+}
+
+.action-btn.edit {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.action-btn.edit:hover {
+    background-color: #e0a800;
+    color: #212529;
+}
+
+.action-btn.delete {
+    background-color: #dc3545;
+}
+
+.action-btn.delete:hover {
+    background-color: #c82333;
+}
+
+/* Scholarship Type Badges */
+.scholarship-type {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.scholarship-type.ched {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.scholarship-type.institutional {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.scholarship-type.employee {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+}
+
+.scholarship-type.private {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-indicator.active {
+    background-color: #4caf50;
+}
+
+.status-indicator.inactive {
+    background-color: #f44336;
+}
+
+.status-indicator.pending {
+    background-color: #ff9800;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .category-tabs {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .tab-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .table-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .students-table {
+        font-size: 12px;
+    }
+
+    .students-table th,
+    .students-table td {
+        padding: 10px 8px;
+    }
+
+    /* Hide less important columns on mobile */
+    .students-table th:nth-child(3),
+    .students-table td:nth-child(3),
+    .students-table th:nth-child(5),
+    .students-table td:nth-child(5) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .student-categories {
+        padding: 15px;
+    }
+
+    .table-header {
+        padding: 15px;
+    }
+
+    .table-header h3 {
+        font-size: 16px;
+    }
+
+    .export-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none !important;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(2px);
+}
+
+.modal[style*="display: block"] {
+    display: block !important;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 2% auto;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #ffcdd2;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 25px;
+}
+
+.form-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1e5631;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Subjects Section Styles */
+.subject-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.subject-row:hover {
+    background-color: #f0f0f0;
+    border-color: #1e5631;
+}
+
+.subject-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.subject-code {
+    font-weight: 600;
+    color: #1e5631;
+    font-size: 14px;
+}
+
+.subject-title {
+    color: #333;
+    font-size: 13px;
+}
+
+.subject-units {
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.grade-input {
+    width: 100px;
+}
+
+.grade-input input {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.grade-input input:focus {
+    outline: none;
+    border-color: #1e5631;
+    box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.1);
+}
+
+.no-subjects-message {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+}
+
+.no-subjects-message p {
+    margin: 5px 0;
+}
+
+.no-subjects-message p:first-child {
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input[readonly] {
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+}
+
+.modal-footer .btn-secondary,
+.modal-footer .btn-primary {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.modal-footer .btn-primary {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    color: white;
+}
+
+.modal-footer .btn-primary:hover {
+    background: linear-gradient(135deg, #164023, #1b5e20);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+}
+
+.modal-footer .btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideInRight 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #f44336, #c62828);
+}
+
+.notification i {
+    font-size: 18px;
+}
+
+/* Modal Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        flex-direction: column;
+    }
+
+    .modal-footer .btn-secondary,
+    .modal-footer .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}

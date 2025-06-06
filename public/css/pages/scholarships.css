@@ -1,0 +1,956 @@
+/* Scholarships Page Specific Styles */
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.action-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.action-icon {
+    font-size: 32px;
+    color: #1e5631;
+    margin-bottom: 10px;
+}
+
+.action-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.action-description {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Scholarship Programs Table */
+.scholarship-programs {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    background-color: #f8f9fa;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.table-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.add-scholarship-btn {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: white;
+    border: 1px solid #4caf50;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-scholarship-btn:hover {
+    background: linear-gradient(135deg, #1b5e20, #0d4e14);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.update-semester-year-btn {
+    background: linear-gradient(135deg, #1565c0, #1976d2);
+    color: white;
+    border: 1px solid #2196f3;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.update-semester-year-btn:hover {
+    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+}
+
+/* Export Button */
+.export-btn {
+    background: linear-gradient(135deg, #78909c, #607d8b);
+    color: white;
+    border: 1px solid #90a4ae;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-right: 10px;
+}
+
+.export-btn:hover {
+    background: linear-gradient(135deg, #607d8b, #455a64);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(96, 125, 139, 0.3);
+}
+
+/* Scholarships Table */
+.scholarships-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.scholarships-table th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.scholarships-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
+}
+
+.scholarships-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.scholarships-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+    color: #2e7d32;
+    border-color: #a5d6a7;
+}
+
+.status-badge.active::before {
+    content: '●';
+    color: #4caf50;
+    font-size: 8px;
+}
+
+.status-badge.inactive {
+    background: linear-gradient(135deg, #ffebee, #fce4ec);
+    color: #c62828;
+    border-color: #ef9a9a;
+}
+
+.status-badge.inactive::before {
+    content: '●';
+    color: #f44336;
+    font-size: 8px;
+}
+
+.status-badge.pending {
+    background: linear-gradient(135deg, #fff8e1, #fffde7);
+    color: #f57f17;
+    border-color: #ffcc02;
+}
+
+.status-badge.pending::before {
+    content: '●';
+    color: #ffc107;
+    font-size: 8px;
+}
+
+/* Scholarship Name Cell */
+.scholarship-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Scholarship Type Indicators */
+.scholarship-type-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.scholarship-type-indicator.ched {
+    background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+}
+
+.scholarship-type-indicator.institutional {
+    background: linear-gradient(135deg, #ba68c8, #ab47bc);
+}
+
+.scholarship-type-indicator.employee {
+    background: linear-gradient(135deg, #81c784, #66bb6a);
+}
+
+.scholarship-type-indicator.private {
+    background: linear-gradient(135deg, #ffb74d, #ffa726);
+}
+
+/* Scholarship Type Badges */
+.scholarship-type {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.scholarship-type.ched {
+    background: linear-gradient(135deg, #e1f5fe, #e3f2fd);
+    color: #0277bd;
+    border-color: #81d4fa;
+}
+
+.scholarship-type.institutional {
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+    color: #7b1fa2;
+    border-color: #ce93d8;
+}
+
+.scholarship-type.employee {
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+    color: #2e7d32;
+    border-color: #a5d6a7;
+}
+
+.scholarship-type.private {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    color: #ef6c00;
+    border-color: #ffcc02;
+}
+
+/* Custom scholarship type styles (lowercase) */
+.scholarship-type.ched,
+.scholarship-type-indicator.ched {
+    background: linear-gradient(135deg, #e3f2fd, #e1f5fe);
+    color: #0277bd;
+    border-color: #29b6f6;
+}
+
+.scholarship-type.institutional,
+.scholarship-type-indicator.institutional {
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+    color: #7b1fa2;
+    border-color: #ba68c8;
+}
+
+.scholarship-type.employee,
+.scholarship-type-indicator.employee {
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+    color: #2e7d32;
+    border-color: #66bb6a;
+}
+
+.scholarship-type.private,
+.scholarship-type-indicator.private {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    color: #ef6c00;
+    border-color: #ffcc02;
+}
+
+/* Semester Badge */
+.semester-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    transition: all 0.2s ease;
+}
+
+/* Academic Year */
+.academic-year {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #e3f2fd, #e1f5fe);
+    color: #0277bd;
+    border: 1px solid #81d4fa;
+    transition: all 0.2s ease;
+}
+
+/* Slots Display */
+.scholarships-table td strong {
+    color: #1e5631;
+    font-size: 16px;
+}
+
+.scholarships-table td small.text-muted {
+    color: #999;
+    font-size: 12px;
+    margin-left: 2px;
+}
+
+/* Table Hover Effects */
+.scholarships-table tbody tr {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.scholarships-table tbody tr:hover {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left: 3px solid #1e5631;
+}
+
+/* Empty State for Table */
+.scholarships-table .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.scholarships-table .empty-state i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.scholarships-table .empty-state h3 {
+    margin: 0 0 10px;
+    color: #999;
+    font-size: 18px;
+}
+
+.scholarships-table .empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 8px 10px;
+    margin: 0 2px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    background-color: #1e5631;
+    color: white;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.action-btn:hover::before {
+    left: 100%;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+}
+
+.action-btn.view {
+    background: linear-gradient(135deg, #29b6f6, #0288d1);
+    border-color: #81d4fa;
+}
+
+.action-btn.view:hover {
+    background: linear-gradient(135deg, #0288d1, #01579b);
+    box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
+}
+
+.action-btn.edit {
+    background: linear-gradient(135deg, #ffa726, #f57c00);
+    border-color: #ffcc02;
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background: linear-gradient(135deg, #f57c00, #e65100);
+    box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+    color: white;
+}
+
+.action-btn.applications {
+    background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+    border-color: #ce93d8;
+}
+
+.action-btn.applications:hover {
+    background: linear-gradient(135deg, #7b1fa2, #4a148c);
+    box-shadow: 0 4px 12px rgba(123, 31, 162, 0.3);
+}
+
+.action-btn i {
+    transition: transform 0.2s ease;
+}
+
+.action-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* Statistics Cards */
+.scholarship-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1e5631;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.stat-icon {
+    font-size: 24px;
+    color: #1e5631;
+    margin-bottom: 10px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px;
+    color: #999;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quick-actions {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .action-card {
+        padding: 15px;
+    }
+
+    .action-icon {
+        font-size: 24px;
+    }
+
+    .action-title {
+        font-size: 14px;
+    }
+
+    .action-description {
+        font-size: 11px;
+    }
+
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .add-scholarship-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .scholarships-table {
+        font-size: 12px;
+    }
+
+    .scholarships-table th,
+    .scholarships-table td {
+        padding: 10px 8px;
+    }
+
+    /* Hide less important columns on mobile */
+    .scholarships-table th:nth-child(4),
+    .scholarships-table td:nth-child(4) {
+        display: none;
+    }
+
+    .scholarship-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .scholarship-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .table-header {
+        padding: 15px;
+    }
+
+    .table-header h3 {
+        font-size: 16px;
+    }
+
+    .add-scholarship-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #ffcdd2;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1e5631;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+}
+
+.modal-footer .btn-secondary,
+.modal-footer .btn-primary {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.modal-footer .btn-primary {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    color: white;
+}
+
+.modal-footer .btn-primary:hover {
+    background: linear-gradient(135deg, #164023, #1b5e20);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+}
+
+.modal-footer .btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+
+/* Confirmation Modal Styles */
+.confirmation-modal {
+    max-width: 500px;
+    margin: 15% auto;
+}
+
+.confirmation-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 0;
+}
+
+.warning-icon {
+    font-size: 2.5rem;
+    color: #f39c12;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.confirmation-text p {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Update Options Styles */
+.update-selection h4 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.update-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.update-option-card {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.update-option-card:hover {
+    border-color: #1e5631;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 86, 49, 0.15);
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+}
+
+.update-option-card:hover .option-icon {
+    transform: scale(1.1);
+    color: #1e5631;
+}
+
+.update-option-card.selected {
+    border-color: #1e5631;
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+    box-shadow: 0 4px 15px rgba(30, 86, 49, 0.2);
+}
+
+.update-option-card.selected .option-icon {
+    color: #1e5631;
+    transform: scale(1.05);
+}
+
+.option-radio {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.option-radio input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1e5631;
+    cursor: pointer;
+}
+
+.option-icon {
+    font-size: 32px;
+    color: #6c757d;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.option-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.option-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.option-content span {
+    font-weight: 600;
+    color: #1e5631;
+}
+
+/* Modal Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        flex-direction: column;
+    }
+
+    .modal-footer .btn-secondary,
+    .modal-footer .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .update-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .update-option-card {
+        padding: 15px;
+    }
+
+    .option-icon {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .option-content h3 {
+        font-size: 14px;
+    }
+
+    .option-content p {
+        font-size: 12px;
+    }
+}

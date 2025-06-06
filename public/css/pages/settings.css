@@ -1,0 +1,391 @@
+/* Settings Page Specific Styles */
+
+/* Settings Container */
+.settings-container {
+    display: grid;
+    gap: 20px;
+}
+
+/* Settings Sections */
+.settings-section {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-header {
+    background-color: #1e5631;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.section-header i {
+    font-size: 20px;
+}
+
+.section-body {
+    padding: 30px;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1e5631;
+    box-shadow: 0 0 0 2px rgba(30, 86, 49, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Setting Items */
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-info h4 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    color: #333;
+}
+
+.setting-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.setting-control {
+    flex-shrink: 0;
+}
+
+/* Toggle Switches */
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-switch.active {
+    background-color: #1e5631;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(26px);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    gap: 10px;
+}
+
+/* Buttons */
+.save-btn,
+.reset-btn,
+.test-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-btn {
+    background-color: #1e5631;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #164023;
+}
+
+.reset-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.reset-btn:hover {
+    background-color: #5a6268;
+}
+
+.test-btn {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.test-btn:hover {
+    background-color: #138496;
+}
+
+/* Security Settings */
+.security-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.security-warning i {
+    color: #856404;
+    font-size: 18px;
+}
+
+.security-warning p {
+    margin: 0;
+    color: #856404;
+    font-size: 14px;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 5px;
+    height: 4px;
+    background-color: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    width: 0%;
+}
+
+.password-strength-bar.weak {
+    background-color: #dc3545;
+    width: 25%;
+}
+
+.password-strength-bar.fair {
+    background-color: #ffc107;
+    width: 50%;
+}
+
+.password-strength-bar.good {
+    background-color: #28a745;
+    width: 75%;
+}
+
+.password-strength-bar.strong {
+    background-color: #1e5631;
+    width: 100%;
+}
+
+/* Backup Settings */
+.backup-info {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.backup-info h5 {
+    margin: 0 0 10px;
+    color: #1565c0;
+}
+
+.backup-info p {
+    margin: 0;
+    color: #1565c0;
+    font-size: 14px;
+}
+
+.backup-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.backup-btn,
+.restore-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.backup-btn {
+    background-color: #1e5631;
+    color: white;
+}
+
+.backup-btn:hover {
+    background-color: #164023;
+}
+
+.restore-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.restore-btn:hover {
+    background-color: #c82333;
+}
+
+/* Success/Error Messages */
+.alert {
+    padding: 12px 16px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert i {
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .section-body {
+        padding: 20px;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .setting-control {
+        align-self: flex-end;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .save-btn,
+    .reset-btn,
+    .test-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .backup-actions {
+        flex-direction: column;
+    }
+
+    .backup-btn,
+    .restore-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header {
+        padding: 15px;
+    }
+
+    .section-header h3 {
+        font-size: 16px;
+    }
+
+    .section-body {
+        padding: 15px;
+    }
+
+    .setting-item {
+        padding: 10px 0;
+    }
+
+    .setting-info h4 {
+        font-size: 14px;
+    }
+
+    .setting-info p {
+        font-size: 12px;
+    }
+}

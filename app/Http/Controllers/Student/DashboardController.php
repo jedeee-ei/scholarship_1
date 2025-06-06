@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\ScholarshipApplication;
+use App\Models\Announcement;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -31,10 +32,17 @@ class DashboardController extends Controller
 
         $canApplyForScholarship = (!$hasActiveScholarship && !$hasPendingApplication) || $isRenewalPeriod;
 
+        // Get published announcements
+        $announcements = Announcement::published()
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
         return view('student.dashboard', [
             'student' => $student,
             'applications' => $applications,
-            'canApplyForScholarship' => $canApplyForScholarship
+            'canApplyForScholarship' => $canApplyForScholarship,
+            'announcements' => $announcements
         ]);
     }
 }

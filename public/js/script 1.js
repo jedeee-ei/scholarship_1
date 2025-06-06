@@ -96,10 +96,10 @@ function showServiceModal(serviceName, serviceType) {
 
     // Modal content HTML
     modalContent.innerHTML = `
-        <div style="color: #1e5631; font-size: 2rem; margin-bottom: 1rem;">
+        <div style="color: #052F11; font-size: 2rem; margin-bottom: 1rem;">
             ${serviceType === 'credential' ? '📋' : '🎓'}
         </div>
-        <h2 style="color: #1e5631; margin-bottom: 1rem;">${serviceName}</h2>
+        <h2 style="color: #052F11; margin-bottom: 1rem;">${serviceName}</h2>
         <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
             ${serviceType === 'credential'
                 ? 'Our credential request system allows you to request official transcripts, diplomas, and other academic documents. Please visit our office or contact us for more information about the application process.'
@@ -107,7 +107,7 @@ function showServiceModal(serviceName, serviceType) {
         </p>
         <div>
             <button id="contactOfficeBtn" style="
-                background: linear-gradient(135deg, #1e5631, #2d7a3d);
+                background: linear-gradient(135deg, #052F11, #052F11);
                 color: white;
                 padding: 12px 30px;
                 border: none;
@@ -252,48 +252,7 @@ function initializeSmoothScrolling() {
     });
 }
 
-// Utility functions
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 5px;
-        z-index: 3000;
-        animation: slideInRight 0.3s ease;
-    `;
-    notification.textContent = message;
 
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// Add slide animations for notifications
-const notificationStyle = document.createElement('style');
-notificationStyle.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(notificationStyle);
 
 // Add button hover effects
 document.addEventListener('mouseover', function(e) {

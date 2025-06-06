@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e5631 0%, #2d7a3d 50%, #1e5631 100%);
+            background: linear-gradient(135deg, #052F11 0%, #052F11 50%, #052F11 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -91,6 +92,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -101,20 +103,29 @@
             from {
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             }
+
             to {
                 box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2);
             }
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 0.8;
             }
+
             50% {
                 opacity: 1;
                 transform: scale(1.05);
@@ -126,6 +137,7 @@
                 opacity: 1;
                 transform: scale(1);
             }
+
             to {
                 opacity: 0;
                 transform: scale(0.95);
@@ -164,10 +176,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="splash-container">
         <div class="logo-container">
-            <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo" class="splash-logo">
+            <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
+                class="splash-logo">
             <h1 class="university-name">St. Paul University Philippines</h1>
             <h2 class="office-name">Office of the Registrar</h2>
         </div>
@@ -202,11 +216,11 @@
                 document.body.style.animation = 'fadeOut 0.5s ease-out';
 
                 setTimeout(() => {
-                    window.location.href = '{{ url("/welcome") }}';
+                    window.location.href = '{{ url('/welcome') }}';
                 }, 500);
             }, 2500);
         });
     </script>
 </body>
-</html>
 
+</html>

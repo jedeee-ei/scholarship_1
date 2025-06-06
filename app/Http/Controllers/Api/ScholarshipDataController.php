@@ -123,4 +123,56 @@ class ScholarshipDataController extends Controller
 
         return response()->json($mapping);
     }
+
+    /**
+     * Get subjects for dashboard (using query parameters)
+     */
+    public function getSubjectsForDashboard(Request $request)
+    {
+        $courseName = $request->query('course');
+        $yearLevel = $request->query('year_level');
+        $semester = $request->query('semester');
+
+        if (!$courseName || !$yearLevel || !$semester) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing required parameters: course, year_level, semester'
+            ], 400);
+        }
+
+        $course = Course::where('name', $courseName)->first();
+
+        if (!$course) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Course not found'
+            ], 404);
+        }
+
+        // Convert year level string to number if needed
+        $yearLevelNumber = is_numeric($yearLevel) ? $yearLevel : (int) filter_var($yearLevel, FILTER_SANITIZE_NUMBER_INT);
+
+        try {
+            $subjects = $course->getSubjectsForSemester($yearLevelNumber, $semester);
+
+            return response()->json([
+                'success' => true,
+                'course' => $course->name,
+                'year_level' => $yearLevel,
+                'semester' => $semester,
+                'subjects' => $subjects->map(function ($subject) {
+                    return [
+                        'code' => $subject->code,
+                        'title' => $subject->title,
+                        'units' => $subject->units
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading subjects: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

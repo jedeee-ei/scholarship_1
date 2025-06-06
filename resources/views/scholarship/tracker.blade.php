@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -234,14 +235,78 @@
         .back-button:hover {
             background-color: #e5e5e5;
         }
+
+        .my-applications {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .my-applications-title {
+            font-size: 18px;
+            color: #1e5631;
+            margin-bottom: 15px;
+        }
+
+        .applications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .application-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .application-item:hover {
+            border-color: #1e5631;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .application-info {
+            flex: 1;
+        }
+
+        .application-id-text {
+            font-weight: 600;
+            color: #1e5631;
+            margin-bottom: 5px;
+        }
+
+        .application-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .application-status {
+            margin-left: 15px;
+        }
+
+        .no-applications {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
+
 <body>
     <!-- University Header -->
     <header class="university-header">
         <div class="header-content">
             <div class="university-logo-title">
-                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo" class="university-logo">
+                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
+                    class="university-logo">
                 <div class="university-title">
                     <h1>St. Paul University Philippines</h1>
                     <h2>OFFICE OF THE REGISTRAR</h2>
@@ -266,11 +331,59 @@
         <div class="tracker-container">
             <div class="tracker-header">
                 <h1 class="tracker-title">Application Status Tracker</h1>
-                <p class="tracker-description">Enter your application ID to check the current status of your scholarship application.</p>
+                <p class="tracker-description">Track your scholarship applications by clicking on them below or enter an
+                    application ID manually.</p>
             </div>
 
-            <form action="{{ route('scholarship.tracker') }}" method="GET" class="search-form">
-                <input type="text" name="id" class="search-input" placeholder="Enter Application ID (e.g., SCH-12345678)" value="{{ request('id') }}" required>
+            @if ($userApplications && $userApplications->count() > 0)
+                <div class="my-applications">
+                    <h3 class="my-applications-title">My Applications</h3>
+                    <div class="applications-list">
+                        @foreach ($userApplications as $app)
+                            <div class="application-item" onclick="trackApplication('{{ $app->application_id }}')">
+                                <div class="application-info">
+                                    <div class="application-id-text">{{ $app->application_id }}</div>
+                                    <div class="application-meta">
+                                        @if ($app->scholarship_type == 'ched')
+                                            CHED Scholarship
+                                        @elseif($app->scholarship_type == 'presidents')
+                                            President's Scholarship
+                                        @elseif($app->scholarship_type == 'employees')
+                                            Employees Scholar
+                                        @elseif($app->scholarship_type == 'private')
+                                            Private Scholarship
+                                        @else
+                                            {{ ucfirst($app->scholarship_type) }} Scholarship
+                                        @endif
+                                        • Applied {{ $app->created_at->format('M d, Y') }}
+                                    </div>
+                                </div>
+                                <div class="application-status">
+                                    <span
+                                        class="status-badge
+                                        @if ($app->status == 'Pending Review') pending
+                                        @elseif($app->status == 'Under Committee Review') review
+                                        @elseif($app->status == 'Approved') approved
+                                        @elseif($app->status == 'Rejected') rejected @endif">
+                                        {{ $app->status }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <div class="my-applications">
+                    <h3 class="my-applications-title">My Applications</h3>
+                    <div class="no-applications">
+                        You haven't submitted any scholarship applications yet.
+                    </div>
+                </div>
+            @endif
+
+            <form action="{{ route('scholarship.tracker') }}" method="GET" class="search-form" id="trackForm">
+                <input type="text" name="id" class="search-input" id="applicationIdInput"
+                    placeholder="Or enter Application ID manually (e.g., SCH-12345678)" value="{{ request('id') }}">
                 <button type="submit" class="search-btn">
                     <i class="fas fa-search"></i> Track
                 </button>
@@ -281,11 +394,13 @@
                 // $application is already set by the controller
             @endphp
 
-            @if(request('id') && $application)
+            @if (request('id') && $application)
                 <div class="result-container">
-                    @if(isset($application->is_debug_view) && $application->is_debug_view)
-                        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin-bottom: 20px; color: #856404;">
-                            <i class="fas fa-exclamation-triangle"></i> <strong>Debug Mode:</strong> Showing application from different student for testing purposes.
+                    @if (isset($application->is_debug_view) && $application->is_debug_view)
+                        <div
+                            style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin-bottom: 20px; color: #856404;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Debug Mode:</strong> Showing application
+                            from different student for testing purposes.
                         </div>
                     @endif
 
@@ -294,7 +409,8 @@
 
                         <div class="detail-row">
                             <div class="detail-label">Student Name</div>
-                            <div class="detail-value">{{ $application->first_name }} {{ $application->last_name }}</div>
+                            <div class="detail-value">{{ $application->first_name }} {{ $application->last_name }}
+                            </div>
                         </div>
 
                         <div class="detail-row">
@@ -305,7 +421,7 @@
                         <div class="detail-row">
                             <div class="detail-label">Scholarship Type</div>
                             <div class="detail-value">
-                                @if($application->scholarship_type == 'ched')
+                                @if ($application->scholarship_type == 'ched')
                                     CHED Scholarship
                                 @elseif($application->scholarship_type == 'presidents')
                                     President's Scholarship
@@ -327,12 +443,12 @@
                         <div class="detail-row">
                             <div class="detail-label">Current Status</div>
                             <div class="detail-value">
-                                <span class="status-badge
-                                    @if($application->status == 'Pending Review') pending
-                                    @elseif($application->status == 'Under Committee Review' || $application->status == 'Decision Made') review
+                                <span
+                                    class="status-badge
+                                    @if ($application->status == 'Pending Review') pending
+                                    @elseif($application->status == 'Under Committee Review') review
                                     @elseif($application->status == 'Approved') approved
-                                    @elseif($application->status == 'Rejected') rejected
-                                    @endif">
+                                    @elseif($application->status == 'Rejected') rejected @endif">
                                     {{ $application->status }}
                                 </span>
                             </div>
@@ -348,38 +464,43 @@
                                 <div class="timeline-content">
                                     <div class="timeline-status">Application Submitted</div>
                                     <div class="timeline-date">{{ $application->created_at->format('F d, Y') }}</div>
-                                    <div class="timeline-description">Your application has been successfully submitted and is awaiting review.</div>
+                                    <div class="timeline-description">Your application has been successfully submitted
+                                        and is awaiting review.</div>
                                 </div>
                             </div>
 
                             <div class="timeline-item">
-                                <div class="timeline-dot {{ in_array($application->status, ['Under Committee Review', 'Decision Made', 'Approved', 'Rejected']) ? 'active' : '' }}"></div>
+                                <div
+                                    class="timeline-dot {{ in_array($application->status, ['Under Committee Review', 'Approved', 'Rejected']) ? 'active' : '' }}">
+                                </div>
                                 <div class="timeline-content">
                                     <div class="timeline-status">Under Committee Review</div>
-                                    <div class="timeline-date">{{ $application->status == 'Pending Review' ? 'Pending' : $application->updated_at->format('F d, Y') }}</div>
-                                    <div class="timeline-description">Your application is being reviewed by the scholarship committee.</div>
+                                    <div class="timeline-date">
+                                        {{ $application->status == 'Pending Review' ? 'Pending' : $application->updated_at->format('F d, Y') }}
+                                    </div>
+                                    <div class="timeline-description">Your application is being reviewed by the
+                                        scholarship committee.</div>
                                 </div>
                             </div>
 
-                            <div class="timeline-item">
-                                <div class="timeline-dot {{ in_array($application->status, ['Decision Made', 'Approved', 'Rejected']) ? 'active' : '' }}"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-status">Decision Made</div>
-                                    <div class="timeline-date">{{ in_array($application->status, ['Pending Review', 'Under Committee Review']) ? 'Pending' : $application->updated_at->format('F d, Y') }}</div>
-                                    <div class="timeline-description">The committee has made a decision on your application.</div>
-                                </div>
-                            </div>
+
 
                             <div class="timeline-item">
-                                <div class="timeline-dot {{ in_array($application->status, ['Approved', 'Rejected']) ? 'active' : '' }}"></div>
+                                <div
+                                    class="timeline-dot {{ in_array($application->status, ['Approved', 'Rejected']) ? 'active' : '' }}">
+                                </div>
                                 <div class="timeline-content">
                                     <div class="timeline-status">Final Status: {{ $application->status }}</div>
-                                    <div class="timeline-date">{{ in_array($application->status, ['Pending Review', 'Under Committee Review', 'Decision Made']) ? 'Pending' : $application->updated_at->format('F d, Y') }}</div>
+                                    <div class="timeline-date">
+                                        {{ in_array($application->status, ['Pending Review', 'Under Committee Review']) ? 'Pending' : $application->updated_at->format('F d, Y') }}
+                                    </div>
                                     <div class="timeline-description">
-                                        @if($application->status == 'Approved')
-                                            Congratulations! Your scholarship application has been approved. Please check your email for further instructions.
+                                        @if ($application->status == 'Approved')
+                                            Congratulations! Your scholarship application has been approved. Please
+                                            check your email for further instructions.
                                         @elseif($application->status == 'Rejected')
-                                            We regret to inform you that your scholarship application has been rejected. Please contact the Office of the Registrar for more information.
+                                            We regret to inform you that your scholarship application has been rejected.
+                                            Please contact the Office of the Registrar for more information.
                                         @else
                                             The final decision on your application is pending.
                                         @endif
@@ -400,7 +521,8 @@
                     <div class="no-result">
                         <i class="fas fa-search"></i>
                         <h3 class="no-result-title">No Application Found</h3>
-                        <p>We couldn't find an application with the ID "{{ request('id') }}". Please check the ID and try again.</p>
+                        <p>We couldn't find an application with the ID "{{ request('id') }}". Please check the ID and
+                            try again.</p>
 
                         <a href="{{ route('student.dashboard') }}" class="back-button">
                             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -410,6 +532,16 @@
             @endif
         </div>
     </div>
-</body>
-</html>
 
+    <script>
+        function trackApplication(applicationId) {
+            // Set the application ID in the input field
+            document.getElementById('applicationIdInput').value = applicationId;
+
+            // Submit the form
+            document.getElementById('trackForm').submit();
+        }
+    </script>
+</body>
+
+</html>
