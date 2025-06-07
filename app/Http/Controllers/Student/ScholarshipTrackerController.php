@@ -106,7 +106,7 @@ class ScholarshipTrackerController extends Controller
         // Get scholarship type display name
         $scholarshipTypes = [
             'ched' => 'CHED Scholarship',
-            'presidents' => 'President\'s and Dean\'s Lister Scholarship',
+            'academic' => 'Academic Scholarship',
             'employees' => 'Employees Scholar',
             'private' => 'Private Scholarship'
         ];

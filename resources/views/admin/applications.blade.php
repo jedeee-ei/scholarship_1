@@ -34,11 +34,7 @@
         </div>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="table-container">
         <table class="applications-table">
@@ -96,15 +92,7 @@
         </table>
     </div>
 
-    <div class="pagination-container">
-        <div class="pagination-info">
-            Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of
-            {{ $applications->total() }} results
-        </div>
-        <div class="pagination-wrapper">
-            {{ $applications->appends(['status' => $currentStatus, 'type' => $currentType])->links('custom-pagination') }}
-        </div>
-    </div>
+
 @endsection
 
 @push('scripts')

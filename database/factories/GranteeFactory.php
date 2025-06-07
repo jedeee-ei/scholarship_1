@@ -24,9 +24,9 @@ class GranteeFactory extends Factory
      */
     public function definition(): array
     {
-        $scholarshipTypes = ['ched', 'presidents', 'institutional', 'employees', 'private'];
+        $scholarshipTypes = ['ched', 'academic', 'employees', 'private'];
         $scholarshipType = fake()->randomElement($scholarshipTypes);
-        
+
         return [
             'grantee_id' => 'GRT-' . strtoupper(substr(uniqid(), -6)),
             'application_id' => 'SCH-' . strtoupper(substr(uniqid(), -6)),
@@ -72,7 +72,7 @@ class GranteeFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Active',
         ]);
     }
@@ -82,7 +82,7 @@ class GranteeFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Inactive',
         ]);
     }
@@ -92,7 +92,7 @@ class GranteeFactory extends Factory
      */
     public function graduated(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'Graduated',
             'scholarship_end_date' => fake()->dateTimeBetween('-1 year', 'now'),
         ]);
@@ -103,7 +103,7 @@ class GranteeFactory extends Factory
      */
     public function renewable(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_renewable' => true,
             'next_renewal_date' => fake()->dateTimeBetween('now', '+1 year'),
         ]);
@@ -114,7 +114,7 @@ class GranteeFactory extends Factory
      */
     public function ched(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'scholarship_type' => 'ched',
             'father_last_name' => fake()->lastName(),
             'father_first_name' => fake()->firstName(),
@@ -136,7 +136,7 @@ class GranteeFactory extends Factory
      */
     public function employee(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'scholarship_type' => 'employees',
             'employee_name' => fake()->name(),
             'employee_relationship' => fake()->randomElement(['Son', 'Daughter', 'Spouse']),
@@ -151,7 +151,7 @@ class GranteeFactory extends Factory
      */
     public function private(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'scholarship_type' => 'private',
             'scholarship_name' => fake()->company() . ' Scholarship',
             'other_scholarship' => fake()->paragraph(),

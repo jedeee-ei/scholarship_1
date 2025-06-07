@@ -8,13 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\ScholarshipApplicationRequest;
+
 
 class ScholarshipController extends Controller
 {
-
-
     public function submitApplication(Request $request)
     {
         // Log the incoming request for debugging
@@ -52,8 +49,7 @@ class ScholarshipController extends Controller
 
             $scholarshipTypeNames = [
                 'ched' => 'CHED Scholarship',
-                'presidents' => 'Institutional Scholarship',
-                'institutional' => 'Institutional Scholarship',
+                'academic' => 'Academic Scholarship',
                 'employees' => 'Employee\'s Scholarship'
             ];
 
@@ -74,6 +70,17 @@ class ScholarshipController extends Controller
         $application = new ScholarshipApplication();
         $application->application_id = $applicationId;
         $application->scholarship_type = $request->scholarship_type;
+
+        // Determine scholarship subtype for Academic scholarships based on GWA
+        if ($request->scholarship_type == 'academic' && $request->gwa) {
+            $gwa = floatval($request->gwa);
+            if ($gwa >= 1.0 && $gwa <= 1.25) {
+                $application->scholarship_subtype = "PL";
+            } elseif ($gwa == 1.50) {
+                $application->scholarship_subtype = "DL";
+            }
+        }
+
         $application->status = 'Pending Review';
 
         // Map form fields to database fields - UPDATED to include all fields
@@ -171,8 +178,7 @@ class ScholarshipController extends Controller
             // Format scholarship type for display
             $scholarshipTypes = [
                 'ched' => 'CHED Scholarship',
-                'presidents' => 'President\'s and Dean\'s Lister Scholarship',
-                'institutional' => 'Institutional Scholarship',
+                'academic' => 'Academic Scholarship',
                 'employees' => 'Employees Scholar'
             ];
 
@@ -212,35 +218,6 @@ class ScholarshipController extends Controller
     }
 
     public function checkStudentId(Request $request)
-    {
-        $request->validate([
-            'student_id' => 'required|string'
-        ]);
-
-        $studentId = $request->input('student_id');
-
-        // Check if this student ID already exists in scholarship applications
-        $existingApplication = ScholarshipApplication::where('student_id', $studentId)->first();
-
-        if ($existingApplication) {
-            return response()->json([
-                'exists' => true,
-                'scholarship_type' => ucfirst($existingApplication->scholarship_type),
-                'application_date' => $existingApplication->created_at->format('M d, Y'),
-                'application_id' => $existingApplication->application_id,
-                'status' => $existingApplication->status
-            ]);
-        }
-
-        return response()->json([
-            'exists' => false
-        ]);
-    }
-
-    /**
-     * Check for duplicate student ID (Laravel-based validation)
-     */
-    public function checkDuplicate(Request $request)
     {
         $request->validate([
             'student_id' => 'required|string'

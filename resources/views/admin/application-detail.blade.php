@@ -19,15 +19,22 @@
 
 @section('content')
     <div class="dashboard-header">
-        <h1>Application Details</h1>
+        <h1>Application Detail for
+            @if ($application->scholarship_type == 'ched')
+                CHED Scholarship
+            @elseif($application->scholarship_type == 'academic')
+                Academic Scholarship
+            @elseif($application->scholarship_type == 'employees')
+                Employee's Scholarship
+            @elseif($application->scholarship_type == 'private')
+                Private Scholarship
+            @else
+                {{ ucfirst($application->scholarship_type) }}
+            @endif
+        </h1>
     </div>
 
-    @if (session('success'))
-        <div class="success-message">
-            <i class="fas fa-check-circle"></i>
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="application-detail-container">
         <div class="detail-header">
@@ -110,6 +117,24 @@
                         <div class="detail-value">{{ $application->contact_number }}</div>
                     </div>
 
+                    <!-- Address Information -->
+                    <div class="detail-group">
+                        <div class="detail-label">Address</div>
+                        <div class="detail-value">
+                            @php
+                                $addressParts = array_filter([
+                                    $application->street,
+                                    $application->barangay,
+                                    $application->city,
+                                    $application->province,
+                                    $application->zipcode,
+                                ]);
+                                $fullAddress = !empty($addressParts) ? implode(', ', $addressParts) : 'N/A';
+                            @endphp
+                            {{ $fullAddress }}
+                        </div>
+                    </div>
+
                     @if ($application->scholarship_type == 'ched')
                         <div class="detail-group">
                             <div class="detail-label">Disability</div>
@@ -123,85 +148,14 @@
                     @endif
                 </div>
 
-                <!-- Address Information -->
-                <div class="detail-section">
-                    <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Address Information</h3>
 
-                    @if ($application->scholarship_type == 'ched')
-                        <!-- CHED: Show detailed address fields -->
-                        <div class="detail-group">
-                            <div class="detail-label">Street</div>
-                            <div class="detail-value">{{ $application->street ?? 'N/A' }}</div>
-                        </div>
-                        <div class="detail-group">
-                            <div class="detail-label">Barangay</div>
-                            <div class="detail-value">{{ $application->barangay ?? 'N/A' }}</div>
-                        </div>
-                        <div class="detail-group">
-                            <div class="detail-label">City</div>
-                            <div class="detail-value">{{ $application->city ?? 'N/A' }}</div>
-                        </div>
-                        <div class="detail-group">
-                            <div class="detail-label">Province</div>
-                            <div class="detail-value">{{ $application->province ?? 'N/A' }}</div>
-                        </div>
-                        <div class="detail-group">
-                            <div class="detail-label">Zipcode</div>
-                            <div class="detail-value">{{ $application->zipcode ?? 'N/A' }}</div>
-                        </div>
-                    @else
-                        <!-- Other scholarships: Show simple address -->
-                        <div class="detail-group">
-                            <div class="detail-label">Address</div>
-                            <div class="detail-value">{{ $application->address ?? 'N/A' }}</div>
-                        </div>
-                    @endif
-                </div>
 
-                <!-- Scholarship Information -->
-                <div class="detail-section">
-                    <h3 class="section-title"><i class="fas fa-graduation-cap"></i> Scholarship Information</h3>
 
-                    <div class="detail-group">
-                        <div class="detail-label">Scholarship Type</div>
-                        <div class="detail-value">
-                            @if ($application->scholarship_type == 'ched')
-                                CHED Scholarship
-                            @elseif($application->scholarship_type == 'presidents')
-                                President's Scholarship
-                            @elseif($application->scholarship_type == 'institutional')
-                                Institutional Scholarship
-                            @elseif($application->scholarship_type == 'employees')
-                                Employee's Scholarship
-                            @elseif($application->scholarship_type == 'private')
-                                Private Scholarship
-                            @else
-                                {{ ucfirst($application->scholarship_type) }}
-                            @endif
-                        </div>
-                    </div>
 
-                    @if ($application->scholarship_type == 'private')
-                        @if ($application->scholarship_name)
-                            <div class="detail-group">
-                                <div class="detail-label">Scholarship Name</div>
-                                <div class="detail-value">{{ $application->scholarship_name }}</div>
-                            </div>
-                        @endif
-
-                        @if ($application->other_scholarship)
-                            <div class="detail-group">
-                                <div class="detail-label">Other Scholarship Details</div>
-                                <div class="detail-value">{{ $application->other_scholarship }}</div>
-                            </div>
-                        @endif
-                    @endif
-                </div>
-
-                <!-- Parent Information (CHED Scholarship) -->
+                <!-- Parents Information (CHED Scholarship) -->
                 @if ($application->scholarship_type == 'ched')
                     <div class="detail-section">
-                        <h3 class="section-title"><i class="fas fa-users"></i> Parent Information</h3>
+                        <h3 class="section-title"><i class="fas fa-users"></i> Parents Information</h3>
 
                         <div class="detail-group">
                             <div class="detail-label">Father's Name</div>
@@ -272,23 +226,48 @@
                         <!-- CHED Scholarship Fields -->
                         <div class="detail-group">
                             <div class="detail-label">Education Stage</div>
-                            <div class="detail-value">{{ $application->education_stage ?? 'N/A' }}</div>
+                            <div class="detail-value">
+                                @if ($application->education_stage == 'BEU' || $application->education_stage == 'BSU')
+                                    BEU (Basic Education Unit)
+                                @else
+                                    {{ $application->education_stage ?? 'N/A' }}
+                                @endif
+                            </div>
                         </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Department</div>
-                            <div class="detail-value">{{ $application->department ?? 'N/A' }}</div>
-                        </div>
+                        @if (
+                            $application->education_stage == 'BEU' ||
+                                $application->education_stage == 'BSU' ||
+                                $application->education_stage == 'Basic Education')
+                            <!-- Basic Education Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Grade Level</div>
+                                <div class="detail-value">{{ $application->grade_level ?? 'N/A' }}</div>
+                            </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Course/Program</div>
-                            <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
-                        </div>
+                            @if ($application->grade_level && in_array($application->grade_level, ['Grade 11', 'Grade 12']))
+                                <div class="detail-group">
+                                    <div class="detail-label">Strand</div>
+                                    <div class="detail-value">{{ $application->strand ?? 'N/A' }}</div>
+                                </div>
+                            @endif
+                        @else
+                            <!-- College Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Department</div>
+                                <div class="detail-value">{{ $application->department ?? 'N/A' }}</div>
+                            </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Year Level</div>
-                            <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
-                        </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Course/Program</div>
+                                <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Year Level</div>
+                                <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
+                            </div>
+                        @endif
 
                         <div class="detail-group">
                             <div class="detail-label">Semester</div>
@@ -308,10 +287,20 @@
                         <!-- Employee Scholarship Fields -->
                         <div class="detail-group">
                             <div class="detail-label">Education Stage</div>
-                            <div class="detail-value">{{ $application->education_stage ?? 'N/A' }}</div>
+                            <div class="detail-value">
+                                @if ($application->education_stage == 'BEU' || $application->education_stage == 'BSU')
+                                    BEU (Basic Education Unit)
+                                @else
+                                    {{ $application->education_stage ?? 'N/A' }}
+                                @endif
+                            </div>
                         </div>
 
-                        @if ($application->education_stage == 'Basic Education')
+                        @if (
+                            $application->education_stage == 'BEU' ||
+                                $application->education_stage == 'BSU' ||
+                                $application->education_stage == 'Basic Education')
+                            <!-- Basic Education Fields -->
                             <div class="detail-group">
                                 <div class="detail-label">Grade Level</div>
                                 <div class="detail-value">{{ $application->grade_level ?? 'N/A' }}</div>
@@ -324,6 +313,7 @@
                                 </div>
                             @endif
                         @else
+                            <!-- College Fields -->
                             <div class="detail-group">
                                 <div class="detail-label">Department</div>
                                 <div class="detail-value">{{ $application->department ?? 'N/A' }}</div>
@@ -356,46 +346,112 @@
                         </div>
                     @elseif($application->scholarship_type == 'private')
                         <!-- Private Scholarship Fields -->
+                        @if ($application->scholarship_name)
+                            <div class="detail-group">
+                                <div class="detail-label">Scholarship Name</div>
+                                <div class="detail-value">{{ $application->scholarship_name }}</div>
+                            </div>
+                        @endif
+
+                        @if ($application->other_scholarship)
+                            <div class="detail-group">
+                                <div class="detail-label">Other Scholarship Details</div>
+                                <div class="detail-value">{{ $application->other_scholarship }}</div>
+                            </div>
+                        @endif
+
                         <div class="detail-group">
                             <div class="detail-label">Education Stage</div>
-                            <div class="detail-value">{{ $application->education_stage ?? 'N/A' }}</div>
+                            <div class="detail-value">
+                                @if ($application->education_stage == 'BEU' || $application->education_stage == 'BSU')
+                                    BEU (Basic Education Unit)
+                                @else
+                                    {{ $application->education_stage ?? 'N/A' }}
+                                @endif
+                            </div>
                         </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Course/Program</div>
-                            <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
-                        </div>
+                        @if (
+                            $application->education_stage == 'BEU' ||
+                                $application->education_stage == 'BSU' ||
+                                $application->education_stage == 'Basic Education')
+                            <!-- Basic Education Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Grade Level</div>
+                                <div class="detail-value">{{ $application->grade_level ?? 'N/A' }}</div>
+                            </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Year Level</div>
-                            <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
-                        </div>
+                            @if ($application->grade_level && in_array($application->grade_level, ['Grade 11', 'Grade 12']))
+                                <div class="detail-group">
+                                    <div class="detail-label">Strand</div>
+                                    <div class="detail-value">{{ $application->strand ?? 'N/A' }}</div>
+                                </div>
+                            @endif
+                        @else
+                            <!-- College Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Course/Program</div>
+                                <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Year Level</div>
+                                <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
+                            </div>
+                        @endif
 
                         <div class="detail-group">
                             <div class="detail-label">GWA</div>
                             <div class="detail-value">{{ $application->gwa ?? 'N/A' }}</div>
                         </div>
                     @else
-                        <!-- Institutional/Presidents Scholarship Fields -->
+                        <!-- Institutional/Presidents/Academic Scholarship Fields -->
                         <div class="detail-group">
                             <div class="detail-label">Education Stage</div>
-                            <div class="detail-value">{{ $application->education_stage ?? 'N/A' }}</div>
+                            <div class="detail-value">
+                                @if ($application->education_stage == 'BEU' || $application->education_stage == 'BSU')
+                                    BEU (Basic Education Unit)
+                                @elseif ($application->scholarship_type == 'academic')
+                                    College
+                                @else
+                                    {{ $application->education_stage ?? 'N/A' }}
+                                @endif
+                            </div>
                         </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Department</div>
-                            <div class="detail-value">{{ $application->department ?? 'N/A' }}</div>
-                        </div>
+                        @if (
+                            $application->education_stage == 'BEU' ||
+                                $application->education_stage == 'BSU' ||
+                                $application->education_stage == 'Basic Education')
+                            <!-- Basic Education Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Grade Level</div>
+                                <div class="detail-value">{{ $application->grade_level ?? 'N/A' }}</div>
+                            </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Course/Program</div>
-                            <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
-                        </div>
+                            @if ($application->grade_level && in_array($application->grade_level, ['Grade 11', 'Grade 12']))
+                                <div class="detail-group">
+                                    <div class="detail-label">Strand</div>
+                                    <div class="detail-value">{{ $application->strand ?? 'N/A' }}</div>
+                                </div>
+                            @endif
+                        @else
+                            <!-- College Fields -->
+                            <div class="detail-group">
+                                <div class="detail-label">Department</div>
+                                <div class="detail-value">{{ $application->department ?? 'N/A' }}</div>
+                            </div>
 
-                        <div class="detail-group">
-                            <div class="detail-label">Year Level</div>
-                            <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
-                        </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Course/Program</div>
+                                <div class="detail-value">{{ $application->course ?? 'N/A' }}</div>
+                            </div>
+
+                            <div class="detail-group">
+                                <div class="detail-label">Year Level</div>
+                                <div class="detail-value">{{ $application->year_level ?? 'N/A' }}</div>
+                            </div>
+                        @endif
 
                         <div class="detail-group">
                             <div class="detail-label">Semester</div>
@@ -411,6 +467,33 @@
                             <div class="detail-label">GWA</div>
                             <div class="detail-value">{{ $application->gwa ?? 'N/A' }}</div>
                         </div>
+
+                        @if ($application->scholarship_type == 'academic')
+                            <div class="detail-group">
+                                <div class="detail-label">Academic Classification</div>
+                                <div class="detail-value">
+                                    @if ($application->scholarship_subtype)
+                                        @if ($application->scholarship_subtype == 'PL')
+                                            President's Lister (PL)
+                                        @elseif ($application->scholarship_subtype == 'DL')
+                                            Dean's Lister (DL)
+                                        @else
+                                            {{ $application->scholarship_subtype }}
+                                        @endif
+                                    @elseif ($application->gwa)
+                                        @if ($application->gwa >= 1.0 && $application->gwa <= 1.25)
+                                            President's Lister (PL) - Eligible
+                                        @elseif ($application->gwa == 1.5)
+                                            Dean's Lister (DL) - Eligible
+                                        @else
+                                            Not Qualified for Academic Honors (GWA: {{ $application->gwa }})
+                                        @endif
+                                    @else
+                                        Pending GWA Verification
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
 

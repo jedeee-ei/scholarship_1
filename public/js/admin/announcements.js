@@ -1,7 +1,11 @@
 // Announcements Management JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    initializeAnnouncementsPage();
+    try {
+        initializeAnnouncementsPage();
+    } catch (error) {
+        console.error('Error initializing announcements page:', error);
+    }
 });
 
 function initializeAnnouncementsPage() {
@@ -135,16 +139,31 @@ function deleteAnnouncement(id) {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
+                    // Show success notification
+                    if (window.showNotification) {
+                        window.showNotification('success', data.message || 'Announcement deleted successfully!');
+                    }
                     location.reload();
                 } else {
-                    console.error('Error deleting announcement');
+                    console.error('Error deleting announcement:', data);
+                    if (window.showNotification) {
+                        window.showNotification('error', data.message || 'Error deleting announcement');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                if (window.showNotification) {
+                    window.showNotification('error', 'Network error occurred. Please try again.');
+                }
             });
         }
     );
@@ -176,17 +195,32 @@ function submitAnnouncementForm() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             closeAnnouncementModal();
+            // Show success notification
+            if (window.showNotification) {
+                window.showNotification('success', data.message || 'Announcement saved successfully!');
+            }
             location.reload();
         } else {
-            console.error('Error saving announcement');
+            console.error('Error saving announcement:', data);
+            if (window.showNotification) {
+                window.showNotification('error', data.message || 'Error saving announcement');
+            }
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        if (window.showNotification) {
+            window.showNotification('error', 'Network error occurred. Please try again.');
+        }
     });
 }
 

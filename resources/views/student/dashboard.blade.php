@@ -29,6 +29,9 @@
         </div>
     </header>
 
+    <!-- Notification Component -->
+    @include('components.notification')
+
     <div class="container">
         <!-- Welcome Section -->
         <div class="welcome-section">
@@ -63,7 +66,7 @@
                                     </button>
                                 </div>
 
-                                <!-- Institutional Scholarship -->
+                                <!-- Academic Scholarship -->
                                 <div class="scholarship-card" data-scholarship="presidents">
                                     <h3 class="scholarship-title">Academic Scholarship</h3>
                                     <p class="scholarship-description">For students with exceptional academic
@@ -192,7 +195,7 @@
                                         <div class="radio-group">
                                             <div class="radio-option">
                                                 <input type="radio" id="ched_bsu" name="education_stage"
-                                                    value="BSU" required>
+                                                    value="BEU" required>
                                                 <label for="ched_bsu">BEU</label>
                                             </div>
                                             <div class="radio-option">
@@ -400,11 +403,11 @@
                         </div>
                     </div>
 
-                    <!-- Institutional Scholarship Application Form -->
+                    <!-- Academic Scholarship Application Form -->
                     <div class="application-form-container" id="presidents-form">
                         <div class="form-header">
                             <div class="application-forms-header">
-                                <h3>Institutional Scholarship Application</h3>
+                                <h3>Academic Scholarship Application</h3>
                             </div>
                             <button class="close-form-btn" onclick="closeForm()">
                                 <i class="fas fa-times"></i>
@@ -430,7 +433,7 @@
                             <form action="{{ route('scholarship.submit') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="scholarship_type" value="institutional">
+                                <input type="hidden" name="scholarship_type" value="academic">
 
                                 <!-- Form Title -->
                                 <div class="form-title">
@@ -442,6 +445,9 @@
                                     <p>Please fill out all required fields marked with an asterisk (*). Ensure all
                                         information is accurate and complete before submitting your application.</p>
                                 </div>
+
+                                <!-- Academic Scholarship Type Selection -->
+
 
                                 <div class="form-section-title">Personal Information</div>
                                 <div class="form-row">
@@ -539,6 +545,13 @@
                                                     <strong>0.00</strong>
                                                 </div>
                                             </div>
+                                            <div class="gwa-requirements">
+                                                <small class="form-help-text">
+                                                    <strong>Academic Scholarship Requirements:</strong><br>
+                                                    • President's Lister (PL): GWA 1.0 - 1.25<br>
+                                                    • Dean's Lister (DL): GWA 1.50
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -573,9 +586,26 @@
                                 <div class="form-section-title">Address Information</div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="inst_address">Complete Address *</label>
-                                        <textarea id="inst_address" name="address" rows="3" required
-                                            placeholder="House No., Street, Barangay, City/Municipality, Province"></textarea>
+                                        <label for="inst_street">Street *</label>
+                                        <input type="text" id="inst_street" name="street" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inst_barangay">Barangay *</label>
+                                        <input type="text" id="inst_barangay" name="barangay" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inst_city">City *</label>
+                                        <input type="text" id="inst_city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inst_province">Province *</label>
+                                        <input type="text" id="inst_province" name="province" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inst_zipcode">Zipcode *</label>
+                                        <input type="text" id="inst_zipcode" name="zipcode" required>
                                     </div>
                                 </div>
 
@@ -702,9 +732,26 @@
                                 <div class="form-section-title">Address Information</div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="employees_address">Complete Address</label>
-                                        <textarea id="employees_address" name="address" rows="3"
-                                            placeholder="House No., Street, Barangay, City/Municipality, Province"></textarea>
+                                        <label for="employees_street">Street *</label>
+                                        <input type="text" id="employees_street" name="street" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="employees_barangay">Barangay *</label>
+                                        <input type="text" id="employees_barangay" name="barangay" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="employees_city">City *</label>
+                                        <input type="text" id="employees_city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="employees_province">Province *</label>
+                                        <input type="text" id="employees_province" name="province" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="employees_zipcode">Zipcode *</label>
+                                        <input type="text" id="employees_zipcode" name="zipcode" required>
                                     </div>
                                 </div>
 
@@ -816,9 +863,26 @@
                                 <div class="form-section-title">Address Information</div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="private_address">Complete Address *</label>
-                                        <textarea id="private_address" name="address" rows="3" required
-                                            placeholder="House No., Street, Barangay, City/Municipality, Province"></textarea>
+                                        <label for="private_street">Street *</label>
+                                        <input type="text" id="private_street" name="street" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="private_barangay">Barangay *</label>
+                                        <input type="text" id="private_barangay" name="barangay" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="private_city">City *</label>
+                                        <input type="text" id="private_city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="private_province">Province *</label>
+                                        <input type="text" id="private_province" name="province" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="private_zipcode">Zipcode *</label>
+                                        <input type="text" id="private_zipcode" name="zipcode" required>
                                     </div>
                                 </div>
 
@@ -1061,7 +1125,7 @@
             academicEducationRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     // Show/hide appropriate fields based on selection
-                    if (this.value === 'BSU') {
+                    if (this.value === 'BEU') {
                         // Show BEU fields, hide college fields
                         chedBsuFields.forEach(field => {
                             field.style.display = 'block';

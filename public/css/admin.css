@@ -620,4 +620,438 @@ body {
     border: 1px solid #29b6f6;
 }
 
+/* Breadcrumb Styles */
+.breadcrumb-nav {
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #052F11;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.breadcrumb-link:hover {
+    background: rgba(5, 47, 17, 0.1);
+    color: #1e5631;
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.breadcrumb-separator {
+    margin: 0 8px;
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    animation: slideInRight 0.3s ease-out;
+    transition: all 0.3s ease;
+}
+
+.notification.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.notification.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.notification.warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+.notification.info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+.notification i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.notification .close-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.notification .close-btn:hover {
+    opacity: 1;
+}
+
+/* Legacy notification styles for backward compatibility */
+.success-message, .alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message, .alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Update Semester/Year Modal Styles */
+.update-selection h4 {
+    margin-bottom: 20px;
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.update-options {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.update-option-card {
+    flex: 1;
+    min-width: 280px;
+    padding: 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    position: relative;
+}
+
+.update-option-card:hover {
+    border-color: #052F11;
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 47, 17, 0.1);
+}
+
+.update-option-card.selected {
+    border-color: #052F11;
+    background: linear-gradient(135deg, #f8f9fa, #e8f5e8);
+    box-shadow: 0 6px 20px rgba(5, 47, 17, 0.15);
+}
+
+.option-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #052F11, #1e5631);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+.option-content {
+    flex: 1;
+}
+
+.option-content h3 {
+    margin: 0 0 8px 0;
+    color: #052F11;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.option-content p {
+    margin: 0 0 8px 0;
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.option-content small {
+    display: block;
+    color: #dc3545;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.option-radio {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.option-radio input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #052F11;
+    cursor: pointer;
+}
+
+/* Modal footer buttons */
+.modal-footer .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #052F11, #1e5631);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
+}
+
+.btn-primary:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Responsive design for update modal */
+@media (max-width: 768px) {
+    .update-options {
+        flex-direction: column;
+    }
+
+    .update-option-card {
+        min-width: auto;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Clean Table Styling with Logo Colors */
+
+/* Basic table structure */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    border-right: 1px solid #dee2e6;
+    padding: 12px 15px;
+    vertical-align: middle;
+    text-align: left;
+}
+
+table th:last-child,
+table td:last-child {
+    border-right: none;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #dee2e6;
+}
+
+table td {
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+/* Status Badges - Logo Color Scheme */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.approved {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+.status-badge.rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-badge.active {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+.status-badge.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Action Buttons - Logo Color Scheme */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    margin: 0 2px;
+    border: 1px solid #052F11;
+    background-color: #052F11;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: rgba(5, 47, 17, 0.8);
+    color: white;
+    text-decoration: none;
+}
+
+.action-btn.view {
+    background-color: #052F11;
+    border-color: #052F11;
+}
+
+.action-btn.edit {
+    background-color: rgba(5, 47, 17, 0.7);
+    border-color: rgba(5, 47, 17, 0.7);
+}
+
+.action-btn.delete {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.action-btn.delete:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
 

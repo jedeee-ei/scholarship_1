@@ -105,6 +105,9 @@
         </div>
     </div>
 
+    <!-- Notification Component -->
+    @include('components.notification')
+
     <!-- Base JavaScript -->
     <script>
         // Initialize navigation to ensure proper link behavior

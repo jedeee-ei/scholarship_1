@@ -11,7 +11,6 @@ class Scholarship extends Model
         'type',
         'semester',
         'academic_year',
-        'description',
-        'status'
+        'description'
     ];
 }

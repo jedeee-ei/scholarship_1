@@ -71,7 +71,7 @@ Route::middleware(['auth', 'student'])->group(function () {
 });
 
 
-// Admin routes without authentication
+// Admin routes without authentication (for testing)
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 Route::get('/applications', [DashboardController::class, 'applications'])->name('admin.applications');
 Route::get('/applications/{id}', [DashboardController::class, 'viewApplication'])->name('admin.application.view');
@@ -138,7 +138,6 @@ Route::prefix('api/admin')->group(function () {
 
 // API route for checking duplicate student IDs
 Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
-Route::post('/api/check-duplicate-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
 
 // API route for loading subjects (used by student dashboard)
 Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard']);

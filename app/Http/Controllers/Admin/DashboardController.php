@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -208,10 +208,9 @@ class DashboardController extends Controller
             $query->where('scholarship_type', $request->type);
         }
 
-        // Get applications with pagination
+        // Get all applications without pagination
         $applications = $query->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
         return view('admin.applications', [
             'applications' => $applications,
@@ -252,10 +251,23 @@ class DashboardController extends Controller
 
             // Handle status-specific actions
             if ($newStatus === 'Approved' && $oldStatus !== 'Approved') {
+                // Determine scholarship subtype for Academic scholarships based on GWA
+                if ($application->scholarship_type == 'academic' && $application->gwa && !$application->scholarship_subtype) {
+                    $gwa = floatval($application->gwa);
+                    if ($gwa >= 1.0 && $gwa <= 1.25) {
+                        $application->scholarship_subtype = "PL";
+                    } elseif ($gwa == 1.50) {
+                        $application->scholarship_subtype = "DL";
+                    }
+                    $application->save();
+                }
+
                 // Create grantee record using GranteeService
                 $granteeService = new GranteeService();
                 $adminUser = Auth::user();
-                $approvedBy = $adminUser ? $adminUser->name : 'Admin';
+
+                // For testing purposes, allow any user to approve applications
+                $approvedBy = $adminUser ? $adminUser->name : 'Admin User';
 
                 // Create grantee from application
                 $grantee = $granteeService->createGranteeFromApplication($application, $approvedBy);
@@ -263,7 +275,9 @@ class DashboardController extends Controller
                 // Delete the application from scholarship_applications table
                 $application->delete();
 
-                $message = 'Application approved successfully. Student has been moved to the Grantees tab and removed from applications.';
+                $studentName = $application->first_name . ' ' . $application->last_name;
+                $scholarshipType = ucfirst($application->scholarship_type);
+                $message = "✅ Application approved successfully! {$studentName}'s {$scholarshipType} scholarship application has been approved and moved to the Grantees tab.";
 
                 Log::info('Application approved and moved to grantees', [
                     'application_id' => $application->application_id,
@@ -275,7 +289,9 @@ class DashboardController extends Controller
                 $application->status = $newStatus;
                 $application->save();
 
-                $message = 'Application rejected. Student will be notified via the tracker.';
+                $studentName = $application->first_name . ' ' . $application->last_name;
+                $scholarshipType = ucfirst($application->scholarship_type);
+                $message = "❌ Application rejected. {$studentName}'s {$scholarshipType} scholarship application has been rejected. Student will be notified via the tracker.";
 
                 Log::info('Application rejected', [
                     'application_id' => $application->application_id,
@@ -285,7 +301,8 @@ class DashboardController extends Controller
                 // For other status updates (Pending Review, Under Committee Review)
                 $application->status = $newStatus;
                 $application->save();
-                $message = 'Application status updated successfully.';
+                $studentName = $application->first_name . ' ' . $application->last_name;
+                $message = "📝 Status updated successfully! {$studentName}'s application status has been changed to '{$newStatus}'.";
             }
 
             DB::commit();
@@ -307,7 +324,8 @@ class DashboardController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return redirect()->back()->with('error', 'An error occurred while updating the application status. Please try again.');
+            $errorMessage = "❌ Error updating application status: " . $e->getMessage() . " Please try again or contact support if the issue persists.";
+            return redirect()->back()->with('error', $errorMessage);
         }
     }
 
@@ -544,9 +562,9 @@ class DashboardController extends Controller
             $query->where('scholarship_type', $request->type);
         }
 
-        // Get applications with pagination
+        // Get all applications without pagination
         $applications = $query->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -762,6 +780,12 @@ class DashboardController extends Controller
 
         foreach ($scholarships as $scholarship) {
             $key = 'scholarship_' . $scholarship->id;
+
+            // Count active grantees for this scholarship type
+            $activeGranteesCount = Grantee::where('scholarship_type', strtolower($scholarship->type))
+                ->where('status', 'Active')
+                ->count();
+
             $scholarshipStats[$key] = [
                 'id' => $scholarship->id,
                 'name' => $scholarship->name,
@@ -769,7 +793,7 @@ class DashboardController extends Controller
                 'semester' => $scholarship->semester,
                 'academic_year' => $scholarship->academic_year,
                 'description' => $scholarship->description,
-                'status' => $scholarship->status,
+                'active_grantees' => $activeGranteesCount,
                 'is_database' => true,
                 'total_applications' => ScholarshipApplication::where('scholarship_type', strtolower($scholarship->type))->count(),
                 'approved' => ScholarshipApplication::where('scholarship_type', strtolower($scholarship->type))->where('status', 'Approved')->count(),
@@ -801,8 +825,7 @@ class DashboardController extends Controller
                 'type' => $validatedData['type'],
                 'semester' => $validatedData['semester'],
                 'academic_year' => $validatedData['academic_year'],
-                'description' => $validatedData['description'],
-                'status' => 'Active'
+                'description' => $validatedData['description']
             ]);
 
             return response()->json([
@@ -1712,9 +1735,23 @@ class DashboardController extends Controller
      */
     public function announcements()
     {
-        $announcements = Announcement::orderBy('created_at', 'desc')->get();
+        try {
+            $announcements = Announcement::orderBy('created_at', 'desc')->get();
 
-        return view('admin.announcements', compact('announcements'));
+            Log::info('Announcements page accessed', [
+                'announcements_count' => $announcements->count(),
+                'user' => Auth::user() ? Auth::user()->email : 'guest'
+            ]);
+
+            return view('admin.announcements', compact('announcements'));
+        } catch (\Exception $e) {
+            Log::error('Error loading announcements page', [
+                'error' => $e->getMessage(),
+                'user' => Auth::user() ? Auth::user()->email : 'guest'
+            ]);
+
+            return redirect()->route('admin.dashboard')->with('error', 'Error loading announcements page: ' . $e->getMessage());
+        }
     }
 
     /**

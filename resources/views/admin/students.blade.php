@@ -376,12 +376,12 @@
             window.forcePopulateCourses = function() {
                 console.log('Force populating courses...');
 
-                // Check for Institutional form
+                // Check for Academic form
                 const deptSelect = document.getElementById('department');
                 const courseSelect = document.getElementById('course');
 
                 if (deptSelect && courseSelect && deptSelect.value) {
-                    console.log('Found Institutional form, department:', deptSelect.value);
+                    console.log('Found Academic form, department:', deptSelect.value);
                     const siteCourses = [
                         'Bachelor of Science in Information Technology',
                         'Bachelor of Science in Computer Science',
@@ -398,7 +398,7 @@
                         courseSelect.appendChild(option);
                     });
                     courseSelect.disabled = false;
-                    console.log('Courses populated for Institutional form');
+                    console.log('Courses populated for Academic form');
                     return;
                 }
 
@@ -433,7 +433,7 @@
 
             // Add direct event listeners for department dropdowns
             setTimeout(() => {
-                // For Institutional scholarship
+                // For Academic scholarship
                 const deptSelect = document.getElementById('department');
                 if (deptSelect) {
                     deptSelect.addEventListener('change', function() {
@@ -465,7 +465,8 @@
                     if (activeTab) {
                         console.log('Active tab found:', activeTab.textContent);
                         // Add a subtle visual indicator that this tab is filtered
-                        activeTab.style.boxShadow = '0 0 10px rgba(30, 86, 49, 0.3)';
+                        activeTab.classList.add('viewing');
+                        activeTab.style.boxShadow = '0 0 15px rgba(5, 47, 17, 0.4)';
                     }
                 }, 100);
             @endif
@@ -517,6 +518,22 @@
             }
 
             isTabSwitching = true;
+
+            // Add visual feedback for the clicked button
+            clickedButton.style.transform = 'scale(0.95)';
+            clickedButton.style.transition = 'all 0.1s ease';
+
+            // Remove viewing class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('viewing');
+                btn.style.boxShadow = '';
+            });
+
+            // Add loading effect to clicked button
+            setTimeout(() => {
+                clickedButton.style.transform = '';
+                clickedButton.classList.add('viewing');
+            }, 100);
 
             // Build the URL with the appropriate scholarship type parameter
             let url = "{{ route('admin.students') }}";
@@ -622,7 +639,7 @@
 
         // Simple, direct course population functions
         function populateCoursesDirectly(department) {
-            console.log('=== INSTITUTIONAL COURSE POPULATION ===');
+            console.log('=== ACADEMIC COURSE POPULATION ===');
             console.log('Department selected:', department);
             console.log('Function called at:', new Date().toLocaleTimeString());
 
@@ -824,7 +841,7 @@
                                     <select id="educationStage" name="education_stage" required onchange="updateChedEducationFields()">
                                         <option value="">Select Education Stage</option>
                                         <option value="College">College</option>
-                                        <option value="BSU">Basic Education</option>
+                                        <option value="BEU">BEU (Basic Education Unit)</option>
                                     </select>
                                 </div>
                             </div>
@@ -897,7 +914,7 @@
                                     <select id="educationStage" name="education_stage" required onchange="updateEducationFields()">
                                         <option value="">Select Education Stage</option>
                                         <option value="College">College</option>
-                                        <option value="BSU">Basic Education</option>
+                                        <option value="BEU">BEU (Basic Education Unit)</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1033,7 +1050,7 @@
                         </div>
                     </div>
                 `;
-            } else if (educationStage === 'BSU') {
+            } else if (educationStage === 'BEU') {
                 fieldsHTML = `
                     <div class="form-row">
                         <div class="form-group">
@@ -1101,7 +1118,7 @@
                         </div>
                     </div>
                 `;
-            } else if (educationStage === 'BSU') {
+            } else if (educationStage === 'BEU') {
                 fieldsHTML = `
                     <div class="form-section">
                         <h3>Basic Education Information</h3>
@@ -1263,15 +1280,15 @@
             const courseSelect = document.getElementById('course');
             const yearLevelSelect = document.getElementById('yearLevel');
 
-            console.log('Loading Institutional courses for department...');
+            console.log('Loading Academic courses for department...');
 
             if (!departmentSelect || !courseSelect) {
-                console.error('Department or course select not found for Institutional');
+                console.error('Department or course select not found for Academic');
                 return;
             }
 
             const selectedDepartment = departmentSelect.value;
-            console.log('Selected department for Institutional:', selectedDepartment);
+            console.log('Selected department for Academic:', selectedDepartment);
 
             // Clear existing options
             courseSelect.innerHTML = '<option value="">Select Course</option>';
@@ -1320,16 +1337,16 @@
 
             try {
                 // Try to load from API first
-                console.log('Attempting to fetch from API for Institutional...');
+                console.log('Attempting to fetch from API for Academic...');
                 const response = await fetch('/api/scholarship/department-course-mapping');
-                console.log('API response status for Institutional:', response.status);
+                console.log('API response status for Academic:', response.status);
 
                 if (response.ok) {
                     const apiData = await response.json();
-                    console.log('API data received for Institutional:', apiData);
+                    console.log('API data received for Academic:', apiData);
 
                     if (apiData[selectedDepartment] && apiData[selectedDepartment].length > 0) {
-                        console.log('Using API data for Institutional courses');
+                        console.log('Using API data for Academic courses');
                         apiData[selectedDepartment].forEach(course => {
                             const option = document.createElement('option');
                             option.value = course;
@@ -1341,11 +1358,11 @@
                     }
                 }
             } catch (error) {
-                console.error('API error for Institutional:', error);
+                console.error('API error for Academic:', error);
             }
 
             // Use fallback data
-            console.log('Using fallback courses for Institutional department:', selectedDepartment);
+            console.log('Using fallback courses for Academic department:', selectedDepartment);
             if (fallbackCourses[selectedDepartment]) {
                 fallbackCourses[selectedDepartment].forEach(course => {
                     const option = document.createElement('option');
@@ -1354,9 +1371,9 @@
                     courseSelect.appendChild(option);
                 });
                 courseSelect.disabled = false;
-                console.log('Institutional courses loaded successfully from fallback');
+                console.log('Academic courses loaded successfully from fallback');
             } else {
-                console.error('No courses found for Institutional department:', selectedDepartment);
+                console.error('No courses found for Academic department:', selectedDepartment);
             }
         }
 

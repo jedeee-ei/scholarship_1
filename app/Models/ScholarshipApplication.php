@@ -18,6 +18,7 @@ class ScholarshipApplication extends Model
         //Common Fields
         'application_id',
         'scholarship_type',
+        'scholarship_subtype',
         'student_id',
         'last_name',
         'first_name',

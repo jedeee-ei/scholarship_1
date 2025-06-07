@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\ScholarshipApplication;
 
 class ScholarshipApplicationRequest extends FormRequest
 {
@@ -49,9 +48,8 @@ class ScholarshipApplicationRequest extends FormRequest
             case 'ched':
                 $rules = array_merge($rules, $this->getChedRules());
                 break;
-            case 'presidents':
-            case 'institutional':
-                $rules = array_merge($rules, $this->getInstitutionalRules());
+            case 'academic':
+                $rules = array_merge($rules, $this->getAcademicRules());
                 break;
             case 'employees':
                 $rules = array_merge($rules, $this->getEmployeesRules());
@@ -72,8 +70,8 @@ class ScholarshipApplicationRequest extends FormRequest
         return [
             'sex' => 'required|in:Male,Female',
             'birthdate' => 'required|date|before:today',
-            'education_stage' => 'required|in:BSU,College',
-            'grade_level' => 'required_if:education_stage,BSU|string',
+            'education_stage' => 'required|in:BEU,BSU,College',
+            'grade_level' => 'required_if:education_stage,BEU,BSU|string',
             'strand' => 'required_if:grade_level,Grade 11,Grade 12|string',
             'department' => 'required_if:education_stage,College|string',
             'course' => 'required_if:education_stage,College|string',
@@ -95,9 +93,9 @@ class ScholarshipApplicationRequest extends FormRequest
     }
 
     /**
-     * Get validation rules for Institutional scholarship
+     * Get validation rules for Academic scholarship
      */
-    private function getInstitutionalRules(): array
+    private function getAcademicRules(): array
     {
         return [
             'department' => 'required|string|max:100',
@@ -106,10 +104,16 @@ class ScholarshipApplicationRequest extends FormRequest
             'semester' => 'required|string|max:50',
             'academic_year' => 'required|string|max:20',
             'gwa' => 'required|numeric|min:1.0|max:5.0',
-            'address' => 'required|string|max:500',
+            'street' => 'required|string|max:255',
+            'barangay' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'zipcode' => 'required|string|max:10',
             'documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120', // 5MB max
         ];
     }
+
+
 
     /**
      * Get validation rules for Employee's scholarship
@@ -121,7 +125,11 @@ class ScholarshipApplicationRequest extends FormRequest
             'employee_relationship' => 'required|in:Son,Daughter,Spouse',
             'employee_department' => 'required|string|max:100',
             'employee_position' => 'required|string|max:100',
-            'address' => 'required|string|max:500',
+            'street' => 'required|string|max:255',
+            'barangay' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'zipcode' => 'required|string|max:10',
         ];
     }
 
@@ -133,11 +141,13 @@ class ScholarshipApplicationRequest extends FormRequest
         return [
             'scholarship_name' => 'required|string|max:255',
             'other_scholarship' => 'nullable|string|max:1000',
-            'address' => 'required|string|max:500',
+            'street' => 'required|string|max:255',
+            'barangay' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'zipcode' => 'required|string|max:10',
         ];
     }
-
-
 
     /**
      * Get custom error messages
@@ -165,7 +175,8 @@ class ScholarshipApplicationRequest extends FormRequest
             'year_level.required' => 'Year level is required.',
             'semester.required' => 'Semester is required.',
             'academic_year.required' => 'Academic year is required.',
-            'gwa.required' => 'GWA is required for institutional scholarships.',
+
+            'gwa.required' => 'GWA is required for academic scholarships.',
             'gwa.numeric' => 'GWA must be a number.',
             'gwa.min' => 'GWA must be at least 1.0.',
             'gwa.max' => 'GWA cannot exceed 5.0.',

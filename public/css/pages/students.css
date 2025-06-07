@@ -1,10 +1,9 @@
-/* Students Page Specific Styles */
+/* Students Page - Clean Styles */
 
 /* Student Categories */
 .student-categories {
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
     padding: 20px;
     margin-bottom: 30px;
 }
@@ -18,30 +17,78 @@
 
 .tab-btn {
     padding: 12px 20px;
-    border: 2px solid #1e5631;
+    border: 2px solid #052F11;
     background-color: white;
-    color: #1e5631;
-    border-radius: 25px;
+    color: #052F11;
     cursor: pointer;
     font-weight: 500;
+    border-radius: 25px;
     transition: all 0.3s ease;
-    border: none;
-    outline: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .tab-btn:hover {
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(30, 86, 49, 0.3);
+    box-shadow: 0 4px 12px rgba(5, 47, 17, 0.3);
 }
 
 .tab-btn.active {
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
-    box-shadow: 0 0 15px rgba(30, 86, 49, 0.4);
-    border: 2px solid #2d7a3e;
+    box-shadow: 0 0 15px rgba(5, 47, 17, 0.4);
+    border: 2px solid rgba(5, 47, 17, 0.8);
     font-weight: 600;
+}
+
+/* Add a subtle glow effect when tab is being viewed */
+.tab-btn.viewing {
+    box-shadow: 0 0 10px rgba(5, 47, 17, 0.3);
+    border-color: rgba(5, 47, 17, 0.7);
+}
+
+/* Enhanced hover animations */
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.tab-btn:hover::before {
+    left: 100%;
+}
+
+/* Pulse animation for active tab */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px rgba(5, 47, 17, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(5, 47, 17, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(5, 47, 17, 0.4);
+    }
+}
+
+.tab-btn.active {
+    animation: pulse 2s infinite;
+}
+
+/* Smooth transitions for all states */
+.tab-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-btn:active {
+    transform: scale(0.95);
 }
 
 /* Student Table Container */
@@ -73,13 +120,11 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    background: #052F11;
     color: white;
-    border: none;
+    border: 1px solid #052F11;
     padding: 10px 16px;
-    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -88,44 +133,44 @@
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2e7d32, #388e3c);
+    background: rgba(5, 47, 17, 0.8);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: rgba(5, 47, 17, 0.6);
     color: white;
-    border: none;
+    border: 1px solid rgba(5, 47, 17, 0.6);
     padding: 10px 16px;
-    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
+    background: #052F11;
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
 }
 
 .export-btn {
-    background-color: #1e5631;
+    background-color: rgba(5, 47, 17, 0.7);
     color: white;
-    border: none;
+    border: 1px solid rgba(5, 47, 17, 0.7);
     padding: 10px 15px;
-    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .export-btn:hover {
-    background-color: #164023;
+    background-color: #052F11;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
 }
 
 /* Students Table */
@@ -182,83 +227,101 @@
     font-size: 14px;
 }
 
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.approved {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+.status-badge.rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-badge.active {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+.status-badge.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
 /* Action Buttons */
 .action-btn {
     padding: 5px 8px;
     margin: 0 2px;
-    border: none;
-    border-radius: 3px;
+    border: 1px solid #052F11;
     cursor: pointer;
     font-size: 12px;
-    background-color: #1e5631;
+    background-color: #052F11;
     color: white;
-    transition: all 0.2s ease;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    transition: all 0.2s ease;
+    border-radius: 3px;
 }
 
 .action-btn:hover {
-    background-color: #164023;
+    background-color: rgba(5, 47, 17, 0.8);
     color: white;
     text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(5, 47, 17, 0.3);
 }
 
 .action-btn.view {
-    background-color: #17a2b8;
-}
-
-.action-btn.view:hover {
-    background-color: #138496;
+    background-color: #052F11;
+    border-color: #052F11;
 }
 
 .action-btn.edit {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.action-btn.edit:hover {
-    background-color: #e0a800;
-    color: #212529;
+    background-color: rgba(5, 47, 17, 0.7);
+    border-color: rgba(5, 47, 17, 0.7);
 }
 
 .action-btn.delete {
     background-color: #dc3545;
+    border-color: #dc3545;
 }
 
 .action-btn.delete:hover {
     background-color: #c82333;
+    border-color: #c82333;
 }
 
 /* Scholarship Type Badges */
 .scholarship-type {
-    display: inline-block;
     padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-.scholarship-type.ched {
-    background-color: #e3f2fd;
-    color: #1565c0;
-}
-
-.scholarship-type.institutional {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
-}
-
-.scholarship-type.employee {
-    background-color: #e8f5e8;
-    color: #2e7d32;
-}
-
-.scholarship-type.private {
-    background-color: #fff3e0;
-    color: #f57c00;
+    font-size: 12px;
+    background: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+    border-radius: 4px;
 }
 
 /* Status Indicators */
@@ -268,18 +331,7 @@
     height: 8px;
     border-radius: 50%;
     margin-right: 8px;
-}
-
-.status-indicator.active {
-    background-color: #4caf50;
-}
-
-.status-indicator.inactive {
-    background-color: #f44336;
-}
-
-.status-indicator.pending {
-    background-color: #ff9800;
+    background-color: #052F11;
 }
 
 /* Responsive Design */
