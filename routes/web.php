@@ -101,10 +101,26 @@ Route::get('/admin/applications/export', [DashboardController::class, 'exportApp
 
 // Reports and Archive routes
 Route::post('/admin/reports/generate', [DashboardController::class, 'generateReport'])->name('admin.reports.generate');
-Route::get('/admin/reports/preview', [DashboardController::class, 'previewReport'])->name('admin.reports.preview');
+Route::post('/admin/reports/preview', [DashboardController::class, 'previewReport'])->name('admin.reports.preview');
 Route::get('/admin/archive/search', [DashboardController::class, 'searchArchive'])->name('admin.archive.search');
 Route::get('/admin/archive/download/{fileId}', [DashboardController::class, 'downloadArchive'])->name('admin.archive.download');
 Route::delete('/admin/archive/delete/{fileId}', [DashboardController::class, 'deleteArchive'])->name('admin.archive.delete');
+
+// Debug route for testing data
+Route::get('/admin/reports/test-data', function() {
+    $totalApps = \App\Models\ScholarshipApplication::count();
+    $allApps = \App\Models\ScholarshipApplication::all();
+
+    return response()->json([
+        'total_applications' => $totalApps,
+        'sample_data' => $allApps->take(3),
+        'scholarship_types' => $allApps->pluck('scholarship_type')->unique(),
+        'statuses' => $allApps->pluck('status')->unique(),
+        'created_dates' => $allApps->pluck('created_at')->map(function($date) {
+            return $date->format('Y-m-d H:i:s');
+        })
+    ]);
+})->name('admin.reports.test-data');
 
 // Students management routes
 Route::get('/admin/students/data', [DashboardController::class, 'getStudentsData'])->name('admin.students.data');

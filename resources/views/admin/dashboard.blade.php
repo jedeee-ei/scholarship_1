@@ -155,9 +155,10 @@
             });
         }
 
-        // Chart initialization
+        // Chart initialization with real grantee data
         function initializeCharts() {
             const chartData = {!! json_encode($chartData) !!};
+            console.log('Dashboard Chart Data:', chartData); // Debug log to see what data we have
 
             // 1. Applications Trend Chart (Line Chart)
             const applicationsCtx = document.getElementById('applicationsChart').getContext('2d');
@@ -196,20 +197,23 @@
                 }
             });
 
-            // 2. Status Distribution Chart (Doughnut)
+            // 2. Status Distribution Chart (Doughnut) - Using real data
             const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statusData = chartData.statusDistribution || {};
             new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Pending', 'Under Review', 'Approved', 'Rejected'],
                     datasets: [{
                         data: [
-                            chartData.statusDistribution.pending,
-                            chartData.statusDistribution.under_review,
-                            chartData.statusDistribution.approved,
-                            chartData.statusDistribution.rejected
+                            statusData.pending || 0,
+                            statusData.under_review || 0,
+                            statusData.approved || 0,
+                            statusData.rejected || 0
                         ],
-                        backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545']
+                        backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
@@ -217,21 +221,37 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     }
                 }
             });
 
-            // 3. GWA Distribution Chart (Bar)
+            // 3. GWA Distribution Chart (Bar) - Using real grantee data
             const gwaCtx = document.getElementById('gwaChart').getContext('2d');
+            const gwaRanges = chartData.gwaRanges || {};
             new Chart(gwaCtx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(chartData.gwaRanges),
+                    labels: Object.keys(gwaRanges),
                     datasets: [{
                         label: 'Grantees',
-                        data: Object.values(chartData.gwaRanges),
+                        data: Object.values(gwaRanges),
                         backgroundColor: [
                             '#1e5631', // 1.00-1.25 (Excellent)
                             '#2d7a3d', // 1.26-1.50 (Very Good)
@@ -256,7 +276,8 @@
                                     return 'GWA Range: ' + context[0].label;
                                 },
                                 label: function(context) {
-                                    return context.parsed.y + ' student' + (context.parsed.y !== 1 ? 's' : '');
+                                    const count = context.parsed.y;
+                                    return count + ' grantee' + (count !== 1 ? 's' : '');
                                 }
                             }
                         }
@@ -282,15 +303,16 @@
                 }
             });
 
-            // 4. Department Distribution Chart (Bar)
+            // 4. Department Distribution Chart (Bar) - Using real grantee data
             const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+            const departmentData = chartData.departmentDistribution || {};
             new Chart(departmentCtx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(chartData.departmentDistribution),
+                    labels: Object.keys(departmentData),
                     datasets: [{
-                        label: 'Applications',
-                        data: Object.values(chartData.departmentDistribution),
+                        label: 'Grantees',
+                        data: Object.values(departmentData),
                         backgroundColor: '#1e5631',
                         borderColor: '#164023',
                         borderWidth: 1
@@ -302,6 +324,17 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Department: ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    const count = context.parsed.y;
+                                    return count + ' grantee' + (count !== 1 ? 's' : '');
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -309,6 +342,16 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Grantees'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Department'
                             }
                         }
                     }

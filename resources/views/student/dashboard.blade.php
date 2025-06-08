@@ -45,6 +45,24 @@
             </div>
         </div>
 
+        <!-- Backend Error Notifications -->
+        @if ($errors->has('student_id'))
+            <div class="main-screen-duplicate-notification">
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Duplicate Student ID Detected!</strong><br>
+                        {{ $errors->first('student_id') }}
+                    </div>
+                    <button class="notification-close" onclick="removeMainScreenDuplicateNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Scholarship Opportunities -->
@@ -231,8 +249,6 @@
                                                 </option>
                                                 <option value="ABM">ABM (Accountancy, Business, Management)</option>
                                                 <option value="HUMSS">HUMSS (Humanities and Social Sciences)</option>
-                                                <option value="GAS">GAS (General Academic Strand)</option>
-                                                <option value="TVL">TVL (Technical-Vocational-Livelihood)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1085,6 +1101,14 @@
             // Initialize FAQ functionality
             initializeFAQ();
 
+            // Check for backend duplicate notifications and scroll to them
+            const backendNotification = document.querySelector('.main-screen-duplicate-notification');
+            if (backendNotification) {
+                setTimeout(() => {
+                    backendNotification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
+            }
+
         });
 
         // Tab Functionality
@@ -1637,6 +1661,20 @@
                 }
             }
 
+            // Check for duplicate Student ID
+            const studentIdField = form.querySelector('input[name="student_id"]');
+            if (studentIdField && studentIdField.getAttribute('data-duplicate') === 'true') {
+                showFieldError(studentIdField, 'This Student ID has already been used. Please check the notification above.');
+
+                // Scroll to the main screen notification
+                const notification = document.querySelector('.main-screen-duplicate-notification');
+                if (notification) {
+                    notification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                isValid = false;
+            }
+
             console.log('Final validation result:', isValid);
             return isValid;
         }
@@ -1743,19 +1781,60 @@
                 });
         }
 
-        // Show duplicate warning
+        // Show duplicate warning on main screen (enhanced for all scholarship types)
         function showDuplicateWarning(inputElement, data) {
             removeDuplicateWarning(inputElement);
 
-            const warning = document.createElement('div');
-            warning.className = 'duplicate-warning';
-            warning.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i>
-                This Student ID has already been used for a ${data.scholarship_type} scholarship application on ${data.application_date}.
+            // Show main screen notification
+            showMainScreenDuplicateNotification(data);
+
+            // Still mark the input field as having duplicate
+            inputElement.classList.add('duplicate-error');
+
+            // Prevent form submission
+            inputElement.setAttribute('data-duplicate', 'true');
+        }
+
+        // Show main screen duplicate notification
+        function showMainScreenDuplicateNotification(data) {
+            // Remove any existing main screen notifications
+            removeMainScreenDuplicateNotification();
+
+            // Create main screen notification
+            const notification = document.createElement('div');
+            notification.className = 'main-screen-duplicate-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Duplicate Student ID Detected!</strong><br>
+                        This Student ID has already been used for a <strong>${data.scholarship_type}</strong> ${data.record_type || 'application'} on ${data.application_date}.<br>
+                        Status: <span class="status-badge">${data.status}</span><br>
+                        ${data.found_in === 'grantees' ? '<span class="grantee-notice">This student is already an approved scholarship grantee.</span><br>' : ''}
+                        <span class="warning-note">Each student can only submit ONE scholarship application. Multiple applications with the same Student ID are not allowed.</span>
+                    </div>
+                    <button class="notification-close" onclick="removeMainScreenDuplicateNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             `;
 
-            inputElement.parentNode.appendChild(warning);
-            inputElement.classList.add('duplicate-error');
+            // Insert notification at the top of the main content area
+            const mainContent = document.querySelector('.main-content') || document.querySelector('.container') || document.body;
+            mainContent.insertBefore(notification, mainContent.firstChild);
+
+            // Auto-scroll to show the notification
+            notification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Remove main screen duplicate notification
+        function removeMainScreenDuplicateNotification() {
+            const existingNotification = document.querySelector('.main-screen-duplicate-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
         }
 
         // Remove duplicate warning
@@ -1764,7 +1843,12 @@
             if (existingWarning) {
                 existingWarning.remove();
             }
+
+            // Also remove main screen notification
+            removeMainScreenDuplicateNotification();
+
             inputElement.classList.remove('duplicate-error');
+            inputElement.removeAttribute('data-duplicate');
         }
 
 

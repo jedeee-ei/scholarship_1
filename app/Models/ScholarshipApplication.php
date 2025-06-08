@@ -34,6 +34,7 @@ class ScholarshipApplication extends Model
 
         //PL and DL
         'gwa',
+        'subject_grades',
         'semester',
         'academic_year',
 
@@ -68,6 +69,7 @@ class ScholarshipApplication extends Model
 
     protected $casts = [
         'documents' => 'array',
+        'subject_grades' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

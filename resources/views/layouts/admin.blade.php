@@ -108,6 +108,9 @@
     <!-- Notification Component -->
     @include('components.notification')
 
+    <!-- Preload jsPDF for faster PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <!-- Base JavaScript -->
     <script>
         // Initialize navigation to ensure proper link behavior

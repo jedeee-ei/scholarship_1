@@ -4,6 +4,162 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/application-detail.css') }}">
+    <style>
+        /* Subjects and Grades Styles */
+        .subjects-grades-container {
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .subjects-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            background-color: #1e5631;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .subjects-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+
+        .subject-row:last-child {
+            border-bottom: none;
+        }
+
+        .subject-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .subject-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .subject-code {
+            font-weight: bold;
+            color: #1e5631;
+            font-size: 14px;
+        }
+
+        .subject-title {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .subject-grade {
+            text-align: center;
+        }
+
+        .grade-display {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            background-color: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .grade-display.has-grade {
+            background-color: #e8f5e8;
+            color: #1e5631;
+            font-weight: bold;
+            border-color: #1e5631;
+        }
+
+        .grade-display.no-grade {
+            background-color: #f8f9fa;
+            color: #999;
+        }
+
+        .subject-units {
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .gwa-summary {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 2px solid #1e5631;
+        }
+
+        .gwa-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .gwa-row:last-child {
+            border-bottom: none;
+        }
+
+        .gwa-final {
+            background-color: #1e5631;
+            color: white;
+            padding: 12px 15px;
+            margin: 10px -15px -15px -15px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .gwa-label {
+            font-weight: 500;
+        }
+
+        .gwa-value {
+            font-weight: bold;
+            color: #1e5631;
+        }
+
+        .gwa-final .gwa-value {
+            color: white;
+        }
+
+        .loading-subjects, .no-subjects-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .loading-subjects i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1e5631;
+        }
+
+        .no-subjects-message p {
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+
+        .no-subjects-message small {
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
 @endpush
 
 @section('breadcrumbs')
@@ -212,6 +368,44 @@
                         <div class="detail-group">
                             <div class="detail-label">Employee Position</div>
                             <div class="detail-value">{{ $application->employee_position ?? 'N/A' }}</div>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($application->scholarship_type == 'academic')
+                    <!-- Academic Performance Section -->
+                    <div class="detail-section">
+                        <h3 class="section-title"><i class="fas fa-chart-line"></i> Academic Performance - Subjects and Grades</h3>
+
+                        <div class="subjects-grades-container">
+                            <div class="subjects-header">
+                                <div class="subject-code-header">Subject Code & Course Title</div>
+                                <div class="grades-header">Grades</div>
+                                <div class="units-header">Units</div>
+                            </div>
+
+                            <div class="subjects-list" id="admin-subjects-list">
+                                <!-- Subjects will be loaded here -->
+                                <div class="loading-subjects">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading subjects...</p>
+                                </div>
+                            </div>
+
+                            <div class="gwa-summary">
+                                <div class="gwa-row">
+                                    <div class="gwa-label">Total Units:</div>
+                                    <div class="gwa-value" id="admin-total-units">-</div>
+                                </div>
+                                <div class="gwa-row">
+                                    <div class="gwa-label">Total Grade Points:</div>
+                                    <div class="gwa-value" id="admin-total-grade-points">-</div>
+                                </div>
+                                <div class="gwa-row gwa-final">
+                                    <div class="gwa-label"><strong>GWA (General Weighted Average):</strong></div>
+                                    <div class="gwa-value"><strong>{{ $application->gwa ?? 'N/A' }}</strong></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -616,6 +810,11 @@
                     e.preventDefault();
                 }
             });
+
+            // Load subjects for academic scholarship
+            @if ($application->scholarship_type == 'academic')
+                loadAcademicSubjects();
+            @endif
         });
 
         // Document Modal Functions
@@ -682,5 +881,111 @@
                 closeDocumentModal();
             }
         });
+
+        // Load subjects for academic scholarship
+        async function loadAcademicSubjects() {
+            const course = '{{ $application->course }}';
+            const yearLevel = '{{ $application->year_level }}';
+            const semester = '{{ $application->semester }}';
+            const subjectsList = document.getElementById('admin-subjects-list');
+
+            if (!course || !yearLevel || !semester) {
+                subjectsList.innerHTML = `
+                    <div class="no-subjects-message">
+                        <p>Incomplete academic information. Cannot load subjects.</p>
+                        <small>Course: ${course || 'Not specified'}, Year: ${yearLevel || 'Not specified'}, Semester: ${semester || 'Not specified'}</small>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                // Convert year level to number for API
+                const yearLevelNumber = parseInt(yearLevel.replace(/\D/g, ''));
+
+                const response = await fetch(`/api/scholarship/subjects/${encodeURIComponent(course)}/${yearLevelNumber}/${encodeURIComponent(semester)}`);
+                const data = await response.json();
+
+                if (response.ok && data.subjects && data.subjects.length > 0) {
+                    displayAcademicSubjects(data.subjects);
+                } else {
+                    subjectsList.innerHTML = `
+                        <div class="no-subjects-message">
+                            <p>No subjects found for ${course} - ${yearLevel} - ${semester}</p>
+                            <small>This may indicate that subjects haven't been configured for this course yet.</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+                subjectsList.innerHTML = `
+                    <div class="no-subjects-message">
+                        <p>Error loading subjects for this course.</p>
+                        <small>Please check the console for more details.</small>
+                    </div>
+                `;
+            }
+        }
+
+        function displayAcademicSubjects(subjects) {
+            const subjectsList = document.getElementById('admin-subjects-list');
+            const totalUnitsElement = document.getElementById('admin-total-units');
+            const totalGradePointsElement = document.getElementById('admin-total-grade-points');
+
+            // Get submitted grades from the application
+            const submittedGrades = @json($application->subject_grades ?? []);
+
+            let subjectsHTML = '';
+            let totalUnits = 0;
+            let totalGradePoints = 0;
+            let hasGrades = Object.keys(submittedGrades).length > 0;
+
+            subjects.forEach((subject, index) => {
+                totalUnits += subject.units;
+
+                // Get the grade for this subject if it exists
+                const grade = submittedGrades[subject.code] || 0;
+                const gradeValue = grade > 0 ? grade.toFixed(2) : '0.00';
+                const gradeClass = grade > 0 ? 'grade-display has-grade' : 'grade-display no-grade';
+
+                // Calculate grade points for this subject
+                if (grade > 0) {
+                    totalGradePoints += grade * subject.units;
+                }
+
+                subjectsHTML += `
+                    <div class="subject-row">
+                        <div class="subject-info">
+                            <div class="subject-code">${subject.code}</div>
+                            <div class="subject-title">${subject.title}</div>
+                        </div>
+                        <div class="subject-grade">
+                            <input type="number"
+                                   value="${gradeValue}"
+                                   min="1.00"
+                                   max="5.00"
+                                   step="0.01"
+                                   readonly
+                                   class="${gradeClass}"
+                                   title="${grade > 0 ? 'Grade: ' + gradeValue : 'No grade submitted'}">
+                        </div>
+                        <div class="subject-units">${subject.units}</div>
+                    </div>
+                `;
+            });
+
+            subjectsList.innerHTML = subjectsHTML;
+            totalUnitsElement.textContent = totalUnits;
+
+            // Display actual calculated grade points or estimated based on GWA
+            if (hasGrades && totalGradePoints > 0) {
+                totalGradePointsElement.textContent = totalGradePoints.toFixed(2);
+            } else {
+                // Calculate estimated grade points based on GWA if no individual grades
+                const gwa = parseFloat('{{ $application->gwa }}') || 0;
+                const estimatedGradePoints = (gwa * totalUnits).toFixed(2);
+                totalGradePointsElement.textContent = estimatedGradePoints + ' (estimated)';
+            }
+        }
     </script>
 @endpush

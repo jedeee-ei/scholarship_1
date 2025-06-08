@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 
 use App\Models\ScholarshipApplication;
+use App\Models\Grantee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
@@ -33,33 +34,42 @@ class ScholarshipController extends Controller
             'documents.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120' // 5MB max per file
         ]);
 
-        // Enhanced duplicate checking with specific scholarship type validation
-        $existingApplication = ScholarshipApplication::where('student_id', $request->student_id)
-            ->where('scholarship_type', $request->scholarship_type)
-            ->first();
+        // Enhanced duplicate checking across ALL scholarship types AND grantees
+        $existingApplication = ScholarshipApplication::where('student_id', $request->student_id)->first();
+        $existingGrantee = Grantee::where('student_id', $request->student_id)->first();
 
-        if ($existingApplication) {
-            Log::warning('Duplicate student ID for same scholarship type detected', [
+        if ($existingApplication || $existingGrantee) {
+            // Determine which record to use for the error message
+            $existingRecord = $existingApplication ?: $existingGrantee;
+            Log::warning('Duplicate student ID detected across all scholarship types and grantees', [
                 'student_id' => $request->student_id,
-                'scholarship_type' => $request->scholarship_type,
-                'existing_application_id' => $existingApplication->application_id,
-                'existing_created_at' => $existingApplication->created_at,
-                'existing_status' => $existingApplication->status
+                'new_scholarship_type' => $request->scholarship_type,
+                'existing_scholarship_type' => $existingRecord->scholarship_type,
+                'existing_id' => $existingApplication ? $existingApplication->application_id : $existingRecord->grantee_id,
+                'existing_created_at' => $existingRecord->created_at,
+                'existing_status' => $existingRecord->status,
+                'found_in_table' => $existingApplication ? 'scholarship_applications' : 'grantees'
             ]);
 
             $scholarshipTypeNames = [
                 'ched' => 'CHED Scholarship',
                 'academic' => 'Academic Scholarship',
-                'employees' => 'Employee\'s Scholarship'
+                'presidents' => 'President\'s Lister Scholarship',
+                'institutional' => 'Institutional Scholarship',
+                'employees' => 'Employee\'s Scholarship',
+                'private' => 'Private Scholarship'
             ];
 
-            $scholarshipName = $scholarshipTypeNames[$request->scholarship_type] ?? ucfirst($request->scholarship_type);
+            $existingScholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);
+            $recordType = $existingApplication ? 'application' : 'scholarship record (approved grantee)';
+            $recordDate = $existingApplication ?
+                $existingApplication->created_at->format('M d, Y') :
+                ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
 
             return back()->withErrors([
-                'student_id' => "This Student ID has already been used for a {$scholarshipName} application on " .
-                    $existingApplication->created_at->format('M d, Y') . ". " .
-                    "Status: {$existingApplication->status}. " .
-                    "Each student can only apply once per scholarship type."
+                'student_id' => "This Student ID ({$request->student_id}) has already been used for a {$existingScholarshipName} {$recordType} on {$recordDate}. " .
+                    "Status: {$existingRecord->status}. " .
+                    "Each student can only submit ONE scholarship application. Multiple applications with the same Student ID are not allowed."
             ])->withInput();
         }
 
@@ -132,6 +142,25 @@ class ScholarshipController extends Controller
             if ($request->has($formField)) {
                 $application->$dbField = $request->$formField;
                 Log::info("Setting {$dbField} = " . $request->$formField);
+            }
+        }
+
+        // Handle subject grades for academic scholarships
+        if ($request->scholarship_type == 'academic' && $request->has('grades')) {
+            $grades = $request->input('grades');
+            if (is_array($grades) && !empty($grades)) {
+                // Filter out empty grades and convert to proper format
+                $subjectGrades = [];
+                foreach ($grades as $subjectCode => $grade) {
+                    if (!empty($grade) && is_numeric($grade)) {
+                        $subjectGrades[$subjectCode] = floatval($grade);
+                    }
+                }
+
+                if (!empty($subjectGrades)) {
+                    $application->subject_grades = $subjectGrades;
+                    Log::info("Subject grades stored:", $subjectGrades);
+                }
             }
         }
 
@@ -225,16 +254,38 @@ class ScholarshipController extends Controller
 
         $studentId = $request->input('student_id');
 
-        // Check if this student ID already exists in scholarship applications
+        // Check if this student ID already exists in scholarship applications OR grantees (across all types)
         $existingApplication = ScholarshipApplication::where('student_id', $studentId)->first();
+        $existingGrantee = Grantee::where('student_id', $studentId)->first();
 
-        if ($existingApplication) {
+        if ($existingApplication || $existingGrantee) {
+            // Determine which record to use for the response
+            $existingRecord = $existingApplication ?: $existingGrantee;
+            $scholarshipTypeNames = [
+                'ched' => 'CHED Scholarship',
+                'academic' => 'Academic Scholarship',
+                'presidents' => 'President\'s Lister Scholarship',
+                'institutional' => 'Institutional Scholarship',
+                'employees' => 'Employee\'s Scholarship',
+                'private' => 'Private Scholarship'
+            ];
+
+            $scholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);
+            $recordType = $existingApplication ? 'application' : 'scholarship (approved grantee)';
+            $recordDate = $existingApplication ?
+                $existingApplication->created_at->format('M d, Y') :
+                ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
+            $recordId = $existingApplication ? $existingApplication->application_id : $existingGrantee->grantee_id;
+
             return response()->json([
                 'exists' => true,
-                'scholarship_type' => ucfirst($existingApplication->scholarship_type),
-                'application_date' => $existingApplication->created_at->format('M d, Y'),
-                'application_id' => $existingApplication->application_id,
-                'status' => $existingApplication->status
+                'scholarship_type' => $scholarshipName,
+                'application_date' => $recordDate,
+                'application_id' => $recordId,
+                'status' => $existingRecord->status,
+                'record_type' => $recordType,
+                'found_in' => $existingApplication ? 'applications' : 'grantees',
+                'message' => "This Student ID has already been used for a {$scholarshipName} {$recordType}. Each student can only submit one scholarship application."
             ]);
         }
 

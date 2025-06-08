@@ -1161,13 +1161,6 @@
                             <option value="STEM">Science, Technology, Engineering and Mathematics (STEM)</option>
                             <option value="ABM">Accountancy, Business and Management (ABM)</option>
                             <option value="HUMSS">Humanities and Social Sciences (HUMSS)</option>
-                            <option value="GAS">General Academic Strand (GAS)</option>
-                            <option value="TVL-ICT">Technical-Vocational-Livelihood - Information and Communications Technology (TVL-ICT)</option>
-                            <option value="TVL-HE">Technical-Vocational-Livelihood - Home Economics (TVL-HE)</option>
-                            <option value="TVL-IA">Technical-Vocational-Livelihood - Industrial Arts (TVL-IA)</option>
-                            <option value="TVL-Agri">Technical-Vocational-Livelihood - Agri-Fishery Arts (TVL-Agri)</option>
-                            <option value="Arts and Design">Arts and Design Track</option>
-                            <option value="Sports">Sports Track</option>
                         </select>
                     </div>
                 `;

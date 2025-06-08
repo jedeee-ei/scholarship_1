@@ -31,10 +31,10 @@ class ScholarshipApplicationRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                // Custom rule to check for duplicates within the same scholarship type
-                Rule::unique('scholarship_applications', 'student_id')->where(function ($query) use ($scholarshipType) {
-                    return $query->where('scholarship_type', $scholarshipType);
-                })
+                // Enhanced rule to check for duplicates across ALL scholarship types
+                Rule::unique('scholarship_applications', 'student_id')->ignore($this->route('id')),
+                // Also check grantees table for duplicates
+                Rule::unique('grantees', 'student_id')
             ],
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
@@ -155,7 +155,7 @@ class ScholarshipApplicationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student_id.unique' => 'This Student ID has already been used for this scholarship type. Each student can only apply once per scholarship type.',
+            'student_id.unique' => 'This Student ID has already been used for a scholarship application or is already an approved grantee. Each student can only submit one scholarship application.',
             'student_id.required' => 'Student ID is required.',
             'first_name.required' => 'First name is required.',
             'last_name.required' => 'Last name is required.',

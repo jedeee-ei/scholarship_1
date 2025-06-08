@@ -27,11 +27,14 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Get statistics for dashboard
+        // Get statistics for dashboard using real data
+        $totalGrantees = Grantee::count();
+        $totalApplications = ScholarshipApplication::count();
+
         $stats = [
-            'total' => ScholarshipApplication::count(),
+            'total' => $totalGrantees + $totalApplications, // Total includes both grantees and pending applications
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
-            'approved' => ScholarshipApplication::where('status', 'Approved')->count(),
+            'approved' => Grantee::where('status', 'Active')->count(), // Use grantees for approved
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
         ];
 
@@ -40,16 +43,18 @@ class DashboardController extends Controller
         $previousMonth = now()->subMonth()->month;
 
         $currentMonthStats = [
-            'total' => ScholarshipApplication::whereMonth('created_at', $currentMonth)->count(),
+            'total' => Grantee::whereMonth('approved_date', $currentMonth)->count() +
+                      ScholarshipApplication::whereMonth('created_at', $currentMonth)->count(),
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $currentMonth)->count(),
-            'approved' => ScholarshipApplication::where('status', 'Approved')->whereMonth('created_at', $currentMonth)->count(),
+            'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $currentMonth)->count(),
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $currentMonth)->count(),
         ];
 
         $previousMonthStats = [
-            'total' => ScholarshipApplication::whereMonth('created_at', $previousMonth)->count(),
+            'total' => Grantee::whereMonth('approved_date', $previousMonth)->count() +
+                      ScholarshipApplication::whereMonth('created_at', $previousMonth)->count(),
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $previousMonth)->count(),
-            'approved' => ScholarshipApplication::where('status', 'Approved')->whereMonth('created_at', $previousMonth)->count(),
+            'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $previousMonth)->count(),
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $previousMonth)->count(),
         ];
 
@@ -63,16 +68,16 @@ class DashboardController extends Controller
             }
         }
 
-        // Get recent applications
+        // Get recent applications (pending ones)
         $recentApplications = ScholarshipApplication::orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
-        // Get all applications for the applications section
+        // Get all applications for the applications section (pending ones)
         $allApplications = ScholarshipApplication::orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Get chart data
+        // Get chart data using real grantee data
         $chartData = $this->getChartData();
 
         return view('admin.dashboard', [
@@ -87,57 +92,80 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get chart data for dashboard
+     * Get chart data for dashboard using real grantee data
      */
     private function getChartData()
     {
-        // Applications over time (last 6 months)
+        // Grantee approvals over time (last 6 months) - using approved_date
         $months = [];
         $applicationCounts = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $months[] = $date->format('M');
-            $applicationCounts[] = ScholarshipApplication::whereYear('created_at', $date->year)
+            // Count grantees approved in this month + any pending applications created
+            $granteeCount = Grantee::whereYear('approved_date', $date->year)
+                ->whereMonth('approved_date', $date->month)
+                ->count();
+            $pendingCount = ScholarshipApplication::whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
                 ->count();
+            $applicationCounts[] = $granteeCount + $pendingCount;
         }
 
-        // GWA distribution (grade ranges)
+        // GWA distribution using grantee data (use current_gwa or gwa field)
         $gwaRanges = [
-            '1.00-1.25' => ScholarshipApplication::whereNotNull('gwa')
-                ->where('gwa', '>=', 1.00)
-                ->where('gwa', '<=', 1.25)
-                ->count(),
-            '1.26-1.50' => ScholarshipApplication::whereNotNull('gwa')
-                ->where('gwa', '>=', 1.26)
-                ->where('gwa', '<=', 1.50)
-                ->count(),
-            '1.51-1.75' => ScholarshipApplication::whereNotNull('gwa')
-                ->where('gwa', '>=', 1.51)
-                ->where('gwa', '<=', 1.75)
-                ->count(),
-            '1.76-2.00' => ScholarshipApplication::whereNotNull('gwa')
-                ->where('gwa', '>=', 1.76)
-                ->where('gwa', '<=', 2.00)
-                ->count(),
-            '2.01+' => ScholarshipApplication::whereNotNull('gwa')
-                ->where('gwa', '>', 2.00)
-                ->count(),
+            '1.00-1.25' => Grantee::where(function($query) {
+                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.00)->where('gwa', '<=', 1.25)
+                          ->orWhere(function($q) {
+                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.00)->where('current_gwa', '<=', 1.25);
+                          });
+                })->count(),
+            '1.26-1.50' => Grantee::where(function($query) {
+                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.26)->where('gwa', '<=', 1.50)
+                          ->orWhere(function($q) {
+                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.26)->where('current_gwa', '<=', 1.50);
+                          });
+                })->count(),
+            '1.51-1.75' => Grantee::where(function($query) {
+                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.51)->where('gwa', '<=', 1.75)
+                          ->orWhere(function($q) {
+                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.51)->where('current_gwa', '<=', 1.75);
+                          });
+                })->count(),
+            '1.76-2.00' => Grantee::where(function($query) {
+                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.76)->where('gwa', '<=', 2.00)
+                          ->orWhere(function($q) {
+                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.76)->where('current_gwa', '<=', 2.00);
+                          });
+                })->count(),
+            '2.01+' => Grantee::where(function($query) {
+                    $query->whereNotNull('gwa')->where('gwa', '>', 2.00)
+                          ->orWhere(function($q) {
+                              $q->whereNotNull('current_gwa')->where('current_gwa', '>', 2.00);
+                          });
+                })->count(),
         ];
 
-        // Status distribution
+        // Status distribution using real data
         $statusDistribution = [
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
             'under_review' => ScholarshipApplication::where('status', 'Under Committee Review')->count(),
-            'approved' => ScholarshipApplication::where('status', 'Approved')->count(),
+            'approved' => Grantee::where('status', 'Active')->count(), // Use grantees for approved
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
         ];
 
-        // Department distribution
-        $departmentDistribution = ScholarshipApplication::select('department', DB::raw('count(*) as count'))
+        // Department distribution using grantee data
+        $departmentDistribution = Grantee::select('department', DB::raw('count(*) as count'))
+            ->whereNotNull('department')
             ->groupBy('department')
             ->pluck('count', 'department')
+            ->toArray();
+
+        // Scholarship type distribution using grantee data
+        $scholarshipTypeDistribution = Grantee::select('scholarship_type', DB::raw('count(*) as count'))
+            ->groupBy('scholarship_type')
+            ->pluck('count', 'scholarship_type')
             ->toArray();
 
         return [
@@ -146,6 +174,7 @@ class DashboardController extends Controller
             'gwaRanges' => $gwaRanges,
             'statusDistribution' => $statusDistribution,
             'departmentDistribution' => $departmentDistribution,
+            'scholarshipTypeDistribution' => $scholarshipTypeDistribution,
         ];
     }
 
@@ -158,33 +187,48 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get analytics summary for dashboard widgets
+     * Get analytics summary for dashboard widgets using real data
      */
     public function getAnalyticsSummary()
     {
+        $totalGrantees = Grantee::count();
         $totalApplications = ScholarshipApplication::count();
-        $thisMonth = ScholarshipApplication::whereMonth('created_at', now()->month)->count();
-        $lastMonth = ScholarshipApplication::whereMonth('created_at', now()->subMonth()->month)->count();
+        $totalAll = $totalGrantees + $totalApplications;
+
+        $thisMonth = Grantee::whereMonth('approved_date', now()->month)->count() +
+                    ScholarshipApplication::whereMonth('created_at', now()->month)->count();
+        $lastMonth = Grantee::whereMonth('approved_date', now()->subMonth()->month)->count() +
+                    ScholarshipApplication::whereMonth('created_at', now()->subMonth()->month)->count();
 
         $monthlyGrowth = $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
 
-        $topCourse = ScholarshipApplication::select('course', DB::raw('count(*) as count'))
+        // Get top course from grantees (real data)
+        $topCourse = Grantee::select('course', DB::raw('count(*) as count'))
+            ->whereNotNull('course')
             ->groupBy('course')
             ->orderBy('count', 'desc')
             ->first();
 
-        $averageGwa = ScholarshipApplication::whereNotNull('gwa')
-            ->where('gwa', '>', 0)
-            ->avg('gwa');
+        // Get average GWA from grantees
+        $averageGwa = Grantee::where(function($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>', 0)
+                      ->orWhere(function($q) {
+                          $q->whereNotNull('current_gwa')->where('current_gwa', '>', 0);
+                      });
+            })
+            ->selectRaw('AVG(COALESCE(NULLIF(current_gwa, 0), NULLIF(gwa, 0))) as avg_gwa')
+            ->value('avg_gwa');
+
+        // Calculate approval rate (grantees vs total)
+        $approvalRate = $totalAll > 0 ? round(($totalGrantees / $totalAll) * 100, 1) : 0;
 
         return response()->json([
-            'total_applications' => $totalApplications,
+            'total_applications' => $totalAll,
             'monthly_growth' => round($monthlyGrowth, 1),
             'top_course' => $topCourse ? $topCourse->course : 'N/A',
             'top_course_count' => $topCourse ? $topCourse->count : 0,
             'average_gwa' => $averageGwa ? round($averageGwa, 2) : 0,
-            'approval_rate' => $totalApplications > 0 ?
-                round((ScholarshipApplication::where('status', 'Approved')->count() / $totalApplications) * 100, 1) : 0
+            'approval_rate' => $approvalRate
         ]);
     }
 
@@ -385,21 +429,713 @@ class DashboardController extends Controller
             'end_date' => 'nullable|date'
         ]);
 
-        // Generate the actual report
-        return response()->json([
-            'success' => true,
-            'message' => 'Report generated successfully',
-            'download_url' => '/downloads/report_' . time() . '.' . $request->format
+        try {
+            // Get report data
+            $reportData = $this->getReportData($request);
+
+            // Debug logging
+            logger('Report generation request:', [
+                'report_type' => $request->report_type,
+                'date_range' => $request->date_range,
+                'format' => $request->format,
+                'data_count' => $reportData->count()
+            ]);
+
+            // Check if we have data
+            if ($reportData->isEmpty()) {
+                // If no data for specific filters, try getting all data
+                $allData = ScholarshipApplication::all();
+                logger('No filtered data found. Total applications in database: ' . $allData->count());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No data found for the selected criteria. Total applications in database: ' . $allData->count() . '. Please try different filters or select "This Year" for date range.'
+                ], 404);
+            }
+
+            // Generate report based on format
+            switch ($request->format) {
+                case 'csv':
+                    return $this->generateCSVReport($reportData, $request->report_type);
+                case 'excel':
+                    return $this->generateExcelReport($reportData, $request->report_type);
+                case 'pdf':
+                    $includeCharts = $request->get('include_charts', 'yes') === 'yes';
+                    return $this->generatePDFReport($reportData, $request->report_type, $includeCharts);
+                default:
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unsupported format'
+                    ], 400);
+            }
+        } catch (\Exception $e) {
+            logger('Report generation error: ' . $e->getMessage());
+            logger('Request data: ' . json_encode($request->all()));
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating report: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get report data based on request parameters
+     */
+    private function getReportData($request)
+    {
+        // Use grantees table as primary data source since that's where the real data is
+        $query = Grantee::query();
+
+        // Apply date range filter using approved_date
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('approved_date', [$request->start_date, $request->end_date]);
+        } else {
+            switch ($request->date_range) {
+                case 'today':
+                    $query->whereDate('approved_date', now()->toDateString());
+                    break;
+                case 'week':
+                    $query->whereBetween('approved_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereMonth('approved_date', now()->month)
+                          ->whereYear('approved_date', now()->year);
+                    break;
+                case 'quarter':
+                    $startOfQuarter = now()->startOfQuarter();
+                    $endOfQuarter = now()->endOfQuarter();
+                    $query->whereBetween('approved_date', [$startOfQuarter, $endOfQuarter]);
+                    break;
+                case 'year':
+                    $query->whereYear('approved_date', now()->year);
+                    break;
+                // Legacy support for old date range values
+                case 'this_month':
+                    $query->whereMonth('approved_date', now()->month)
+                          ->whereYear('approved_date', now()->year);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('approved_date', now()->subMonth()->month)
+                          ->whereYear('approved_date', now()->subMonth()->year);
+                    break;
+                case 'this_year':
+                    $query->whereYear('approved_date', now()->year);
+                    break;
+                case 'last_year':
+                    $query->whereYear('approved_date', now()->subYear()->year);
+                    break;
+            }
+        }
+
+        // Apply report type specific filters
+        switch ($request->report_type) {
+            case 'application_summary':
+                // Include all grantees for summary
+                break;
+            case 'approved_applications':
+            case 'grantee_list':
+                // Use grantees table for approved applications
+                $query->where('status', 'Active');
+                break;
+            case 'ched_applications':
+                $query->where('scholarship_type', 'ched');
+                break;
+            case 'academic_applications':
+                $query->where('scholarship_type', 'academic');
+                break;
+            case 'benefactor_summary':
+                // Include all grantees for benefactor summary
+                break;
+        }
+
+        return $query->orderBy('approved_date', 'desc')->get();
+    }
+
+    /**
+     * Generate CSV report
+     */
+    private function generateCSVReport($data, $reportType)
+    {
+        $filename = $reportType . '_report_' . date('Y-m-d_H-i-s') . '.csv';
+
+        return response()->streamDownload(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($handle, [
+                'Application ID',
+                'Student ID',
+                'Full Name',
+                'Scholarship Type',
+                'Status',
+                'Department',
+                'Course',
+                'Year Level',
+                'GWA',
+                'Email',
+                'Contact Number',
+                'Application Date'
+            ]);
+
+            // Add data rows
+            foreach ($data as $record) {
+                // Handle both grantee and application data structures
+                if (isset($record->grantee_id)) {
+                    // This is grantee data
+                    fputcsv($handle, [
+                        $record->grantee_id,
+                        $record->student_id,
+                        trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        ucfirst($record->scholarship_type),
+                        $record->status,
+                        $record->department ?: 'N/A',
+                        $record->course ?: 'N/A',
+                        $record->year_level ?: 'N/A',
+                        $record->gwa ?: $record->current_gwa ?: 'N/A',
+                        $record->email ?: 'N/A',
+                        $record->contact_number ?: 'N/A',
+                        $record->approved_date ? \Carbon\Carbon::parse($record->approved_date)->format('Y-m-d H:i:s') : $record->created_at->format('Y-m-d H:i:s')
+                    ]);
+                } else {
+                    // This is application data (for pending/rejected)
+                    fputcsv($handle, [
+                        $record->application_id,
+                        $record->student_id,
+                        trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        ucfirst($record->scholarship_type),
+                        $record->status,
+                        $record->department ?: 'N/A',
+                        $record->course ?: 'N/A',
+                        $record->year_level ?: 'N/A',
+                        $record->gwa ?: 'N/A',
+                        $record->email ?: 'N/A',
+                        $record->contact_number ?: 'N/A',
+                        $record->created_at->format('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
         ]);
+    }
+
+    /**
+     * Generate Excel report (simplified version)
+     */
+    private function generateExcelReport($data, $reportType)
+    {
+        // Generate CSV file with .csv extension for Excel compatibility
+        $filename = $reportType . '_report_' . date('Y-m-d_H-i-s') . '.csv';
+
+        return response()->streamDownload(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+            // Add headers
+            fputcsv($handle, [
+                'Application ID',
+                'Student ID',
+                'Full Name',
+                'Scholarship Type',
+                'Status',
+                'Department',
+                'Course',
+                'Year Level',
+                'GWA',
+                'Email',
+                'Contact Number',
+                'Application Date'
+            ]);
+
+            // Add data rows
+            foreach ($data as $record) {
+                // Handle both grantee and application data structures
+                if (isset($record->grantee_id)) {
+                    // This is grantee data
+                    fputcsv($handle, [
+                        $record->grantee_id,
+                        $record->student_id,
+                        trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        ucfirst($record->scholarship_type),
+                        $record->status,
+                        $record->department ?: 'N/A',
+                        $record->course ?: 'N/A',
+                        $record->year_level ?: 'N/A',
+                        $record->gwa ?: $record->current_gwa ?: 'N/A',
+                        $record->email ?: 'N/A',
+                        $record->contact_number ?: 'N/A',
+                        $record->approved_date ? \Carbon\Carbon::parse($record->approved_date)->format('Y-m-d H:i:s') : $record->created_at->format('Y-m-d H:i:s')
+                    ]);
+                } else {
+                    // This is application data (for pending/rejected)
+                    fputcsv($handle, [
+                        $record->application_id,
+                        $record->student_id,
+                        trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        ucfirst($record->scholarship_type),
+                        $record->status,
+                        $record->department ?: 'N/A',
+                        $record->course ?: 'N/A',
+                        $record->year_level ?: 'N/A',
+                        $record->gwa ?: 'N/A',
+                        $record->email ?: 'N/A',
+                        $record->contact_number ?: 'N/A',
+                        $record->created_at->format('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ]);
+    }
+
+    /**
+     * Generate PDF report with charts and data
+     */
+    private function generatePDFReport($data, $reportType, $includeCharts = true)
+    {
+        try {
+            // Prepare data for PDF
+            $title = ucwords(str_replace('_', ' ', $reportType)) . ' Report';
+            $subtitle = 'Scholarship Management System';
+            $date = now()->format('F j, Y \a\t g:i A');
+
+            // Transform data for PDF template
+            $pdfData = $data->map(function($record) {
+                if (isset($record->grantee_id)) {
+                    // This is grantee data
+                    return [
+                        'id' => $record->grantee_id,
+                        'student_id' => $record->student_id,
+                        'full_name' => trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        'scholarship_type' => $record->scholarship_type,
+                        'status' => $record->status,
+                        'department' => $record->department ?: 'N/A',
+                        'course' => $record->course ?: 'N/A',
+                        'gwa' => $record->gwa ?: $record->current_gwa ?: 'N/A',
+                        'date' => $record->approved_date ? \Carbon\Carbon::parse($record->approved_date)->format('Y-m-d') : $record->created_at->format('Y-m-d')
+                    ];
+                } else {
+                    // This is application data
+                    return [
+                        'id' => $record->application_id,
+                        'student_id' => $record->student_id,
+                        'full_name' => trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        'scholarship_type' => $record->scholarship_type,
+                        'status' => $record->status,
+                        'department' => $record->department ?: 'N/A',
+                        'course' => $record->course ?: 'N/A',
+                        'gwa' => $record->gwa ?: 'N/A',
+                        'date' => $record->created_at->format('Y-m-d')
+                    ];
+                }
+            })->toArray();
+
+            // Generate summary statistics
+            $summary = [
+                'total_records' => $data->count(),
+                'scholarship_types' => $data->pluck('scholarship_type')->unique()->count(),
+                'departments' => $data->pluck('department')->filter()->unique()->count(),
+            ];
+
+            // Generate chart data
+            $chartData = [];
+            if ($includeCharts) {
+                $chartData['by_scholarship_type'] = $data->groupBy('scholarship_type')
+                    ->map(function($group) { return $group->count(); })
+                    ->toArray();
+
+                $chartData['by_status'] = $data->groupBy('status')
+                    ->map(function($group) { return $group->count(); })
+                    ->toArray();
+            }
+
+            // Generate HTML content
+            $html = view('admin.reports.pdf-template', [
+                'title' => $title,
+                'subtitle' => $subtitle,
+                'date' => $date,
+                'data' => $pdfData,
+                'summary' => $summary,
+                'chartData' => $chartData,
+                'includeCharts' => $includeCharts
+            ])->render();
+
+            // Create filename
+            $filename = strtolower(str_replace(' ', '_', $title)) . '_' . date('Y-m-d_H-i-s') . '.pdf';
+
+            // For now, return HTML as downloadable file (can be opened in browser and printed as PDF)
+            return response()->streamDownload(function () use ($html) {
+                echo $html;
+            }, str_replace('.pdf', '.html', $filename), [
+                'Content-Type' => 'text/html',
+                'Content-Disposition' => 'attachment; filename="' . str_replace('.pdf', '.html', $filename) . '"'
+            ]);
+
+        } catch (\Exception $e) {
+            // Fallback to simple text format if PDF generation fails
+            return $this->generateSimpleTextReport($data, $reportType);
+        }
+    }
+
+    /**
+     * Generate simple text report as fallback
+     */
+    private function generateSimpleTextReport($data, $reportType)
+    {
+        $filename = $reportType . '_report_' . date('Y-m-d_H-i-s') . '.txt';
+
+        return response()->streamDownload(function () use ($data, $reportType) {
+            $title = ucwords(str_replace('_', ' ', $reportType));
+
+            echo "=".str_repeat("=", 80)."=\n";
+            echo "  {$title}\n";
+            echo "  Generated on: " . date('Y-m-d H:i:s') . "\n";
+            echo "  Total Records: " . count($data) . "\n";
+            echo "=".str_repeat("=", 80)."=\n\n";
+
+            // Summary statistics
+            $statusCounts = $data->groupBy('status')->map->count();
+            $typeCounts = $data->groupBy('scholarship_type')->map->count();
+
+            echo "SUMMARY STATISTICS:\n";
+            echo str_repeat("-", 40) . "\n";
+            echo "By Status:\n";
+            foreach ($statusCounts as $status => $count) {
+                echo "  {$status}: {$count}\n";
+            }
+            echo "\nBy Scholarship Type:\n";
+            foreach ($typeCounts as $type => $count) {
+                echo "  " . ucfirst($type) . ": {$count}\n";
+            }
+            echo "\n" . str_repeat("-", 80) . "\n\n";
+
+            // Detailed data
+            echo "DETAILED APPLICATION DATA:\n";
+            echo str_repeat("-", 80) . "\n";
+
+            foreach ($data as $record) {
+                if (isset($record->grantee_id)) {
+                    echo "Grantee ID: " . $record->grantee_id . "\n";
+                    echo "Student ID: " . $record->student_id . "\n";
+                    echo "Name: " . trim($record->first_name . ' ' . $record->last_name) . "\n";
+                    echo "Scholarship Type: " . ucfirst($record->scholarship_type) . "\n";
+                    echo "Status: " . $record->status . "\n";
+                    echo "Department: " . ($record->department ?: 'N/A') . "\n";
+                    echo "Course: " . ($record->course ?: 'N/A') . "\n";
+                    echo "GWA: " . ($record->gwa ?: $record->current_gwa ?: 'N/A') . "\n";
+                    echo "Date: " . ($record->approved_date ? \Carbon\Carbon::parse($record->approved_date)->format('Y-m-d') : $record->created_at->format('Y-m-d')) . "\n";
+                } else {
+                    echo "Application ID: " . $record->application_id . "\n";
+                    echo "Student ID: " . $record->student_id . "\n";
+                    echo "Name: " . trim($record->first_name . ' ' . $record->last_name) . "\n";
+                    echo "Scholarship Type: " . ucfirst($record->scholarship_type) . "\n";
+                    echo "Status: " . $record->status . "\n";
+                    echo "Department: " . ($record->department ?: 'N/A') . "\n";
+                    echo "Course: " . ($record->course ?: 'N/A') . "\n";
+                    echo "GWA: " . ($record->gwa ?: 'N/A') . "\n";
+                    echo "Date: " . $record->created_at->format('Y-m-d') . "\n";
+                }
+                echo str_repeat("-", 40) . "\n";
+            }
+
+            echo "\nEnd of Report\n";
+
+        }, $filename, [
+            'Content-Type' => 'text/plain',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ]);
+    }
+
+    /**
+     * Generate HTML for PDF report
+     */
+    private function generateReportHTML($data, $reportType)
+    {
+        $title = ucwords(str_replace('_', ' ', $reportType));
+
+        $html = "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>{$title}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .summary { margin-bottom: 20px; }
+                .stat-item { display: inline-block; margin-right: 30px; }
+            </style>
+        </head>
+        <body>
+            <div class='header'>
+                <h1>{$title}</h1>
+                <p>Generated on: " . date('Y-m-d H:i:s') . "</p>
+                <p>Total Records: " . count($data) . "</p>
+            </div>
+
+            <div class='summary'>
+                <h3>Report Summary</h3>";
+
+        // Add summary statistics
+        $statusCounts = $data->groupBy('status')->map->count();
+        $typeCounts = $data->groupBy('scholarship_type')->map->count();
+
+        $html .= "<div class='stat-item'><strong>By Status:</strong><br>";
+        foreach ($statusCounts as $status => $count) {
+            $html .= "{$status}: {$count}<br>";
+        }
+        $html .= "</div>";
+
+        $html .= "<div class='stat-item'><strong>By Type:</strong><br>";
+        foreach ($typeCounts as $type => $count) {
+            $html .= ucfirst($type) . ": {$count}<br>";
+        }
+        $html .= "</div>";
+
+        $html .= "
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Student ID</th>
+                        <th>Full Name</th>
+                        <th>Scholarship Type</th>
+                        <th>Status</th>
+                        <th>Department</th>
+                        <th>Course</th>
+                        <th>GWA</th>
+                        <th>Application Date</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
+        foreach ($data as $application) {
+            $fullName = trim($application->first_name . ' ' . $application->middle_name . ' ' . $application->last_name);
+            $html .= "
+                    <tr>
+                        <td>{$application->application_id}</td>
+                        <td>{$application->student_id}</td>
+                        <td>{$fullName}</td>
+                        <td>" . ucfirst($application->scholarship_type) . "</td>
+                        <td>{$application->status}</td>
+                        <td>{$application->department}</td>
+                        <td>{$application->course}</td>
+                        <td>{$application->gwa}</td>
+                        <td>" . $application->created_at->format('Y-m-d') . "</td>
+                    </tr>";
+        }
+
+        $html .= "
+                </tbody>
+            </table>
+        </body>
+        </html>";
+
+        return $html;
     }
 
     /**
      * Preview report
      */
-    public function previewReport()
+    public function previewReport(Request $request)
     {
-        // Generate a preview of the report
-        return response()->json(['success' => true, 'message' => 'Report preview functionality will be implemented']);
+        $request->validate([
+            'report_type' => 'required|string',
+            'date_range' => 'required|string',
+            'include_charts' => 'nullable|string|in:yes,no',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date'
+        ]);
+
+        try {
+            // Get the actual report data (same as what would be downloaded)
+            $reportData = $this->getReportData($request);
+
+            // Get summary statistics
+            $summaryData = $this->getReportPreviewData($request->report_type, $request->date_range);
+
+            if ($reportData->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No data found for the selected criteria. Please try different filters.'
+                ], 404);
+            }
+
+            // Limit preview to first 10 records for performance
+            $previewRecords = $reportData->take(10)->map(function($record) {
+                // Handle both grantee and application data structures
+                if (isset($record->grantee_id)) {
+                    // This is grantee data
+                    return [
+                        'application_id' => $record->grantee_id,
+                        'student_id' => $record->student_id,
+                        'full_name' => trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        'scholarship_type' => ucfirst($record->scholarship_type),
+                        'status' => $record->status,
+                        'department' => $record->department ?: 'N/A',
+                        'course' => $record->course ?: 'N/A',
+                        'year_level' => $record->year_level ?: 'N/A',
+                        'gwa' => $record->gwa ?: $record->current_gwa ?: 'N/A',
+                        'email' => $record->email ?: 'N/A',
+                        'contact_number' => $record->contact_number ?: 'N/A',
+                        'application_date' => $record->approved_date ? \Carbon\Carbon::parse($record->approved_date)->format('Y-m-d H:i:s') : $record->created_at->format('Y-m-d H:i:s')
+                    ];
+                } else {
+                    // This is application data (for pending/rejected)
+                    return [
+                        'application_id' => $record->application_id,
+                        'student_id' => $record->student_id,
+                        'full_name' => trim($record->first_name . ' ' . $record->middle_name . ' ' . $record->last_name),
+                        'scholarship_type' => ucfirst($record->scholarship_type),
+                        'status' => $record->status,
+                        'department' => $record->department ?: 'N/A',
+                        'course' => $record->course ?: 'N/A',
+                        'year_level' => $record->year_level ?: 'N/A',
+                        'gwa' => $record->gwa ?: 'N/A',
+                        'email' => $record->email ?: 'N/A',
+                        'contact_number' => $record->contact_number ?: 'N/A',
+                        'application_date' => $record->created_at->format('Y-m-d H:i:s')
+                    ];
+                }
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Report preview generated successfully',
+                'data' => [
+                    'summary' => $summaryData,
+                    'total_records' => $reportData->count(),
+                    'preview_records' => $previewRecords,
+                    'showing_records' => min(10, $reportData->count()),
+                    'report_type' => ucwords(str_replace('_', ' ', $request->report_type)),
+                    'date_range' => $request->date_range
+                ]
+            ]);
+        } catch (\Exception $e) {
+            logger('Preview generation error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating preview: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get preview data for reports
+     */
+    private function getReportPreviewData($reportType, $dateRange)
+    {
+        $query = ScholarshipApplication::query();
+
+        // Apply date range filter
+        switch ($dateRange) {
+            case 'today':
+                $query->whereDate('created_at', now()->toDateString());
+                break;
+            case 'week':
+                $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                break;
+            case 'month':
+                $query->whereMonth('created_at', now()->month)
+                      ->whereYear('created_at', now()->year);
+                break;
+            case 'quarter':
+                $startOfQuarter = now()->startOfQuarter();
+                $endOfQuarter = now()->endOfQuarter();
+                $query->whereBetween('created_at', [$startOfQuarter, $endOfQuarter]);
+                break;
+            case 'year':
+                $query->whereYear('created_at', now()->year);
+                break;
+            // Legacy support
+            case 'this_month':
+                $query->whereMonth('created_at', now()->month)
+                      ->whereYear('created_at', now()->year);
+                break;
+            case 'last_month':
+                $query->whereMonth('created_at', now()->subMonth()->month)
+                      ->whereYear('created_at', now()->subMonth()->year);
+                break;
+            case 'this_year':
+                $query->whereYear('created_at', now()->year);
+                break;
+            case 'last_year':
+                $query->whereYear('created_at', now()->subYear()->year);
+                break;
+        }
+
+        // Get data based on report type (simplified to match available options)
+        switch ($reportType) {
+            case 'application_summary':
+                // Use grantees for summary since that's our real data
+                $granteeQuery = Grantee::query();
+                return [
+                    'total_applications' => $granteeQuery->count(),
+                    'approved_applications' => $granteeQuery->where('status', 'Active')->count(),
+                    'by_scholarship_type' => $granteeQuery->groupBy('scholarship_type')
+                        ->selectRaw('scholarship_type, count(*) as count')
+                        ->pluck('count', 'scholarship_type')
+                        ->toArray(),
+                ];
+
+            case 'approved_applications':
+            case 'grantee_list':
+                $approvedQuery = Grantee::where('status', 'Active');
+                return [
+                    'total_approved' => $approvedQuery->count(),
+                    'by_scholarship_type' => $approvedQuery->groupBy('scholarship_type')
+                        ->selectRaw('scholarship_type, count(*) as count')
+                        ->pluck('count', 'scholarship_type')
+                        ->toArray(),
+                ];
+
+            case 'ched_applications':
+                $chedQuery = Grantee::where('scholarship_type', 'ched');
+                return [
+                    'total_ched_applications' => $chedQuery->count(),
+                    'by_status' => $chedQuery->groupBy('status')
+                        ->selectRaw('status, count(*) as count')
+                        ->pluck('count', 'status')
+                        ->toArray(),
+                ];
+
+            case 'academic_applications':
+                $academicQuery = Grantee::where('scholarship_type', 'academic');
+                return [
+                    'total_academic_applications' => $academicQuery->count(),
+                    'by_status' => $academicQuery->groupBy('status')
+                        ->selectRaw('status, count(*) as count')
+                        ->pluck('count', 'status')
+                        ->toArray(),
+                ];
+
+            case 'benefactor_summary':
+                $benefactorQuery = Grantee::query();
+                return [
+                    'total_benefactor_applications' => $benefactorQuery->count(),
+                    'by_scholarship_type' => $benefactorQuery->groupBy('scholarship_type')
+                        ->selectRaw('scholarship_type, count(*) as count')
+                        ->pluck('count', 'scholarship_type')
+                        ->toArray(),
+                ];
+
+            default:
+                return [
+                    'total_records' => Grantee::count(),
+                    'date_range' => $dateRange,
+                    'report_type' => $reportType
+                ];
+        }
     }
 
     /**
@@ -410,14 +1146,56 @@ class DashboardController extends Controller
         $archiveType = $request->get('archive_type', '');
         $archiveYear = $request->get('archive_year', '');
 
-        // Search the archive based on criteria
+        // Mock archive data - in a real implementation, this would search actual files
+        $mockFiles = [
+            [
+                'id' => 'app_2024_01',
+                'name' => 'Applications_Report_2024_January.pdf',
+                'type' => 'Applications',
+                'date' => 'Jan 31, 2024',
+                'size' => '2.1 MB'
+            ],
+            [
+                'id' => 'grantee_2024_01',
+                'name' => 'Grantee_List_2024_January.xlsx',
+                'type' => 'Grantee',
+                'date' => 'Jan 31, 2024',
+                'size' => '1.8 MB'
+            ],
+            [
+                'id' => 'benefactor_2023_12',
+                'name' => 'Benefactor_Summary_2023_December.pdf',
+                'type' => 'Benefactor',
+                'date' => 'Dec 31, 2023',
+                'size' => '3.2 MB'
+            ],
+            [
+                'id' => 'archive_2023_q4',
+                'name' => 'Quarterly_Archive_2023_Q4.zip',
+                'type' => 'Archive',
+                'date' => 'Dec 31, 2023',
+                'size' => '15.7 MB'
+            ]
+        ];
+
+        // Filter by type if specified
+        if ($archiveType) {
+            $mockFiles = array_filter($mockFiles, function($file) use ($archiveType) {
+                return stripos($file['type'], $archiveType) !== false;
+            });
+        }
+
+        // Filter by year if specified
+        if ($archiveYear) {
+            $mockFiles = array_filter($mockFiles, function($file) use ($archiveYear) {
+                return strpos($file['date'], $archiveYear) !== false;
+            });
+        }
+
         return response()->json([
             'success' => true,
-            'search_criteria' => [
-                'type' => $archiveType ?: 'All Types',
-                'year' => $archiveYear ?: 'All Years'
-            ],
-            'data' => []
+            'files' => array_values($mockFiles),
+            'message' => 'Archive search completed'
         ]);
     }
 
@@ -426,8 +1204,36 @@ class DashboardController extends Controller
      */
     public function downloadArchive($fileId)
     {
-        // Serve the actual file
-        return response()->json(['success' => true, 'message' => "Downloading file: {$fileId}"]);
+        // In a real implementation, this would download the actual file
+        // For now, we'll generate a sample file based on the fileId
+
+        $filename = 'archive_' . $fileId . '_' . date('Y-m-d') . '.txt';
+
+        return response()->streamDownload(function () use ($fileId) {
+            echo "Archive File: {$fileId}\n";
+            echo "Downloaded on: " . date('Y-m-d H:i:s') . "\n";
+            echo "This is a sample archive file.\n";
+            echo "In a real implementation, this would be the actual archived data.\n\n";
+
+            // Add some sample data based on file type
+            if (strpos($fileId, 'app_') === 0) {
+                echo "Sample Application Data:\n";
+                echo "Application ID, Student ID, Name, Status\n";
+                echo "APP001, STU001, John Doe, Approved\n";
+                echo "APP002, STU002, Jane Smith, Pending\n";
+            } elseif (strpos($fileId, 'grantee_') === 0) {
+                echo "Sample Grantee Data:\n";
+                echo "Grantee ID, Student ID, Name, Scholarship Type\n";
+                echo "GRA001, STU001, John Doe, CHED\n";
+                echo "GRA002, STU003, Bob Johnson, Academic\n";
+            } else {
+                echo "Sample Archive Data:\n";
+                echo "This archive contains various reports and data files.\n";
+            }
+        }, $filename, [
+            'Content-Type' => 'text/plain',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ]);
     }
 
     /**
@@ -1035,25 +1841,177 @@ class DashboardController extends Controller
      */
     public function reports()
     {
-        // Get report statistics
-        $reportStats = [
-            'total_applications' => ScholarshipApplication::count(),
-            'applications_this_month' => ScholarshipApplication::whereMonth('created_at', now()->month)->count(),
-            'applications_this_year' => ScholarshipApplication::whereYear('created_at', now()->year)->count(),
-            'by_status' => [
-                'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
-                'approved' => ScholarshipApplication::where('status', 'Approved')->count(),
-                'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
-            ],
-            'by_type' => [
-                'ched' => ScholarshipApplication::where('scholarship_type', 'ched')->count(),
-                'academic' => ScholarshipApplication::where('scholarship_type', 'academic')->count(),
-                'employees' => ScholarshipApplication::where('scholarship_type', 'employees')->count(),
-                'private' => ScholarshipApplication::where('scholarship_type', 'private')->count(),
-            ]
-        ];
+        try {
+            // Use grantees as the primary data source since that's where the real data is
+            $totalGrantees = Grantee::count();
+            $totalApplications = ScholarshipApplication::count();
 
-        return view('admin.reports', compact('reportStats'));
+            // Get report statistics from grantees table
+            $reportStats = [
+                'total_applications' => $totalGrantees, // Show grantees as "applications" since they represent processed applications
+                'applications_this_month' => Grantee::whereMonth('approved_date', now()->month)
+                    ->whereYear('approved_date', now()->year)->count(),
+                'applications_this_year' => Grantee::whereYear('approved_date', now()->year)->count(),
+                'by_status' => [
+                    'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
+                    'approved' => Grantee::where('status', 'Active')->count(), // Active grantees are "approved"
+                    'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
+                ],
+                'by_type' => [
+                    'ched' => Grantee::where('scholarship_type', 'ched')->count(),
+                    'academic' => Grantee::where('scholarship_type', 'academic')->count(),
+                    'employees' => Grantee::where('scholarship_type', 'employee')->count(),
+                    'private' => Grantee::where('scholarship_type', 'private')->count(),
+                    'presidents' => Grantee::where('scholarship_type', 'presidents')->count(),
+                    'institutional' => Grantee::where('scholarship_type', 'institutional')->count(),
+                ]
+            ];
+
+            // Debug: Log the statistics
+            logger('Report statistics (using real grantee data):', $reportStats);
+            logger('Total grantees in database: ' . $totalGrantees);
+            logger('Total applications in database: ' . $totalApplications);
+
+            return view('admin.reports', compact('reportStats'));
+        } catch (\Exception $e) {
+            logger('Error in reports method: ' . $e->getMessage());
+
+            // Return default values if there's an error
+            $reportStats = [
+                'total_applications' => 0,
+                'applications_this_month' => 0,
+                'applications_this_year' => 0,
+                'by_status' => [
+                    'pending' => 0,
+                    'approved' => 0,
+                    'rejected' => 0,
+                ],
+                'by_type' => [
+                    'ched' => 0,
+                    'academic' => 0,
+                    'employees' => 0,
+                    'private' => 0,
+                    'presidents' => 0,
+                    'institutional' => 0,
+                ]
+            ];
+
+            return view('admin.reports', compact('reportStats'));
+        }
+    }
+
+    /**
+     * Create sample data for testing
+     */
+    private function createSampleData()
+    {
+        try {
+            $sampleData = [
+                [
+                    'application_id' => 'APP-' . date('Y') . '-001',
+                    'scholarship_type' => 'ched',
+                    'student_id' => '2024-001',
+                    'first_name' => 'Juan',
+                    'last_name' => 'Dela Cruz',
+                    'middle_name' => 'Santos',
+                    'email' => 'juan.delacruz@email.com',
+                    'course' => 'BSIT',
+                    'department' => 'SITE',
+                    'year_level' => '2nd Year',
+                    'gwa' => 1.75,
+                    'semester' => '1st Semester',
+                    'academic_year' => '2024-2025',
+                    'status' => 'Pending Review',
+                    'contact_number' => '09123456789',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'application_id' => 'APP-' . date('Y') . '-002',
+                    'scholarship_type' => 'academic',
+                    'student_id' => '2024-002',
+                    'first_name' => 'Maria',
+                    'last_name' => 'Garcia',
+                    'middle_name' => 'Lopez',
+                    'email' => 'maria.garcia@email.com',
+                    'course' => 'BSCS',
+                    'department' => 'SITE',
+                    'year_level' => '3rd Year',
+                    'gwa' => 1.25,
+                    'semester' => '1st Semester',
+                    'academic_year' => '2024-2025',
+                    'status' => 'Approved',
+                    'contact_number' => '09123456790',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'application_id' => 'APP-' . date('Y') . '-003',
+                    'scholarship_type' => 'presidents',
+                    'student_id' => '2024-003',
+                    'first_name' => 'Jose',
+                    'last_name' => 'Rizal',
+                    'middle_name' => 'Protacio',
+                    'email' => 'jose.rizal@email.com',
+                    'course' => 'BSBA',
+                    'department' => 'SBAHM',
+                    'year_level' => '1st Year',
+                    'gwa' => 1.50,
+                    'semester' => '1st Semester',
+                    'academic_year' => '2024-2025',
+                    'status' => 'Approved',
+                    'contact_number' => '09123456791',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'application_id' => 'APP-' . date('Y') . '-004',
+                    'scholarship_type' => 'institutional',
+                    'student_id' => '2024-004',
+                    'first_name' => 'Ana',
+                    'last_name' => 'Santos',
+                    'middle_name' => 'Cruz',
+                    'email' => 'ana.santos@email.com',
+                    'course' => 'BSN',
+                    'department' => 'SNAHS',
+                    'year_level' => '2nd Year',
+                    'gwa' => 1.80,
+                    'semester' => '1st Semester',
+                    'academic_year' => '2024-2025',
+                    'status' => 'Pending Review',
+                    'contact_number' => '09123456792',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'application_id' => 'APP-' . date('Y') . '-005',
+                    'scholarship_type' => 'employee',
+                    'student_id' => '2024-005',
+                    'first_name' => 'Pedro',
+                    'last_name' => 'Martinez',
+                    'middle_name' => 'Reyes',
+                    'email' => 'pedro.martinez@email.com',
+                    'course' => 'BSED',
+                    'department' => 'SASTE',
+                    'year_level' => '4th Year',
+                    'gwa' => 2.00,
+                    'semester' => '1st Semester',
+                    'academic_year' => '2024-2025',
+                    'status' => 'Rejected',
+                    'contact_number' => '09123456793',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            ];
+
+            foreach ($sampleData as $data) {
+                ScholarshipApplication::create($data);
+            }
+
+            logger('Sample data created successfully');
+        } catch (\Exception $e) {
+            logger('Error creating sample data: ' . $e->getMessage());
+        }
     }
 
     /**
