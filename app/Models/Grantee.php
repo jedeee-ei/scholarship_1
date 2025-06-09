@@ -20,6 +20,7 @@ class Grantee extends Model
         'application_id',
         'scholarship_type',
         'student_id',
+        'government_benefactor_type',
         'last_name',
         'first_name',
         'middle_name',
@@ -35,7 +36,7 @@ class Grantee extends Model
         'semester',
         'academic_year',
 
-        // CHED specific fields
+        // Government specific fields
         'father_last_name',
         'father_first_name',
         'father_middle_name',

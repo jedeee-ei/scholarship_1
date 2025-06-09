@@ -134,7 +134,7 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/announcements.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pages/announcements.css') }}">
 @endpush
 
 @push('scripts')

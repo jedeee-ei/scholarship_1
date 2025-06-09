@@ -63,8 +63,7 @@ class ScholarshipController extends Controller
             $existingScholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);
             $recordType = $existingApplication ? 'application' : 'scholarship record (approved grantee)';
             $recordDate = $existingApplication ?
-                $existingApplication->created_at->format('M d, Y') :
-                ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
+                $existingApplication->created_at->format('M d, Y') : ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
 
             return back()->withErrors([
                 'student_id' => "This Student ID ({$request->student_id}) has already been used for a {$existingScholarshipName} {$recordType} on {$recordDate}. " .
@@ -102,6 +101,7 @@ class ScholarshipController extends Controller
             'sex' => 'sex',
             'birthdate' => 'birthdate',
             'education_stage' => 'education_stage',
+            'government_benefactor_type' => 'government_benefactor_type',
             'department' => 'department',
             'course' => 'course',
             'year_level' => 'year_level',
@@ -206,9 +206,10 @@ class ScholarshipController extends Controller
 
             // Format scholarship type for display
             $scholarshipTypes = [
-                'ched' => 'CHED Scholarship',
+                'government' => 'Government Scholarship',
                 'academic' => 'Academic Scholarship',
-                'employees' => 'Employees Scholar'
+                'employees' => 'Employees Scholar',
+                'private' => 'Private Scholarship'
             ];
 
             session(['scholarship_type' => $scholarshipTypes[$request->scholarship_type] ?? $request->scholarship_type]);
@@ -262,7 +263,7 @@ class ScholarshipController extends Controller
             // Determine which record to use for the response
             $existingRecord = $existingApplication ?: $existingGrantee;
             $scholarshipTypeNames = [
-                'ched' => 'CHED Scholarship',
+                'government' => 'Government Scholarship',
                 'academic' => 'Academic Scholarship',
                 'presidents' => 'President\'s Lister Scholarship',
                 'institutional' => 'Institutional Scholarship',
@@ -273,8 +274,7 @@ class ScholarshipController extends Controller
             $scholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);
             $recordType = $existingApplication ? 'application' : 'scholarship (approved grantee)';
             $recordDate = $existingApplication ?
-                $existingApplication->created_at->format('M d, Y') :
-                ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
+                $existingApplication->created_at->format('M d, Y') : ($existingGrantee->approved_date ? $existingGrantee->approved_date->format('M d, Y') : $existingGrantee->created_at->format('M d, Y'));
             $recordId = $existingApplication ? $existingApplication->application_id : $existingGrantee->grantee_id;
 
             return response()->json([

@@ -21,7 +21,7 @@
                 </select>
                 <select name="type" class="filter-select" onchange="this.form.submit()">
                     <option value="">All Types</option>
-                    <option value="ched" {{ $currentType == 'ched' ? 'selected' : '' }}>CHED Scholarship
+                    <option value="government" {{ $currentType == 'government' ? 'selected' : '' }}>Government Scholarship
                     </option>
                     <option value="presidents" {{ $currentType == 'presidents' ? 'selected' : '' }}>President's
                         Scholarship</option>
@@ -56,8 +56,11 @@
                         <td>{{ $application->first_name }} {{ $application->last_name }}</td>
                         <td>{{ $application->student_id }}</td>
                         <td>
-                            @if ($application->scholarship_type == 'ched')
-                                CHED Scholarship
+                            @if ($application->scholarship_type == 'government')
+                                Government Scholarship
+                                @if ($application->government_benefactor_type)
+                                    <br><small class="text-muted">({{ $application->government_benefactor_type }})</small>
+                                @endif
                             @elseif($application->scholarship_type == 'presidents')
                                 President's Scholarship
                             @elseif($application->scholarship_type == 'employees')

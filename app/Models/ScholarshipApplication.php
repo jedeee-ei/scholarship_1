@@ -19,6 +19,7 @@ class ScholarshipApplication extends Model
         'application_id',
         'scholarship_type',
         'scholarship_subtype',
+        'government_benefactor_type',
         'student_id',
         'last_name',
         'first_name',
@@ -38,7 +39,7 @@ class ScholarshipApplication extends Model
         'semester',
         'academic_year',
 
-        //CHED
+        //Government
         'father_last_name',
         'father_first_name',
         'father_middle_name',

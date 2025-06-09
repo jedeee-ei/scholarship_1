@@ -344,8 +344,8 @@
                                 <div class="application-info">
                                     <div class="application-id-text">{{ $app->application_id }}</div>
                                     <div class="application-meta">
-                                        @if ($app->scholarship_type == 'ched')
-                                            CHED Scholarship
+                                        @if ($app->scholarship_type == 'government')
+                                            Government Scholarship
                                         @elseif($app->scholarship_type == 'presidents')
                                             President's Scholarship
                                         @elseif($app->scholarship_type == 'employees')
@@ -421,8 +421,8 @@
                         <div class="detail-row">
                             <div class="detail-label">Scholarship Type</div>
                             <div class="detail-value">
-                                @if ($application->scholarship_type == 'ched')
-                                    CHED Scholarship
+                                @if ($application->scholarship_type == 'government')
+                                    Government Scholarship
                                 @elseif($application->scholarship_type == 'presidents')
                                     President's Scholarship
                                 @elseif($application->scholarship_type == 'employees')

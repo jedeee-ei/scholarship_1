@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('semester')->nullable();
             $table->string('academic_year')->nullable();
 
-            // CHED specific fields
+            // Government specific fields
             $table->string('father_last_name')->nullable();
             $table->string('father_first_name')->nullable();
             $table->string('father_middle_name')->nullable();

@@ -17,6 +17,7 @@
                 opacity: 0;
                 transform: translateY(-20px) scale(0.95);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
@@ -28,6 +29,7 @@
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
+
             to {
                 opacity: 0;
                 transform: translateY(-20px) scale(0.95);
@@ -39,6 +41,7 @@
                 opacity: 0;
                 transform: translateX(100%) scale(0.8);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0) scale(1);
@@ -50,34 +53,16 @@
                 opacity: 1;
                 transform: translateX(0) scale(1);
             }
+
             to {
                 opacity: 0;
                 transform: translateX(100%) scale(0.8);
             }
         }
 
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
 
-        /* Toast Container */
-        .toast-container {
-            position: fixed !important;
-            top: 20px !important;
-            right: 20px !important;
-            z-index: 10000 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 15px !important;
-            max-width: 400px !important;
-        }
+
+
 
         .toast {
             background: white !important;
@@ -171,8 +156,8 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
             <div class="welcome-text">
-                <div class="welcome-greeting">Welcome, {{ $student->full_name ?? $student->name ?? 'Student' }}!</div>
-                @if($student->student_id)
+                <div class="welcome-greeting">Welcome, {{ $student->full_name ?? ($student->name ?? 'Student') }}!</div>
+                @if ($student->student_id)
                     <div class="student-id-display">Student ID: {{ $student->student_id }}</div>
                 @endif
             </div>
@@ -215,12 +200,12 @@
                         </div>
                         <div class="card-body">
                             <div class="scholarship-grid">
-                                <!-- CHED Scholarship -->
-                                <div class="scholarship-card" data-scholarship="ched">
-                                    <h3 class="scholarship-title">CHED Scholarship</h3>
+                                <!-- Government Scholarship -->
+                                <div class="scholarship-card" data-scholarship="government">
+                                    <h3 class="scholarship-title">Government Scholarship</h3>
                                     <p class="scholarship-description">Government scholarship for qualified students.
                                     </p>
-                                    <button class="apply-btn" data-form="ched-form">
+                                    <button class="apply-btn" data-form="government-form">
                                         <i class="fas fa-paper-plane"></i> Apply Now
                                     </button>
                                 </div>
@@ -260,11 +245,11 @@
                     </div>
 
                     <!-- Application Forms -->
-                    <!-- CHED Application Form -->
-                    <div class="application-form-container" id="ched-form">
+                    <!-- Government Application Form -->
+                    <div class="application-form-container" id="government-form">
                         <div class="form-header">
                             <div class="application-forms-header">
-                                <h3>CHED Scholarship Application</h3>
+                                <h3>Government Scholarship Application</h3>
                             </div>
                             <button class="close-form-btn" onclick="closeForm()">
                                 <i class="fas fa-times"></i>
@@ -290,7 +275,7 @@
                             <form action="{{ route('scholarship.submit') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="scholarship_type" value="ched">
+                                <input type="hidden" name="scholarship_type" value="government">
 
                                 <!-- Form Title -->
                                 <div class="form-title">
@@ -301,6 +286,23 @@
                                 <div class="form-description">
                                     <p>Please fill out all required fields marked with an asterisk (*). Ensure all
                                         information is accurate and complete before submitting your application.</p>
+                                </div>
+
+                                <!-- Government Benefactor Type Selection -->
+                                <div class="form-section-title">Government Benefactor Type</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="government_benefactor_type">Benefactor Type *</label>
+                                        <select id="government_benefactor_type" name="government_benefactor_type"
+                                            required>
+                                            <option value="">Select Benefactor Type</option>
+                                            <option value="CHED">CHED (Commission on Higher Education)</option>
+                                            <option value="DOST">DOST (Department of Science and Technology)</option>
+                                            <option value="DSWD">DSWD (Department of Social Welfare and Development)
+                                            </option>
+                                            <option value="DOLE">DOLE (Department of Labor and Employment)</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="form-section-title">Personal Information</div>
@@ -353,25 +355,25 @@
                                         <label>Education Stage *</label>
                                         <div class="radio-group">
                                             <div class="radio-option">
-                                                <input type="radio" id="ched_bsu" name="education_stage"
+                                                <input type="radio" id="government_bsu" name="education_stage"
                                                     value="BEU" required>
-                                                <label for="ched_bsu">BEU</label>
+                                                <label for="government_bsu">BEU</label>
                                             </div>
                                             <div class="radio-option">
-                                                <input type="radio" id="ched_college" name="education_stage"
+                                                <input type="radio" id="government_college" name="education_stage"
                                                     value="College" required>
-                                                <label for="ched_college">College</label>
+                                                <label for="government_college">College</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- BEU Fields (Hidden by default) -->
-                                <div class="ched-bsu-fields" style="display: none;">
+                                <div class="government-bsu-fields" style="display: none;">
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="ched_grade_level">Grade Level *</label>
-                                            <select id="ched_grade_level" name="grade_level">
+                                            <label for="government_grade_level">Grade Level *</label>
+                                            <select id="government_grade_level" name="grade_level">
                                                 <option value="">Select Grade Level</option>
                                                 <option value="Grade 7">Grade 7</option>
                                                 <option value="Grade 8">Grade 8</option>
@@ -381,9 +383,9 @@
                                                 <option value="Grade 12">Grade 12</option>
                                             </select>
                                         </div>
-                                        <div class="form-group ched-strand-field" style="display: none;">
-                                            <label for="ched_strand">Strand *</label>
-                                            <select id="ched_strand" name="strand">
+                                        <div class="form-group government-strand-field" style="display: none;">
+                                            <label for="government_strand">Strand *</label>
+                                            <select id="government_strand" name="strand">
                                                 <option value="">Select Strand</option>
                                                 <option value="STEM">STEM (Science, Technology, Engineering,
                                                     Mathematics)
@@ -396,11 +398,11 @@
                                 </div>
 
                                 <!-- College Fields (Hidden by default) -->
-                                <div class="ched-college-fields" style="display: none;">
+                                <div class="government-college-fields" style="display: none;">
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="ched_department">Department *</label>
-                                            <select id="ched_department" name="department">
+                                            <label for="government_department">Department *</label>
+                                            <select id="government_department" name="department">
                                                 <option value="">Select Department</option>
                                                 <option value="SITE">SITE</option>
                                                 <option value="SASTE">SASTE</option>
@@ -409,16 +411,16 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="ched_course">Course *</label>
-                                            <select id="ched_course" name="course">
+                                            <label for="government_course">Course *</label>
+                                            <select id="government_course" name="course">
                                                 <option value="">Select Course</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="ched_year_level">Year Level *</label>
-                                            <select id="ched_year_level" name="year_level">
+                                            <label for="government_year_level">Year Level *</label>
+                                            <select id="government_year_level" name="year_level">
                                                 <option value="">Select Year Level</option>
                                                 <option value="1st Year">1st Year</option>
                                                 <option value="2nd Year">2nd Year</option>
@@ -535,7 +537,7 @@
                                     <div class="form-group">
                                         <label for="contact_number">Contact Number *</label>
                                         <input type="number" id="contact_number" name="contact_number" required
-                                            maxlength="11" placeholder="09123456789">
+                                            maxlength="11" placeholder="Phone Number">
                                     </div>
                                     <div class="form-group">
                                         <label for="email">Email Address *</label>
@@ -1218,8 +1220,8 @@
                 });
             });
 
-            // Initialize CHED form functionality
-            initializeCHEDForm();
+            // Initialize Government form functionality
+            initializeGovernmentForm();
 
             // Initialize President's form functionality
             initializePresidentsForm();
@@ -1246,7 +1248,10 @@
             const backendNotification = document.querySelector('.main-screen-duplicate-notification');
             if (backendNotification) {
                 setTimeout(() => {
-                    backendNotification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    backendNotification.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }, 500);
             }
 
@@ -1280,25 +1285,25 @@
             });
         }
 
-        // CHED Form Dynamic Functionality
-        function initializeCHEDForm() {
+        // Government Form Dynamic Functionality
+        function initializeGovernmentForm() {
             // Academic Information card-style radio button handling
-            const academicEducationRadios = document.querySelectorAll('#ched-form input[name="education_stage"]');
-            const chedBsuFields = document.querySelectorAll('.ched-bsu-fields');
-            const chedCollegeFields = document.querySelectorAll('.ched-college-fields');
+            const academicEducationRadios = document.querySelectorAll('#government-form input[name="education_stage"]');
+            const governmentBsuFields = document.querySelectorAll('.government-bsu-fields');
+            const governmentCollegeFields = document.querySelectorAll('.government-college-fields');
 
             academicEducationRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     // Show/hide appropriate fields based on selection
                     if (this.value === 'BEU') {
                         // Show BEU fields, hide college fields
-                        chedBsuFields.forEach(field => {
+                        governmentBsuFields.forEach(field => {
                             field.style.display = 'block';
                             // Make BEU fields required
                             const selects = field.querySelectorAll('select');
                             selects.forEach(select => select.required = true);
                         });
-                        chedCollegeFields.forEach(field => {
+                        governmentCollegeFields.forEach(field => {
                             field.style.display = 'none';
                             // Remove required from college fields
                             const selects = field.querySelectorAll('select');
@@ -1309,13 +1314,13 @@
                         });
                     } else if (this.value === 'College') {
                         // Show college fields, hide BEU fields
-                        chedCollegeFields.forEach(field => {
+                        governmentCollegeFields.forEach(field => {
                             field.style.display = 'block';
                             // Make college fields required
                             const selects = field.querySelectorAll('select');
                             selects.forEach(select => select.required = true);
                         });
-                        chedBsuFields.forEach(field => {
+                        governmentBsuFields.forEach(field => {
                             field.style.display = 'none';
                             // Remove required from BEU fields
                             const selects = field.querySelectorAll('select');
@@ -1367,46 +1372,46 @@
                 ]
             };
 
-            // Grade level change handler for CHED form
-            const chedGradeLevelSelect = document.getElementById('ched_grade_level');
-            const chedStrandField = document.querySelector('.ched-strand-field');
-            const chedStrandSelect = document.getElementById('ched_strand');
+            // Grade level change handler for Government form
+            const governmentGradeLevelSelect = document.getElementById('government_grade_level');
+            const governmentStrandField = document.querySelector('.government-strand-field');
+            const governmentStrandSelect = document.getElementById('government_strand');
 
-            if (chedGradeLevelSelect && chedStrandField && chedStrandSelect) {
-                chedGradeLevelSelect.addEventListener('change', function() {
+            if (governmentGradeLevelSelect && governmentStrandField && governmentStrandSelect) {
+                governmentGradeLevelSelect.addEventListener('change', function() {
                     const selectedGrade = this.value;
 
                     if (selectedGrade === 'Grade 11' || selectedGrade === 'Grade 12') {
                         // Show strand field for Grade 11 and 12
-                        chedStrandField.style.display = 'block';
-                        chedStrandSelect.required = true;
+                        governmentStrandField.style.display = 'block';
+                        governmentStrandSelect.required = true;
                     } else {
                         // Hide strand field for other grades
-                        chedStrandField.style.display = 'none';
-                        chedStrandSelect.required = false;
-                        chedStrandSelect.value = ''; // Clear selection
+                        governmentStrandField.style.display = 'none';
+                        governmentStrandSelect.required = false;
+                        governmentStrandSelect.value = ''; // Clear selection
                     }
                 });
             }
 
-            // Department change handler for CHED form
-            const chedDepartmentSelect = document.getElementById('ched_department');
-            const chedCourseSelect = document.getElementById('ched_course');
+            // Department change handler for Government form
+            const governmentDepartmentSelect = document.getElementById('government_department');
+            const governmentCourseSelect = document.getElementById('government_course');
 
-            if (chedDepartmentSelect && chedCourseSelect) {
-                chedDepartmentSelect.addEventListener('change', function() {
+            if (governmentDepartmentSelect && governmentCourseSelect) {
+                governmentDepartmentSelect.addEventListener('change', function() {
                     const selectedDepartment = this.value;
                     const courses = departmentCourses[selectedDepartment] || [];
 
                     // Clear existing options
-                    chedCourseSelect.innerHTML = '<option value="">Select Course</option>';
+                    governmentCourseSelect.innerHTML = '<option value="">Select Course</option>';
 
                     // Add new options
                     courses.forEach(course => {
                         const option = document.createElement('option');
                         option.value = course;
                         option.textContent = course;
-                        chedCourseSelect.appendChild(option);
+                        governmentCourseSelect.appendChild(option);
                     });
                 });
             }
@@ -1805,12 +1810,16 @@
             // Check for duplicate Student ID
             const studentIdField = form.querySelector('input[name="student_id"]');
             if (studentIdField && studentIdField.getAttribute('data-duplicate') === 'true') {
-                showFieldError(studentIdField, 'This Student ID has already been used. Please check the notification above.');
+                showFieldError(studentIdField,
+                    'This Student ID has already been used. Please check the notification above.');
 
                 // Scroll to the main screen notification
                 const notification = document.querySelector('.main-screen-duplicate-notification');
                 if (notification) {
-                    notification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    notification.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
 
                 isValid = false;
@@ -1963,11 +1972,15 @@
             `;
 
             // Insert notification at the top of the main content area
-            const mainContent = document.querySelector('.main-content') || document.querySelector('.container') || document.body;
+            const mainContent = document.querySelector('.main-content') || document.querySelector('.container') || document
+                .body;
             mainContent.insertBefore(notification, mainContent.firstChild);
 
             // Auto-scroll to show the notification
-            notification.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            notification.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
 
         // Remove main screen duplicate notification
@@ -2099,100 +2112,106 @@
                     e.preventDefault();
                     console.log('Form submission intercepted - AJAX will be used');
 
-            const currentPassword = document.getElementById('current_password').value;
-            const newPassword = document.getElementById('new_password').value;
-            const confirmPassword = document.getElementById('new_password_confirmation').value;
+                    const currentPassword = document.getElementById('current_password').value;
+                    const newPassword = document.getElementById('new_password').value;
+                    const confirmPassword = document.getElementById('new_password_confirmation').value;
 
-            // Clear previous errors
-            clearPasswordErrors();
+                    // Clear previous errors
+                    clearPasswordErrors();
 
-            // Validate passwords
-            let hasErrors = false;
+                    // Validate passwords
+                    let hasErrors = false;
 
-            if (newPassword.length < 8) {
-                showPasswordError('new_password', 'Password must be at least 8 characters long');
-                hasErrors = true;
-            }
-
-            if (newPassword !== confirmPassword) {
-                showPasswordError('new_password_confirmation', 'Passwords do not match');
-                hasErrors = true;
-            }
-
-            if (currentPassword === newPassword) {
-                showPasswordError('new_password', 'New password must be different from current password');
-                hasErrors = true;
-            }
-
-            if (hasErrors) {
-                return;
-            }
-
-            // Submit form via AJAX
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing Password...';
-            submitBtn.disabled = true;
-
-            console.log('Making AJAX request to:', this.action);
-            console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(JSON.stringify(data));
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-
-                if (data.success) {
-                    showPasswordSuccess(data.message);
-                    this.reset();
-                    // Update password status in profile tab
-                    updatePasswordStatus(true);
-                } else {
-                    if (data.errors) {
-                        Object.keys(data.errors).forEach(field => {
-                            showPasswordError(field, data.errors[field][0]);
-                        });
-                    } else {
-                        showPasswordError('current_password', data.message || 'An error occurred');
+                    if (newPassword.length < 8) {
+                        showPasswordError('new_password', 'Password must be at least 8 characters long');
+                        hasErrors = true;
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
 
-                try {
-                    const errorData = JSON.parse(error.message);
-                    if (errorData.errors) {
-                        Object.keys(errorData.errors).forEach(field => {
-                            showPasswordError(field, errorData.errors[field][0]);
-                        });
-                    } else {
-                        showPasswordError('current_password', errorData.message || 'An error occurred');
+                    if (newPassword !== confirmPassword) {
+                        showPasswordError('new_password_confirmation', 'Passwords do not match');
+                        hasErrors = true;
                     }
-                } catch (parseError) {
-                    showPasswordError('current_password', 'An error occurred. Please try again.');
-                }
-            })
-            .finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            });
+
+                    if (currentPassword === newPassword) {
+                        showPasswordError('new_password',
+                            'New password must be different from current password');
+                        hasErrors = true;
+                    }
+
+                    if (hasErrors) {
+                        return;
+                    }
+
+                    // Submit form via AJAX
+                    const formData = new FormData(this);
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing Password...';
+                    submitBtn.disabled = true;
+
+                    console.log('Making AJAX request to:', this.action);
+                    console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]')
+                        .getAttribute('content'));
+
+                    fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(JSON.stringify(data));
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+
+                            if (data.success) {
+                                showPasswordSuccess(data.message);
+                                this.reset();
+                                // Update password status in profile tab
+                                updatePasswordStatus(true);
+                            } else {
+                                if (data.errors) {
+                                    Object.keys(data.errors).forEach(field => {
+                                        showPasswordError(field, data.errors[field][0]);
+                                    });
+                                } else {
+                                    showPasswordError('current_password', data.message ||
+                                        'An error occurred');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+
+                            try {
+                                const errorData = JSON.parse(error.message);
+                                if (errorData.errors) {
+                                    Object.keys(errorData.errors).forEach(field => {
+                                        showPasswordError(field, errorData.errors[field][0]);
+                                    });
+                                } else {
+                                    showPasswordError('current_password', errorData.message ||
+                                        'An error occurred');
+                                }
+                            } catch (parseError) {
+                                showPasswordError('current_password',
+                                    'An error occurred. Please try again.');
+                            }
+                        })
+                        .finally(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        });
                 });
             }
         });
@@ -2265,11 +2284,7 @@
                 }
             }, 5000);
 
-            // Also show a toast notification
-            showToastNotification('Password Changed Successfully!', 'Your password has been updated and you are now using a custom password.', 'success');
-
-            // Add celebration effect
-            createCelebrationEffect();
+            // Password changed successfully - no notifications needed
         }
 
         function updatePasswordStatus(changed) {
@@ -2286,89 +2301,9 @@
             }
         }
 
-        // Toast notification system
-        function showToastNotification(title, message, type = 'success') {
-            // Create toast container if it doesn't exist
-            let toastContainer = document.getElementById('toast-container');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toast-container';
-                toastContainer.className = 'toast-container';
-                document.body.appendChild(toastContainer);
-            }
 
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
 
-            // Add toast to container
-            toastContainer.appendChild(toast);
 
-            // Auto-remove after 6 seconds
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.remove();
-                        }
-                    }, 300);
-                }
-            }, 6000);
-        }
-
-        // Celebration effect for successful password change
-        function createCelebrationEffect() {
-            const colors = ['#28a745', '#20c997', '#17a2b8', '#ffc107', '#fd7e14'];
-            const celebrationContainer = document.createElement('div');
-            celebrationContainer.className = 'celebration-container';
-            celebrationContainer.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 9999;
-            `;
-            document.body.appendChild(celebrationContainer);
-
-            // Create confetti particles
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.style.cssText = `
-                    position: absolute;
-                    width: 10px;
-                    height: 10px;
-                    background: ${colors[Math.floor(Math.random() * colors.length)]};
-                    top: -10px;
-                    left: ${Math.random() * 100}%;
-                    animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
-                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-                    transform: rotate(${Math.random() * 360}deg);
-                `;
-                celebrationContainer.appendChild(confetti);
-            }
-
-            // Remove celebration after animation
-            setTimeout(() => {
-                if (celebrationContainer.parentNode) {
-                    celebrationContainer.remove();
-                }
-            }, 5000);
-        }
 
         // Close modal when clicking outside
         window.onclick = function(event) {
@@ -2406,7 +2341,7 @@
                         <div class="profile-details">
                             <div class="detail-row">
                                 <label>Full Name:</label>
-                                <span>{{ $student->full_name ?? $student->name ?? 'Not Set' }}</span>
+                                <span>{{ $student->full_name ?? ($student->name ?? 'Not Set') }}</span>
                             </div>
                             <div class="detail-row">
                                 <label>First Name:</label>
@@ -2426,23 +2361,26 @@
                             </div>
                             <div class="detail-row">
                                 <label>Account Status:</label>
-                                <span class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
+                                <span
+                                    class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
                                     {{ ucfirst($student->status ?? 'Unknown') }}
                                 </span>
                             </div>
                             <div class="detail-row">
                                 <label>Password Status:</label>
-                                <span class="password-status {{ $student->password_changed ? 'changed' : 'default' }}">
+                                <span
+                                    class="password-status {{ $student->password_changed ? 'changed' : 'default' }}">
                                     {{ $student->password_changed ? 'Custom Password Set' : 'Using Default Password' }}
                                 </span>
                             </div>
                         </div>
 
-                        @if(!$student->password_changed)
-                        <div class="password-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Security Notice:</strong> You are still using the default password. Please change it for better security.
-                        </div>
+                        @if (!$student->password_changed)
+                            <div class="password-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Security Notice:</strong> You are still using the default password. Please
+                                change it for better security.
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -2451,14 +2389,16 @@
                 <div id="password-tab-content" class="settings-tab-content" style="display: none;">
                     <div class="settings-section">
                         <h3>Change Password</h3>
-                        <form id="changePasswordForm" action="{{ route('student.change-password') }}" method="POST">
+                        <form id="changePasswordForm" action="{{ route('student.change-password') }}"
+                            method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="current_password">Current Password</label>
                                 <div class="password-input-container">
                                     <input type="password" id="current_password" name="current_password"
-                                           placeholder="Enter your current password" required>
-                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('current_password')">
+                                        placeholder="Enter your current password" required>
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePasswordVisibility('current_password')">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -2468,8 +2408,9 @@
                                 <label for="new_password">New Password</label>
                                 <div class="password-input-container">
                                     <input type="password" id="new_password" name="new_password"
-                                           placeholder="Enter your new password" required minlength="8">
-                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new_password')">
+                                        placeholder="Enter your new password" required minlength="8">
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePasswordVisibility('new_password')">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -2479,9 +2420,11 @@
                             <div class="form-group">
                                 <label for="new_password_confirmation">Confirm New Password</label>
                                 <div class="password-input-container">
-                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation"
-                                           placeholder="Confirm your new password" required>
-                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new_password_confirmation')">
+                                    <input type="password" id="new_password_confirmation"
+                                        name="new_password_confirmation" placeholder="Confirm your new password"
+                                        required>
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePasswordVisibility('new_password_confirmation')">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>

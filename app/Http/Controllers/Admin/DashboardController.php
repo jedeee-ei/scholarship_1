@@ -48,7 +48,7 @@ class DashboardController extends Controller
 
         $currentMonthStats = [
             'total' => Grantee::whereMonth('approved_date', $currentMonth)->count() +
-                      ScholarshipApplication::whereMonth('created_at', $currentMonth)->count(),
+                ScholarshipApplication::whereMonth('created_at', $currentMonth)->count(),
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $currentMonth)->count(),
             'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $currentMonth)->count(),
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $currentMonth)->count(),
@@ -56,7 +56,7 @@ class DashboardController extends Controller
 
         $previousMonthStats = [
             'total' => Grantee::whereMonth('approved_date', $previousMonth)->count() +
-                      ScholarshipApplication::whereMonth('created_at', $previousMonth)->count(),
+                ScholarshipApplication::whereMonth('created_at', $previousMonth)->count(),
             'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $previousMonth)->count(),
             'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $previousMonth)->count(),
             'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $previousMonth)->count(),
@@ -119,36 +119,36 @@ class DashboardController extends Controller
 
         // GWA distribution using grantee data (use current_gwa or gwa field)
         $gwaRanges = [
-            '1.00-1.25' => Grantee::where(function($query) {
-                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.00)->where('gwa', '<=', 1.25)
-                          ->orWhere(function($q) {
-                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.00)->where('current_gwa', '<=', 1.25);
-                          });
-                })->count(),
-            '1.26-1.50' => Grantee::where(function($query) {
-                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.26)->where('gwa', '<=', 1.50)
-                          ->orWhere(function($q) {
-                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.26)->where('current_gwa', '<=', 1.50);
-                          });
-                })->count(),
-            '1.51-1.75' => Grantee::where(function($query) {
-                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.51)->where('gwa', '<=', 1.75)
-                          ->orWhere(function($q) {
-                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.51)->where('current_gwa', '<=', 1.75);
-                          });
-                })->count(),
-            '1.76-2.00' => Grantee::where(function($query) {
-                    $query->whereNotNull('gwa')->where('gwa', '>=', 1.76)->where('gwa', '<=', 2.00)
-                          ->orWhere(function($q) {
-                              $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.76)->where('current_gwa', '<=', 2.00);
-                          });
-                })->count(),
-            '2.01+' => Grantee::where(function($query) {
-                    $query->whereNotNull('gwa')->where('gwa', '>', 2.00)
-                          ->orWhere(function($q) {
-                              $q->whereNotNull('current_gwa')->where('current_gwa', '>', 2.00);
-                          });
-                })->count(),
+            '1.00-1.25' => Grantee::where(function ($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>=', 1.00)->where('gwa', '<=', 1.25)
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.00)->where('current_gwa', '<=', 1.25);
+                    });
+            })->count(),
+            '1.26-1.50' => Grantee::where(function ($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>=', 1.26)->where('gwa', '<=', 1.50)
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.26)->where('current_gwa', '<=', 1.50);
+                    });
+            })->count(),
+            '1.51-1.75' => Grantee::where(function ($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>=', 1.51)->where('gwa', '<=', 1.75)
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.51)->where('current_gwa', '<=', 1.75);
+                    });
+            })->count(),
+            '1.76-2.00' => Grantee::where(function ($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>=', 1.76)->where('gwa', '<=', 2.00)
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.76)->where('current_gwa', '<=', 2.00);
+                    });
+            })->count(),
+            '2.01+' => Grantee::where(function ($query) {
+                $query->whereNotNull('gwa')->where('gwa', '>', 2.00)
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('current_gwa')->where('current_gwa', '>', 2.00);
+                    });
+            })->count(),
         ];
 
         // Status distribution using real data
@@ -200,9 +200,9 @@ class DashboardController extends Controller
         $totalAll = $totalGrantees + $totalApplications;
 
         $thisMonth = Grantee::whereMonth('approved_date', now()->month)->count() +
-                    ScholarshipApplication::whereMonth('created_at', now()->month)->count();
+            ScholarshipApplication::whereMonth('created_at', now()->month)->count();
         $lastMonth = Grantee::whereMonth('approved_date', now()->subMonth()->month)->count() +
-                    ScholarshipApplication::whereMonth('created_at', now()->subMonth()->month)->count();
+            ScholarshipApplication::whereMonth('created_at', now()->subMonth()->month)->count();
 
         $monthlyGrowth = $lastMonth > 0 ? (($thisMonth - $lastMonth) / $lastMonth) * 100 : 0;
 
@@ -214,12 +214,12 @@ class DashboardController extends Controller
             ->first();
 
         // Get average GWA from grantees
-        $averageGwa = Grantee::where(function($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>', 0)
-                      ->orWhere(function($q) {
-                          $q->whereNotNull('current_gwa')->where('current_gwa', '>', 0);
-                      });
-            })
+        $averageGwa = Grantee::where(function ($query) {
+            $query->whereNotNull('gwa')->where('gwa', '>', 0)
+                ->orWhere(function ($q) {
+                    $q->whereNotNull('current_gwa')->where('current_gwa', '>', 0);
+                });
+        })
             ->selectRaw('AVG(COALESCE(NULLIF(current_gwa, 0), NULLIF(gwa, 0))) as avg_gwa')
             ->value('avg_gwa');
 
@@ -393,31 +393,7 @@ class DashboardController extends Controller
         return response()->json(['success' => true, 'message' => 'Students imported successfully']);
     }
 
-    /**
-     * Update system settings
-     */
-    public function updateSettings(Request $request)
-    {
-        $request->validate([
-            'application_period' => 'required|string|in:open,closed,renewal',
-            'academic_year' => 'nullable|string',
-            'current_semester' => 'nullable|string|in:1st,2nd,summer',
-            'notification_email' => 'nullable|email',
-            'email_notifications' => 'boolean'
-        ]);
 
-        // Save settings to database or config
-        return response()->json(['success' => true, 'message' => 'Settings updated successfully']);
-    }
-
-    /**
-     * Export applications data
-     */
-    public function exportApplications()
-    {
-        // Generate CSV/Excel file
-        return response()->json(['success' => true, 'message' => 'Export functionality will be implemented']);
-    }
 
     /**
      * Generate report
@@ -503,7 +479,7 @@ class DashboardController extends Controller
                     break;
                 case 'month':
                     $query->whereMonth('approved_date', now()->month)
-                          ->whereYear('approved_date', now()->year);
+                        ->whereYear('approved_date', now()->year);
                     break;
                 case 'quarter':
                     $startOfQuarter = now()->startOfQuarter();
@@ -516,11 +492,11 @@ class DashboardController extends Controller
                 // Legacy support for old date range values
                 case 'this_month':
                     $query->whereMonth('approved_date', now()->month)
-                          ->whereYear('approved_date', now()->year);
+                        ->whereYear('approved_date', now()->year);
                     break;
                 case 'last_month':
                     $query->whereMonth('approved_date', now()->subMonth()->month)
-                          ->whereYear('approved_date', now()->subMonth()->year);
+                        ->whereYear('approved_date', now()->subMonth()->year);
                     break;
                 case 'this_year':
                     $query->whereYear('approved_date', now()->year);
@@ -710,7 +686,7 @@ class DashboardController extends Controller
             $date = now()->format('F j, Y \a\t g:i A');
 
             // Transform data for PDF template
-            $pdfData = $data->map(function($record) {
+            $pdfData = $data->map(function ($record) {
                 if (isset($record->grantee_id)) {
                     // This is grantee data
                     return [
@@ -751,11 +727,15 @@ class DashboardController extends Controller
             $chartData = [];
             if ($includeCharts) {
                 $chartData['by_scholarship_type'] = $data->groupBy('scholarship_type')
-                    ->map(function($group) { return $group->count(); })
+                    ->map(function ($group) {
+                        return $group->count();
+                    })
                     ->toArray();
 
                 $chartData['by_status'] = $data->groupBy('status')
-                    ->map(function($group) { return $group->count(); })
+                    ->map(function ($group) {
+                        return $group->count();
+                    })
                     ->toArray();
             }
 
@@ -798,8 +778,7 @@ class DashboardController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
                 'Content-Length' => strlen($dompdf->output()),
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Fallback to simple text format if PDF generation fails
             return $this->generateSimpleTextReport($data, $reportType);
         }
@@ -815,11 +794,11 @@ class DashboardController extends Controller
         return response()->streamDownload(function () use ($data, $reportType) {
             $title = ucwords(str_replace('_', ' ', $reportType));
 
-            echo "=".str_repeat("=", 80)."=\n";
+            echo "=" . str_repeat("=", 80) . "=\n";
             echo "  {$title}\n";
             echo "  Generated on: " . date('Y-m-d H:i:s') . "\n";
             echo "  Total Records: " . count($data) . "\n";
-            echo "=".str_repeat("=", 80)."=\n\n";
+            echo "=" . str_repeat("=", 80) . "=\n\n";
 
             // Summary statistics
             $statusCounts = $data->groupBy('status')->map->count();
@@ -867,104 +846,13 @@ class DashboardController extends Controller
             }
 
             echo "\nEnd of Report\n";
-
         }, $filename, [
             'Content-Type' => 'text/plain',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"'
         ]);
     }
 
-    /**
-     * Generate HTML for PDF report
-     */
-    private function generateReportHTML($data, $reportType)
-    {
-        $title = ucwords(str_replace('_', ' ', $reportType));
 
-        $html = "
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>{$title}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .summary { margin-bottom: 20px; }
-                .stat-item { display: inline-block; margin-right: 30px; }
-            </style>
-        </head>
-        <body>
-            <div class='header'>
-                <h1>{$title}</h1>
-                <p>Generated on: " . date('Y-m-d H:i:s') . "</p>
-                <p>Total Records: " . count($data) . "</p>
-            </div>
-
-            <div class='summary'>
-                <h3>Report Summary</h3>";
-
-        // Add summary statistics
-        $statusCounts = $data->groupBy('status')->map->count();
-        $typeCounts = $data->groupBy('scholarship_type')->map->count();
-
-        $html .= "<div class='stat-item'><strong>By Status:</strong><br>";
-        foreach ($statusCounts as $status => $count) {
-            $html .= "{$status}: {$count}<br>";
-        }
-        $html .= "</div>";
-
-        $html .= "<div class='stat-item'><strong>By Type:</strong><br>";
-        foreach ($typeCounts as $type => $count) {
-            $html .= ucfirst($type) . ": {$count}<br>";
-        }
-        $html .= "</div>";
-
-        $html .= "
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Application ID</th>
-                        <th>Student ID</th>
-                        <th>Full Name</th>
-                        <th>Scholarship Type</th>
-                        <th>Status</th>
-                        <th>Department</th>
-                        <th>Course</th>
-                        <th>GWA</th>
-                        <th>Application Date</th>
-                    </tr>
-                </thead>
-                <tbody>";
-
-        foreach ($data as $application) {
-            $fullName = trim($application->first_name . ' ' . $application->middle_name . ' ' . $application->last_name);
-            $html .= "
-                    <tr>
-                        <td>{$application->application_id}</td>
-                        <td>{$application->student_id}</td>
-                        <td>{$fullName}</td>
-                        <td>" . ucfirst($application->scholarship_type) . "</td>
-                        <td>{$application->status}</td>
-                        <td>{$application->department}</td>
-                        <td>{$application->course}</td>
-                        <td>{$application->gwa}</td>
-                        <td>" . $application->created_at->format('Y-m-d') . "</td>
-                    </tr>";
-        }
-
-        $html .= "
-                </tbody>
-            </table>
-        </body>
-        </html>";
-
-        return $html;
-    }
 
     /**
      * Preview report
@@ -994,7 +882,7 @@ class DashboardController extends Controller
             }
 
             // Limit preview to first 10 records for performance
-            $previewRecords = $reportData->take(10)->map(function($record) {
+            $previewRecords = $reportData->take(10)->map(function ($record) {
                 // Handle both grantee and application data structures
                 if (isset($record->grantee_id)) {
                     // This is grantee data
@@ -1069,7 +957,7 @@ class DashboardController extends Controller
                 break;
             case 'month':
                 $query->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                    ->whereYear('created_at', now()->year);
                 break;
             case 'quarter':
                 $startOfQuarter = now()->startOfQuarter();
@@ -1082,11 +970,11 @@ class DashboardController extends Controller
             // Legacy support
             case 'this_month':
                 $query->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                    ->whereYear('created_at', now()->year);
                 break;
             case 'last_month':
                 $query->whereMonth('created_at', now()->subMonth()->month)
-                      ->whereYear('created_at', now()->subMonth()->year);
+                    ->whereYear('created_at', now()->subMonth()->year);
                 break;
             case 'this_year':
                 $query->whereYear('created_at', now()->year);
@@ -1202,14 +1090,14 @@ class DashboardController extends Controller
 
         // Filter by type if specified
         if ($archiveType) {
-            $mockFiles = array_filter($mockFiles, function($file) use ($archiveType) {
+            $mockFiles = array_filter($mockFiles, function ($file) use ($archiveType) {
                 return stripos($file['type'], $archiveType) !== false;
             });
         }
 
         // Filter by year if specified
         if ($archiveYear) {
-            $mockFiles = array_filter($mockFiles, function($file) use ($archiveYear) {
+            $mockFiles = array_filter($mockFiles, function ($file) use ($archiveYear) {
                 return strpos($file['date'], $archiveYear) !== false;
             });
         }
@@ -1281,7 +1169,7 @@ class DashboardController extends Controller
         if ($category !== 'all') {
             // Map category names to database values
             $typeMap = [
-                'ched' => 'ched',
+                'government' => 'government',
                 'academic' => 'academic', // academic scholarship type
                 'employees' => 'employees',
                 'private' => 'private'
@@ -1300,11 +1188,17 @@ class DashboardController extends Controller
                 'id' => $grantee->student_id,
                 'name' => $grantee->first_name . ' ' . $grantee->last_name,
                 'course' => $grantee->course ?: 'N/A',
+                'strand' => $grantee->strand,
                 'scholarship_type' => $this->formatScholarshipType($grantee->scholarship_type),
                 'status' => $grantee->status,
                 'gwa' => $grantee->current_gwa ?: $grantee->gwa ?: 'N/A',
                 'application_id' => $grantee->application_id,
-                'grantee_id' => $grantee->grantee_id
+                'grantee_id' => $grantee->grantee_id,
+                'government_benefactor_type' => $grantee->government_benefactor_type,
+                'employee_name' => $grantee->employee_name,
+                'employee_relationship' => $grantee->employee_relationship,
+                'scholarship_name' => $grantee->scholarship_name,
+                'department' => $grantee->department
             ];
         });
 
@@ -1317,7 +1211,7 @@ class DashboardController extends Controller
     private function formatScholarshipType($type)
     {
         $types = [
-            'ched' => 'CHED',
+            'government' => 'Government',
             'academic' => 'Academic',
             'employees' => 'Employee',
             'private' => 'Private'
@@ -1448,19 +1342,9 @@ class DashboardController extends Controller
      */
     public function students(Request $request)
     {
-        // Get current semester and academic year from system settings
-        $currentYear = now()->year;
-        $currentMonth = now()->month;
-
-        // Calculate default values
-        $defaultAcademicYear = ($currentMonth >= 7) ?
-            $currentYear . '-' . ($currentYear + 1) : ($currentYear - 1) . '-' . $currentYear;
-        $defaultSemester = ($currentMonth >= 1 && $currentMonth <= 6) ?
-            '2nd Semester' : '1st Semester';
-
-        // Get from system settings or use defaults
-        $currentAcademicYear = SystemSetting::get('current_academic_year', $defaultAcademicYear);
-        $currentSemester = SystemSetting::get('current_semester', $defaultSemester);
+        // Get semester and academic year from system settings only (no auto-calculation)
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $currentAcademicYear = SystemSetting::get('current_academic_year', '2024-2025');
 
         // Get grantees from the grantees table
         $query = Grantee::query();
@@ -1478,6 +1362,7 @@ class DashboardController extends Controller
                     'id' => $grantee->student_id,
                     'name' => $grantee->first_name . ' ' . $grantee->last_name,
                     'course' => $grantee->course ?: 'N/A',
+                    'strand' => $grantee->strand,
                     'scholarship_type' => $this->formatScholarshipType($grantee->scholarship_type),
                     'status' => $grantee->status,
                     'gwa' => $grantee->current_gwa ?: $grantee->gwa ?: 'N/A',
@@ -1487,6 +1372,10 @@ class DashboardController extends Controller
                     'year_level' => $grantee->year_level,
                     'email' => $grantee->email,
                     'contact_number' => $grantee->contact_number,
+                    'government_benefactor_type' => $grantee->government_benefactor_type,
+                    'employee_name' => $grantee->employee_name,
+                    'employee_relationship' => $grantee->employee_relationship,
+                    'scholarship_name' => $grantee->scholarship_name,
                     'current_semester' => $currentSemester,
                     'current_academic_year' => $currentAcademicYear
                 ];
@@ -1577,28 +1466,9 @@ class DashboardController extends Controller
      */
     public function scholarships()
     {
-        // Get current academic year and semester from system settings or calculate default
-        $currentYear = now()->year;
-        $currentMonth = now()->month;
-
-        // Calculate default values
-        $defaultAcademicYear = ($currentMonth >= 7) ?
-            $currentYear . '-' . ($currentYear + 1) : ($currentYear - 1) . '-' . $currentYear;
-
-        $defaultSemester = ($currentMonth >= 1 && $currentMonth <= 6) ?
-            '2nd Semester' : '1st Semester';
-
-        // Get from system settings or use defaults
-        $academicYear = SystemSetting::get('current_academic_year', $defaultAcademicYear);
-        $currentSemester = SystemSetting::get('current_semester', $defaultSemester);
-
-        // Initialize settings if they don't exist
-        if (!SystemSetting::where('key', 'current_academic_year')->exists()) {
-            SystemSetting::set('current_academic_year', $defaultAcademicYear);
-        }
-        if (!SystemSetting::where('key', 'current_semester')->exists()) {
-            SystemSetting::set('current_semester', $defaultSemester);
-        }
+        // Get semester and academic year from system settings only (no auto-calculation)
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $academicYear = SystemSetting::get('current_academic_year', '2024-2025');
 
         // Get scholarships from database only
         $scholarships = Scholarship::orderBy('created_at', 'desc')->get();
@@ -1641,7 +1511,7 @@ class DashboardController extends Controller
             // Validate the request
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'type' => 'required|string|in:ched,academic,employees,private',
+                'type' => 'required|string|in:government,academic,employees,private',
                 'semester' => 'required|string|in:1st Semester,2nd Semester',
                 'academic_year' => 'required|string|max:20',
                 'description' => 'nullable|string|max:1000'
@@ -1922,119 +1792,7 @@ class DashboardController extends Controller
         }
     }
 
-    /**
-     * Create sample data for testing
-     */
-    private function createSampleData()
-    {
-        try {
-            $sampleData = [
-                [
-                    'application_id' => 'APP-' . date('Y') . '-001',
-                    'scholarship_type' => 'ched',
-                    'student_id' => '2024-001',
-                    'first_name' => 'Juan',
-                    'last_name' => 'Dela Cruz',
-                    'middle_name' => 'Santos',
-                    'email' => 'juan.delacruz@email.com',
-                    'course' => 'BSIT',
-                    'department' => 'SITE',
-                    'year_level' => '2nd Year',
-                    'gwa' => 1.75,
-                    'semester' => '1st Semester',
-                    'academic_year' => '2024-2025',
-                    'status' => 'Pending Review',
-                    'contact_number' => '09123456789',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'application_id' => 'APP-' . date('Y') . '-002',
-                    'scholarship_type' => 'academic',
-                    'student_id' => '2024-002',
-                    'first_name' => 'Maria',
-                    'last_name' => 'Garcia',
-                    'middle_name' => 'Lopez',
-                    'email' => 'maria.garcia@email.com',
-                    'course' => 'BSCS',
-                    'department' => 'SITE',
-                    'year_level' => '3rd Year',
-                    'gwa' => 1.25,
-                    'semester' => '1st Semester',
-                    'academic_year' => '2024-2025',
-                    'status' => 'Approved',
-                    'contact_number' => '09123456790',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'application_id' => 'APP-' . date('Y') . '-003',
-                    'scholarship_type' => 'presidents',
-                    'student_id' => '2024-003',
-                    'first_name' => 'Jose',
-                    'last_name' => 'Rizal',
-                    'middle_name' => 'Protacio',
-                    'email' => 'jose.rizal@email.com',
-                    'course' => 'BSBA',
-                    'department' => 'SBAHM',
-                    'year_level' => '1st Year',
-                    'gwa' => 1.50,
-                    'semester' => '1st Semester',
-                    'academic_year' => '2024-2025',
-                    'status' => 'Approved',
-                    'contact_number' => '09123456791',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'application_id' => 'APP-' . date('Y') . '-004',
-                    'scholarship_type' => 'institutional',
-                    'student_id' => '2024-004',
-                    'first_name' => 'Ana',
-                    'last_name' => 'Santos',
-                    'middle_name' => 'Cruz',
-                    'email' => 'ana.santos@email.com',
-                    'course' => 'BSN',
-                    'department' => 'SNAHS',
-                    'year_level' => '2nd Year',
-                    'gwa' => 1.80,
-                    'semester' => '1st Semester',
-                    'academic_year' => '2024-2025',
-                    'status' => 'Pending Review',
-                    'contact_number' => '09123456792',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'application_id' => 'APP-' . date('Y') . '-005',
-                    'scholarship_type' => 'employee',
-                    'student_id' => '2024-005',
-                    'first_name' => 'Pedro',
-                    'last_name' => 'Martinez',
-                    'middle_name' => 'Reyes',
-                    'email' => 'pedro.martinez@email.com',
-                    'course' => 'BSED',
-                    'department' => 'SASTE',
-                    'year_level' => '4th Year',
-                    'gwa' => 2.00,
-                    'semester' => '1st Semester',
-                    'academic_year' => '2024-2025',
-                    'status' => 'Rejected',
-                    'contact_number' => '09123456793',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]
-            ];
 
-            foreach ($sampleData as $data) {
-                ScholarshipApplication::create($data);
-            }
-
-            logger('Sample data created successfully');
-        } catch (\Exception $e) {
-            logger('Error creating sample data: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Show settings page
@@ -2062,20 +1820,9 @@ class DashboardController extends Controller
      */
     public function getCurrentSemesterYear()
     {
-        // Get current academic year and semester from system settings or calculate default
-        $currentYear = now()->year;
-        $currentMonth = now()->month;
-
-        // Calculate default values
-        $defaultAcademicYear = ($currentMonth >= 7) ?
-            $currentYear . '-' . ($currentYear + 1) : ($currentYear - 1) . '-' . $currentYear;
-
-        $defaultSemester = ($currentMonth >= 1 && $currentMonth <= 6) ?
-            '2nd Semester' : '1st Semester';
-
-        // Get from system settings or use defaults
-        $academicYear = SystemSetting::get('current_academic_year', $defaultAcademicYear);
-        $currentSemester = SystemSetting::get('current_semester', $defaultSemester);
+        // Get semester and academic year from system settings only (no auto-calculation)
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $academicYear = SystemSetting::get('current_academic_year', '2024-2025');
 
         return response()->json([
             'current_semester' => $currentSemester,
@@ -2674,41 +2421,13 @@ class DashboardController extends Controller
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Fallback to CSV if Excel generation fails
-            return $this->downloadCSVTemplate();
+            return $this->downloadTemplate();
         }
     }
 
-    /**
-     * Fallback CSV template download
-     */
-    private function downloadCSVTemplate()
-    {
-        $headers = [
-            'Student ID',
-            'First Name',
-            'Last Name',
-            'Middle Name',
-            'Email',
-            'Course',
-            'Department',
-            'Year Level',
-            'GWA',
-            'Contact Number'
-        ];
 
-        $filename = 'student_import_template.csv';
-
-        return response()->streamDownload(function () use ($headers) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, $headers);
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
-    }
 
     /**
      * Show announcements page
@@ -2898,7 +2617,6 @@ class DashboardController extends Controller
                     'email' => $user->email,
                     'password' => $defaultPassword
                 ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
 

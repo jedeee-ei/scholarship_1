@@ -26,7 +26,7 @@ class ScholarshipApplicationRequest extends FormRequest
 
         $rules = [
             // Basic required fields for all scholarship types
-            'scholarship_type' => 'required|in:ched,presidents,institutional,employees,private',
+            'scholarship_type' => 'required|in:government,academic,institutional,employees,private',
             'student_id' => [
                 'required',
                 'string',
@@ -45,8 +45,8 @@ class ScholarshipApplicationRequest extends FormRequest
 
         // Add scholarship-specific validation rules
         switch ($scholarshipType) {
-            case 'ched':
-                $rules = array_merge($rules, $this->getChedRules());
+            case 'government':
+                $rules = array_merge($rules, $this->getGovernmentRules());
                 break;
             case 'academic':
                 $rules = array_merge($rules, $this->getAcademicRules());
@@ -63,11 +63,12 @@ class ScholarshipApplicationRequest extends FormRequest
     }
 
     /**
-     * Get validation rules for CHED scholarship
+     * Get validation rules for Government scholarship
      */
-    private function getChedRules(): array
+    private function getGovernmentRules(): array
     {
         return [
+            'government_benefactor_type' => 'required|in:CHED,DOST,DSWD,DOLE',
             'sex' => 'required|in:Male,Female',
             'birthdate' => 'required|date|before:today',
             'education_stage' => 'required|in:BEU,BSU,College',
@@ -169,6 +170,8 @@ class ScholarshipApplicationRequest extends FormRequest
             'sex.required' => 'Please select your sex.',
             'birthdate.required' => 'Birthdate is required.',
             'birthdate.before' => 'Birthdate must be before today.',
+            'government_benefactor_type.required' => 'Please select a benefactor type.',
+            'government_benefactor_type.in' => 'Please select a valid benefactor type.',
             'education_stage.required' => 'Please select your education stage.',
             'department.required' => 'Department is required.',
             'course.required' => 'Course is required.',

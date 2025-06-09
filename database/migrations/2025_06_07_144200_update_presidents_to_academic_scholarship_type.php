@@ -17,11 +17,21 @@ return new class extends Migration
             ->where('scholarship_type', 'presidents')
             ->update(['scholarship_type' => 'academic']);
 
+        // Update scholarship_type from 'ched' to 'government' in scholarship_applications table
+        DB::table('scholarship_applications')
+            ->where('scholarship_type', 'ched')
+            ->update(['scholarship_type' => 'government']);
+
         // Update scholarship_type from 'presidents' to 'academic' in grantees table (if it exists)
         if (Schema::hasTable('grantees')) {
             DB::table('grantees')
                 ->where('scholarship_type', 'presidents')
                 ->update(['scholarship_type' => 'academic']);
+
+            // Update scholarship_type from 'ched' to 'government' in grantees table
+            DB::table('grantees')
+                ->where('scholarship_type', 'ched')
+                ->update(['scholarship_type' => 'government']);
         }
 
         // Update scholarship_type from 'presidents' to 'academic' in archived_students table (if it exists and has the column)

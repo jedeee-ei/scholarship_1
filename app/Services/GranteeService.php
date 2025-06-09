@@ -28,6 +28,7 @@ class GranteeService
                 // Copy all application data
                 'application_id' => $application->application_id,
                 'scholarship_type' => $application->scholarship_type,
+                'government_benefactor_type' => $application->government_benefactor_type,
                 'student_id' => $application->student_id,
                 'last_name' => $application->last_name,
                 'first_name' => $application->first_name,

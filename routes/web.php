@@ -7,11 +7,6 @@ use App\Http\Controllers\Student\ScholarshipTrackerController;
 use App\Http\Controllers\Api\ScholarshipDataController;
 use Illuminate\Support\Facades\Auth;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-
 Route::get('/welcome', function () {
     return view('layouts.welcome');
 })->name('welcome');
@@ -44,10 +39,6 @@ Route::get('/login/{type}', [App\Http\Controllers\Auth\LoginController::class, '
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-
-
-
-
 // Student routes
 Route::middleware(['auth', 'student'])->group(function () {
     // Student dashboard route
@@ -60,8 +51,6 @@ Route::middleware(['auth', 'student'])->group(function () {
         return view('student.profile');
     })->name('student.profile');
 
-
-
     // Scholarship routes
     Route::post('/scholarship/submit', [ScholarshipController::class, 'submitApplication'])->name('scholarship.submit');
 
@@ -72,7 +61,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/scholarship/tracker', [ScholarshipTrackerController::class, 'showTracker'])->name('scholarship.tracker');
     Route::post('/scholarship/track', [ScholarshipTrackerController::class, 'trackApplication'])->name('scholarship.track');
 });
-
 
 // Admin routes without authentication (for testing)
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -112,22 +100,6 @@ Route::get('/admin/archive/search', [DashboardController::class, 'searchArchive'
 Route::get('/admin/archive/download/{fileId}', [DashboardController::class, 'downloadArchive'])->name('admin.archive.download');
 Route::delete('/admin/archive/delete/{fileId}', [DashboardController::class, 'deleteArchive'])->name('admin.archive.delete');
 
-// Debug route for testing data
-Route::get('/admin/reports/test-data', function() {
-    $totalApps = \App\Models\ScholarshipApplication::count();
-    $allApps = \App\Models\ScholarshipApplication::all();
-
-    return response()->json([
-        'total_applications' => $totalApps,
-        'sample_data' => $allApps->take(3),
-        'scholarship_types' => $allApps->pluck('scholarship_type')->unique(),
-        'statuses' => $allApps->pluck('status')->unique(),
-        'created_dates' => $allApps->pluck('created_at')->map(function($date) {
-            return $date->format('Y-m-d H:i:s');
-        })
-    ]);
-})->name('admin.reports.test-data');
-
 // Students management routes
 Route::get('/admin/students/data', [DashboardController::class, 'getStudentsData'])->name('admin.students.data');
 Route::get('/admin/students/category/{category}', [DashboardController::class, 'getStudentsByCategory'])->name('admin.students.category');
@@ -160,22 +132,6 @@ Route::prefix('api/admin')->group(function () {
 
 // API route for checking duplicate student IDs
 Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
-
-// Test route for student login verification
-Route::get('/test-student-login', function() {
-    $students = \App\Models\User::where('role', 'student')->get();
-    return response()->json([
-        'total_students' => $students->count(),
-        'students' => $students->map(function($student) {
-            return [
-                'student_id' => $student->student_id,
-                'name' => $student->full_name,
-                'email' => $student->email,
-                'password_changed' => $student->password_changed ?? false
-            ];
-        })
-    ]);
-})->name('test.student-login');
 
 // API route for loading subjects (used by student dashboard)
 Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard']);

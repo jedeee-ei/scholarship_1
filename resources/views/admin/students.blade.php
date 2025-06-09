@@ -29,8 +29,9 @@
         <div class="category-tabs">
             <button class="tab-btn {{ !isset($scholarshipTypeFilter) ? 'active' : '' }}"
                 onclick="showStudentCategory('all', this)">All Grantees</button>
-            <button class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'ched' ? 'active' : '' }}"
-                onclick="showStudentCategory('ched', this)">CHED Grantees</button>
+            <button
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'government' ? 'active' : '' }}"
+                onclick="showStudentCategory('government', this)">Government Grantees</button>
             <button
                 class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'academic' ? 'active' : '' }}"
                 onclick="showStudentCategory('academic', this)">Academic Grantees</button>
@@ -49,8 +50,8 @@
             <h3 id="categoryTitle">
                 @if (isset($scholarshipTypeFilter))
                     @switch($scholarshipTypeFilter)
-                        @case('ched')
-                            CHED Grantees
+                        @case('government')
+                            Government Grantees
                         @break
 
                         @case('academic')
@@ -77,61 +78,197 @@
                     style="display: {{ isset($scholarshipTypeFilter) ? 'none' : 'block' }};">
                     <i class="fas fa-upload"></i> Import
                 </button>
-                <button class="btn-primary" onclick="showAddStudentForm()">
+                <button class="btn-primary" onclick="showAddStudentForm()"
+                    style="display: {{ isset($scholarshipTypeFilter) ? 'none' : 'block' }};">
                     <i class="fas fa-plus"></i> Add Grantee
                 </button>
             </div>
         </div>
         <table class="students-table">
             <thead>
-                <tr>
-                    <th>Grantee ID</th>
-                    <th>Name</th>
-                    <th>Course</th>
-                    <th>Benefactor Type</th>
-                    <th>Semester</th>
-                    <th>Academic Year</th>
-                    <th>Status</th>
-                    <th>GWA</th>
-                    <th>Actions</th>
+                <tr id="tableHeader">
+                    @if (isset($scholarshipTypeFilter))
+                        @if ($scholarshipTypeFilter == 'government')
+                            <th>Grantee ID</th>
+                            <th>Full Name</th>
+                            <th>Course/Strand</th>
+                            <th>Benefactor Type</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'academic')
+                            <th>Grantee ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>GWA</th>
+                            <th>Classification</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'employees')
+                            <th>Grantee ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>Employee Name</th>
+                            <th>Relationship</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'private')
+                            <th>Grantee ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>Scholarship Name</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Actions</th>
+                        @endif
+                    @else
+                        <!-- Default view for all grantees -->
+                        <th>Grantee ID</th>
+                        <th>Name</th>
+                        <th>Course/Strand</th>
+                        <th>Benefactor Type</th>
+                        <th>Semester</th>
+                        <th>Academic Year</th>
+                        <th>Actions</th>
+                    @endif
                 </tr>
             </thead>
             <tbody id="studentsTableBody">
                 @forelse($students as $student)
                     <tr data-type="{{ strtolower(str_replace(' ', '', $student['scholarship_type'])) }}">
-                        <td>{{ $student['id'] }}</td>
-                        <td>{{ $student['name'] }}</td>
-                        <td>{{ $student['course'] }}</td>
-                        <td>{{ $student['scholarship_type'] }}</td>
-                        <td>
-                            <span class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
-                        </td>
-                        <td>
-                            <span
-                                class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
-                        </td>
-                        <td><span class="status-badge active">{{ $student['status'] }}</span></td>
-                        <td>{{ $student['gwa'] }}</td>
-                        <td>
-                            <button class="action-btn edit"
-                                onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
-                                title="Edit Grantee" data-student-id="{{ $student['id'] }}"
-                                data-student-name="{{ $student['name'] }}" data-student-course="{{ $student['course'] }}"
-                                data-student-gwa="{{ $student['gwa'] }}"
-                                data-student-email="{{ $student['email'] ?? '' }}"
-                                data-student-contact="{{ $student['contact_number'] ?? '' }}"
-                                data-student-department="{{ $student['department'] ?? '' }}"
-                                data-student-year="{{ $student['year_level'] ?? '' }}"
-                                data-application-id="{{ $student['application_id'] }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
+                        @if (isset($scholarshipTypeFilter))
+                            @if ($scholarshipTypeFilter == 'government')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>
+                                    @if (!empty($student['strand']))
+                                        {{ $student['strand'] }}
+                                    @elseif (!empty($student['course']))
+                                        {{ $student['course'] }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="benefactor-badge">
+                                        {{ $student['government_benefactor_type'] ?? 'N/A' }}
+                                    </span>
+                                </td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'academic')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['course'] }}</td>
+                                <td>{{ $student['gwa'] }}</td>
+                                <td>
+                                    <span class="classification-badge">
+                                        @if ($student['gwa'] >= 1.0 && $student['gwa'] <= 1.25)
+                                            PL (President's Lister)
+                                        @elseif($student['gwa'] == 1.5)
+                                            DL (Dean's Lister)
+                                        @else
+                                            N/A
+                                        @endif
+                                    </span>
+                                </td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'employees')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['course'] }}</td>
+                                <td>{{ $student['employee_name'] ?? 'N/A' }}</td>
+                                <td>{{ $student['employee_relationship'] ?? 'N/A' }}</td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'private')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['course'] }}</td>
+                                <td>{{ $student['scholarship_name'] ?? 'N/A' }}</td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @endif
+                        @else
+                            <!-- Default view for all grantees -->
+                            <td>{{ $student['id'] }}</td>
+                            <td>{{ $student['name'] }}</td>
+                            <td>
+                                @if (!empty($student['strand']))
+                                    {{ $student['strand'] }}
+                                @elseif (!empty($student['course']))
+                                    {{ $student['course'] }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td>{{ $student['scholarship_type'] }}</td>
+                            <td><span class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                            </td>
+                            <td><span
+                                    class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                            </td>
+                            <td>
+                                <button class="action-btn edit"
+                                    onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                    title="Edit Grantee">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="empty-state">
-                            No grantees found. Grantees will appear here once benefactor applications are
-                            approved.
+                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '7' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'private' ? '6' : '7') }}"
+                            class="empty-state">
+                            No grantees found. Grantees will appear here once benefactor applications are approved.
                         </td>
                     </tr>
                 @endforelse
@@ -402,12 +539,12 @@
                     return;
                 }
 
-                // Check for CHED form
-                const chedDeptSelect = document.getElementById('chedDepartment');
-                const chedCourseSelect = document.getElementById('chedCourse');
+                // Check for Government form
+                const chedDeptSelect = document.getElementById('governmentDepartment');
+                const chedCourseSelect = document.getElementById('governmentCourse');
 
                 if (chedDeptSelect && chedCourseSelect && chedDeptSelect.value) {
-                    console.log('Found CHED form, department:', chedDeptSelect.value);
+                    console.log('Found Government form, department:', chedDeptSelect.value);
                     const siteCourses = [
                         'Bachelor of Science in Information Technology',
                         'Bachelor of Science in Computer Science',
@@ -424,7 +561,7 @@
                         chedCourseSelect.appendChild(option);
                     });
                     chedCourseSelect.disabled = false;
-                    console.log('Courses populated for CHED form');
+                    console.log('Courses populated for Government form');
                     return;
                 }
 
@@ -442,12 +579,13 @@
                     });
                 }
 
-                // For CHED scholarship
-                const chedDeptSelect = document.getElementById('chedDepartment');
-                if (chedDeptSelect) {
-                    chedDeptSelect.addEventListener('change', function() {
-                        console.log('CHED Department changed via event listener:', this.value);
-                        loadChedCoursesByDepartment();
+                // For Government scholarship
+                const governmentDeptSelect = document.getElementById('governmentDepartment');
+                if (governmentDeptSelect) {
+                    governmentDeptSelect.addEventListener('change', function() {
+                        console.log('Government Department changed via event listener:', this
+                            .value);
+                        loadGovernmentCoursesByDepartment();
                     });
                 }
             }, 1000);
@@ -482,7 +620,7 @@
             tabButtons.forEach(btn => {
                 const btnText = btn.textContent.toLowerCase();
                 if (
-                    (scholarshipType === 'ched' && btnText.includes('ched')) ||
+                    (scholarshipType === 'government' && btnText.includes('government')) ||
                     (scholarshipType === 'academic' && btnText.includes('academic')) ||
                     (scholarshipType === 'employees' && btnText.includes('employee')) ||
                     (scholarshipType === 'private' && btnText.includes('private'))
@@ -491,7 +629,7 @@
 
                     // Update table title
                     const titles = {
-                        'ched': 'CHED Grantees',
+                        'government': 'Government Grantees',
                         'academic': 'Academic Grantees',
                         'employees': 'Employee Grantees',
                         'private': 'Private Grantees'
@@ -541,7 +679,7 @@
             if (category !== 'all') {
                 // Map category to scholarship type parameter
                 const categoryMap = {
-                    'ched': 'ched',
+                    'government': 'government',
                     'academic': 'academic',
                     'employees': 'employees',
                     'private': 'private'
@@ -724,12 +862,12 @@
             }
         }
 
-        function populateChedCoursesDirectly(department) {
-            console.log('Direct course population for CHED:', department);
+        function populateGovernmentCoursesDirectly(department) {
+            console.log('Direct course population for Government:', department);
 
-            const courseSelect = document.getElementById('chedCourse');
+            const courseSelect = document.getElementById('governmentCourse');
             if (!courseSelect) {
-                console.error('CHED Course select not found');
+                console.error('Government Course select not found');
                 return;
             }
 
@@ -831,21 +969,31 @@
             let fieldsHTML = '';
 
             switch (scholarshipType) {
-                case 'ched':
+                case 'government':
                     fieldsHTML = `
                         <div class="form-section">
-                            <h3>CHED Scholarship Information</h3>
+                            <h3>Government Scholarship Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
+                                    <label for="governmentBenefactorType">Benefactor Type *</label>
+                                    <select id="governmentBenefactorType" name="government_benefactor_type" required>
+                                        <option value="">Select Benefactor Type</option>
+                                        <option value="CHED">CHED (Commission on Higher Education)</option>
+                                        <option value="DOST">DOST (Department of Science and Technology)</option>
+                                        <option value="DSWD">DSWD (Department of Social Welfare and Development)</option>
+                                        <option value="DOLE">DOLE (Department of Labor and Employment)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="educationStage">Education Stage *</label>
-                                    <select id="educationStage" name="education_stage" required onchange="updateChedEducationFields()">
+                                    <select id="educationStage" name="education_stage" required onchange="updateGovernmentEducationFields()">
                                         <option value="">Select Education Stage</option>
                                         <option value="College">College</option>
                                         <option value="BEU">BEU (Basic Education Unit)</option>
                                     </select>
                                 </div>
                             </div>
-                            <div id="chedEducationSpecificFields"></div>
+                            <div id="governmentEducationSpecificFields"></div>
 
                             <!-- Parents Information -->
                             <div class="form-section">
@@ -1075,10 +1223,10 @@
             hideSubjectsSection();
         }
 
-        // CHED Education Fields Handler
-        function updateChedEducationFields() {
+        // Government Education Fields Handler
+        function updateGovernmentEducationFields() {
             const educationStage = document.getElementById('educationStage').value;
-            const specificFields = document.getElementById('chedEducationSpecificFields');
+            const specificFields = document.getElementById('governmentEducationSpecificFields');
 
             if (!specificFields) return;
 
@@ -1090,8 +1238,8 @@
                         <h3>Academic Information</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="chedDepartment">Department *</label>
-                                <select id="chedDepartment" name="department" required onchange="populateChedCoursesDirectly(this.value)">
+                                <label for="governmentDepartment">Department *</label>
+                                <select id="governmentDepartment" name="department" required onchange="populateGovernmentCoursesDirectly(this.value)">
                                     <option value="">Select Department</option>
                                     <option value="SITE">School of Information Technology and Engineering (SITE)</option>
                                     <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
@@ -1100,14 +1248,14 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="chedCourse">Course *</label>
-                                <select id="chedCourse" name="course" required disabled>
+                                <label for="governmentCourse">Course *</label>
+                                <select id="governmentCourse" name="course" required disabled>
                                     <option value="">Select Course</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="chedYearLevel">Year Level *</label>
-                                <select id="chedYearLevel" name="year_level" required>
+                                <label for="governmentYearLevel">Year Level *</label>
+                                <select id="governmentYearLevel" name="year_level" required>
                                     <option value="">Select Year Level</option>
                                     <option value="1st Year">1st Year</option>
                                     <option value="2nd Year">2nd Year</option>
@@ -1124,8 +1272,8 @@
                         <h3>Basic Education Information</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="chedGradeLevel">Grade Level *</label>
-                                <select id="chedGradeLevel" name="grade_level" required onchange="updateChedStrandField()">
+                                <label for="governmentGradeLevel">Grade Level *</label>
+                                <select id="governmentGradeLevel" name="grade_level" required onchange="updateGovernmentStrandField()">
                                     <option value="">Select Grade Level</option>
                                     <option value="Grade 7">Grade 7</option>
                                     <option value="Grade 8">Grade 8</option>
@@ -1135,7 +1283,7 @@
                                     <option value="Grade 12">Grade 12</option>
                                 </select>
                             </div>
-                            <div id="chedStrandField"></div>
+                            <div id="governmentStrandField"></div>
                         </div>
                     </div>
                 `;
@@ -1144,9 +1292,9 @@
             specificFields.innerHTML = fieldsHTML;
         }
 
-        function updateChedStrandField() {
-            const gradeLevel = document.getElementById('chedGradeLevel').value;
-            const strandField = document.getElementById('chedStrandField');
+        function updateGovernmentStrandField() {
+            const gradeLevel = document.getElementById('governmentGradeLevel').value;
+            const strandField = document.getElementById('governmentStrandField');
 
             if (!strandField) return;
 
@@ -1155,8 +1303,8 @@
             if (gradeLevel === 'Grade 11' || gradeLevel === 'Grade 12') {
                 strandHTML = `
                     <div class="form-group">
-                        <label for="chedStrand">Strand *</label>
-                        <select id="chedStrand" name="strand" required>
+                        <label for="governmentStrand">Strand *</label>
+                        <select id="governmentStrand" name="strand" required>
                             <option value="">Select Strand</option>
                             <option value="STEM">Science, Technology, Engineering and Mathematics (STEM)</option>
                             <option value="ABM">Accountancy, Business and Management (ABM)</option>
@@ -1169,11 +1317,11 @@
             strandField.innerHTML = strandHTML;
         }
 
-        async function loadChedCoursesByDepartment() {
-            const departmentSelect = document.getElementById('chedDepartment');
-            const courseSelect = document.getElementById('chedCourse');
+        async function loadGovernmentCoursesByDepartment() {
+            const departmentSelect = document.getElementById('governmentDepartment');
+            const courseSelect = document.getElementById('governmentCourse');
 
-            console.log('Loading CHED courses for department...');
+            console.log('Loading Government courses for department...');
 
             if (!departmentSelect || !courseSelect) {
                 console.error('Department or course select not found');

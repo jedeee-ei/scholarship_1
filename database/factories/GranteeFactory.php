@@ -110,12 +110,12 @@ class GranteeFactory extends Factory
     }
 
     /**
-     * Create a CHED scholarship grantee.
+     * Create a Government scholarship grantee.
      */
-    public function ched(): static
+    public function government(): static
     {
         return $this->state(fn(array $attributes) => [
-            'scholarship_type' => 'ched',
+            'scholarship_type' => 'government',
             'father_last_name' => fake()->lastName(),
             'father_first_name' => fake()->firstName(),
             'father_middle_name' => fake()->optional()->lastName(),

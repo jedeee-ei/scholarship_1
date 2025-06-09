@@ -781,3 +781,216 @@
         font-size: 16px;
     }
 }
+
+    .subjects-grades-container {
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .subjects-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            background-color: #1e5631;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .subjects-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+
+        .subject-row:last-child {
+            border-bottom: none;
+        }
+
+        .subject-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .subject-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .subject-code {
+            font-weight: bold;
+            color: #1e5631;
+            font-size: 14px;
+        }
+
+        .subject-title {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .subject-grade {
+            text-align: center;
+        }
+
+        .grade-display {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            background-color: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .grade-display.has-grade {
+            background-color: #e8f5e8;
+            color: #1e5631;
+            font-weight: bold;
+            border-color: #1e5631;
+        }
+
+        .grade-display.no-grade {
+            background-color: #f8f9fa;
+            color: #999;
+        }
+
+        .subject-units {
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .gwa-summary {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 2px solid #1e5631;
+        }
+
+        .gwa-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .gwa-row:last-child {
+            border-bottom: none;
+        }
+
+        .gwa-final {
+            background-color: #1e5631;
+            color: white;
+            padding: 12px 15px;
+            margin: 10px -15px -15px -15px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .gwa-label {
+            font-weight: 500;
+        }
+
+        .gwa-value {
+            font-weight: bold;
+            color: #1e5631;
+        }
+
+        .gwa-final .gwa-value {
+            color: white;
+        }
+
+        .loading-subjects, .no-subjects-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .loading-subjects i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1e5631;
+        }
+
+        .no-subjects-message p {
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+
+        .no-subjects-message small {
+            color: #999;
+            font-size: 12px;
+        }
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid;
+}
+
+.status-badge.pending {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-color: #ffeaa7;
+}
+
+.status-badge.approved {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.status-badge.rejected {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* Benefactor Type Badge */
+.benefactor-badge {
+    background: linear-gradient(135deg, #e3f2fd, #e1f5fe);
+    color: #0277bd;
+    border: 1px solid #29b6f6;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* Classification Badge for Academic */
+.classification-badge {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 1px solid #ffeaa7;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}

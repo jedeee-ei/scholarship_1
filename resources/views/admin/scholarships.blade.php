@@ -124,7 +124,7 @@
                         <label for="scholarshipType">Type</label>
                         <select id="scholarshipType" name="type" required>
                             <option value="">Select Type</option>
-                            <option value="ched">CHED</option>
+                            <option value="government">Government</option>
                             <option value="academic">Academic</option>
                             <option value="employees">Employee</option>
                             <option value="private">Private</option>
@@ -164,54 +164,32 @@
 
 <!-- Update Semester/Year Modal -->
 <div id="updateSemesterYearModal" class="modal" style="display: none;">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 400px;">
         <div class="modal-header">
-            <h2>Update Semester/Academic Year</h2>
+            <h2>Monitor Benefactor's Scholars</h2>
             <span class="close" onclick="closeUpdateSemesterYearModal()">&times;</span>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 20px;">
             <div class="update-selection">
-                <h4>Select Update Type:</h4>
-                <div class="update-options">
-                    <div class="update-option-card" onclick="selectUpdateType('semester')">
-                        <div class="option-icon">
-                            <i class="fas fa-calendar-week"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Update Semester</h3>
-                            <p>Move from <span id="currentSemester">1st Semester</span> to <span id="nextSemester">2nd
-                                    Semester</span></p>
-                            <small style="color: #dc3545; font-weight: 500;">⚠️ Will archive current
-                                students</small>
-                        </div>
-                        <div class="option-radio">
-                            <input type="radio" name="updateType" value="semester" id="semesterRadio">
-                        </div>
-                    </div>
-                    <div class="update-option-card" onclick="selectUpdateType('year')">
-                        <div class="option-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Update Academic Year</h3>
-                            <p>Move from <span id="currentYear">2024-2025</span> to <span
-                                    id="nextYear">2025-2026</span></p>
-                            <small style="color: #dc3545; font-weight: 500;">⚠️ Will archive current students &
-                                reset
-                                to 1st Semester</small>
-                        </div>
-                        <div class="option-radio">
-                            <input type="radio" name="updateType" value="year" id="yearRadio">
-                        </div>
-                    </div>
+                <div class="radio-group" style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="radio" name="updateType" value="semester" id="semesterRadio"
+                            style="margin-right: 8px;">
+                        <span>Per Semester</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="radio" name="updateType" value="year" id="yearRadio"
+                            style="margin-right: 8px;">
+                        <span>Per Academic Year</span>
+                    </label>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeUpdateSemesterYearModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" id="updateBtn" onclick="executeUpdate()" disabled>
-                <i class="fas fa-sync-alt"></i> Update
-            </button>
+        <div class="modal-footer" style="padding: 15px 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeUpdateSemesterYearModal()"
+                style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Close</button>
+            <button type="button" class="btn btn-primary" id="updateBtn" onclick="executeUpdate()"
+                style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Update</button>
         </div>
     </div>
 </div>
@@ -352,35 +330,10 @@
         }
 
         async function showUpdateSemesterYearModal() {
-            try {
-                // Fetch current semester and year from API
-                const response = await fetch('/admin/current-semester-year');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch current semester/year');
-                }
-
-                const data = await response.json();
-                const currentSemester = data.current_semester;
-                const currentYear = data.current_academic_year;
-
-                // Calculate next semester and year
-                const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
-                const yearParts = currentYear.split('-');
-                const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
-
-                // Update modal content
-                document.getElementById('currentSemester').textContent = currentSemester;
-                document.getElementById('nextSemester').textContent = nextSemester;
-                document.getElementById('currentYear').textContent = currentYear;
-                document.getElementById('nextYear').textContent = nextYear;
-
-                // Show modal with CSS check
-                const modal = document.getElementById('updateSemesterYearModal');
-                modal.style.display = 'block';
-                modal.classList.add('modal-show');
-            } catch (error) {
-                console.error('Error fetching current semester/year:', error);
-            }
+            // Show modal
+            const modal = document.getElementById('updateSemesterYearModal');
+            modal.style.display = 'block';
+            modal.classList.add('modal-show');
         }
 
         function closeUpdateSemesterYearModal() {
@@ -389,28 +342,18 @@
             modal.classList.remove('modal-show');
             // Reset selections
             document.querySelectorAll('input[name="updateType"]').forEach(radio => radio.checked = false);
-            document.querySelectorAll('.update-option-card').forEach(card => card.classList.remove('selected'));
-            document.getElementById('updateBtn').disabled = true;
         }
 
-        function selectUpdateType(type) {
-            // Clear previous selections
-            document.querySelectorAll('.update-option-card').forEach(card => card.classList.remove('selected'));
-            document.querySelectorAll('input[name="updateType"]').forEach(radio => radio.checked = false);
-
-            // Select the clicked option
-            const selectedCard = event.currentTarget;
-            selectedCard.classList.add('selected');
-
-            if (type === 'semester') {
-                document.getElementById('semesterRadio').checked = true;
-            } else if (type === 'year') {
-                document.getElementById('yearRadio').checked = true;
-            }
-
-            // Enable the update button
-            document.getElementById('updateBtn').disabled = false;
-        }
+        // Add event listeners for radio buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('input[name="updateType"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Radio button selection automatically enables the update button
+                    // No additional logic needed since radio buttons handle selection
+                });
+            });
+        });
 
         function executeUpdate() {
             const selectedType = document.querySelector('input[name="updateType"]:checked');
@@ -427,99 +370,122 @@
             }
         }
 
-        function updateSemester() {
-            const currentSemester = document.getElementById('currentSemester').textContent;
-            const nextSemester = document.getElementById('nextSemester').textContent;
-
-            if (confirm(
-                    `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`
-                )) {
-                // Get CSRF token
-                const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                if (!csrfToken) {
-                    alert('Security token not found. Please refresh the page.');
-                    return;
+        async function updateSemester() {
+            try {
+                // Fetch current semester data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
                 }
 
-                // Send request to update semester
-                fetch('/admin/scholarships/update-semester', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            current_semester: currentSemester,
-                            new_semester: nextSemester
+                const data = await response.json();
+                const currentSemester = data.current_semester;
+                const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
+
+                if (confirm(
+                        `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`
+                    )) {
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (!csrfToken) {
+                        alert('Security token not found. Please refresh the page.');
+                        return;
+                    }
+
+                    // Send request to update semester
+                    fetch('/admin/scholarships/update-semester', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                current_semester: currentSemester,
+                                new_semester: nextSemester
+                            })
                         })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert('Semester updated successfully!');
-                            closeUpdateSemesterYearModal();
-                            window.location.reload();
-                        } else {
-                            alert('Failed to update semester: ' + (data.message || 'Unknown error'));
-                        }
-                    })
-                    .catch(error => {
-                        alert('Error updating semester: ' + error.message);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                alert('Semester updated successfully!');
+                                closeUpdateSemesterYearModal();
+                                window.location.reload();
+                            } else {
+                                alert('Failed to update semester: ' + (data.message || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error updating semester: ' + error.message);
+                        });
+                }
+            } catch (error) {
+                alert('Error fetching current data: ' + error.message);
             }
         }
 
-        function updateAcademicYear() {
-            const currentYear = document.getElementById('currentYear').textContent;
-            const nextYear = document.getElementById('nextYear').textContent;
-
-            if (confirm(
-                    `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`
-                )) {
-                // Get CSRF token
-                const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                if (!csrfToken) {
-                    alert('Security token not found. Please refresh the page.');
-                    return;
+        async function updateAcademicYear() {
+            try {
+                // Fetch current academic year data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
                 }
 
-                // Send request to update academic year
-                fetch('/admin/scholarships/update-year', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            current_year: currentYear,
-                            new_year: nextYear
+                const data = await response.json();
+                const currentYear = data.current_academic_year;
+                const yearParts = currentYear.split('-');
+                const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
+
+                if (confirm(
+                        `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`
+                    )) {
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (!csrfToken) {
+                        alert('Security token not found. Please refresh the page.');
+                        return;
+                    }
+
+                    // Send request to update academic year
+                    fetch('/admin/scholarships/update-year', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                current_year: currentYear,
+                                new_year: nextYear
+                            })
                         })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert('Academic year updated successfully!');
-                            closeUpdateSemesterYearModal();
-                            window.location.reload();
-                        } else {
-                            alert('Failed to update academic year: ' + (data.message || 'Unknown error'));
-                        }
-                    })
-                    .catch(error => {
-                        alert('Error updating academic year: ' + error.message);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                alert('Academic year updated successfully!');
+                                closeUpdateSemesterYearModal();
+                                window.location.reload();
+                            } else {
+                                alert('Failed to update academic year: ' + (data.message || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error updating academic year: ' + error.message);
+                        });
+                }
+            } catch (error) {
+                alert('Error fetching current data: ' + error.message);
             }
         }
 

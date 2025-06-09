@@ -36,8 +36,8 @@
                 </div>
                 <div class="setting-item">
                     <div class="setting-info">
-                        <h4>Auto-approve CHED Applications</h4>
-                        <p>Automatically approve applications that meet CHED criteria</p>
+                        <h4>Auto-approve Government Applications</h4>
+                        <p>Automatically approve applications that meet Government criteria</p>
                     </div>
                     <div class="setting-control">
                         <div class="toggle-switch {{ $settings['auto_approve_ched'] ? 'active' : '' }}"

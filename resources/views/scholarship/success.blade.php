@@ -338,8 +338,8 @@
                 <div class="detail-row">
                     <div class="detail-label">Scholarship Type:</div>
                     <div class="detail-value">
-                        @if (session('scholarship_type') == 'ched')
-                            CHED Scholarship
+                        @if (session('scholarship_type') == 'government')
+                            Government Scholarship
                         @elseif(session('scholarship_type') == 'presidents')
                             Institutional Scholarship
                         @elseif(session('scholarship_type') == 'employees')
