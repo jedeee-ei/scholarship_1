@@ -53,6 +53,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Student dashboard route
     Route::get('/student/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])->name('student.dashboard');
 
+    // Student password change
+    Route::post('/student/change-password', [\App\Http\Controllers\Student\DashboardController::class, 'changePassword'])->name('student.change-password');
+
     Route::get('/student/profile', function () {
         return view('student.profile');
     })->name('student.profile');
@@ -79,6 +82,9 @@ Route::post('/applications/{id}/status', [DashboardController::class, 'updateSta
 
 // New admin page routes
 Route::get('/admin/students', [DashboardController::class, 'students'])->name('admin.students');
+Route::get('/admin/student-register', [DashboardController::class, 'studentRegister'])->name('admin.student-register');
+Route::post('/admin/student-register', [DashboardController::class, 'storeStudentRegister'])->name('admin.student-register.store');
+Route::post('/admin/check-student-id', [DashboardController::class, 'checkStudentIdAvailability'])->name('admin.check-student-id');
 Route::post('/students/{id}/update', [DashboardController::class, 'updateStudent'])->name('admin.student.update');
 Route::get('/admin/scholarships', [DashboardController::class, 'scholarships'])->name('admin.scholarships');
 Route::post('/admin/scholarships/add', [DashboardController::class, 'addScholarship'])->name('admin.scholarship.add');
@@ -154,6 +160,22 @@ Route::prefix('api/admin')->group(function () {
 
 // API route for checking duplicate student IDs
 Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
+
+// Test route for student login verification
+Route::get('/test-student-login', function() {
+    $students = \App\Models\User::where('role', 'student')->get();
+    return response()->json([
+        'total_students' => $students->count(),
+        'students' => $students->map(function($student) {
+            return [
+                'student_id' => $student->student_id,
+                'name' => $student->full_name,
+                'email' => $student->email,
+                'password_changed' => $student->password_changed ?? false
+            ];
+        })
+    ]);
+})->name('test.student-login');
 
 // API route for loading subjects (used by student dashboard)
 Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard']);

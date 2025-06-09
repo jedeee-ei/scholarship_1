@@ -9,30 +9,62 @@ class ReportPDFGenerator {
         this.isReady = typeof window.jsPDF !== 'undefined';
         if (!this.isReady) {
             console.warn('jsPDF not loaded. PDF generation may be slower.');
+            console.log('Available window objects:', Object.keys(window).filter(key => key.toLowerCase().includes('pdf')));
+            console.log('Attempting to load jsPDF...');
+            this.loadJsPDF();
+        } else {
+            console.log('jsPDF loaded successfully');
         }
+    }
+
+    /**
+     * Load jsPDF library dynamically
+     */
+    loadJsPDF() {
+        return new Promise((resolve, reject) => {
+            if (typeof window.jsPDF !== 'undefined') {
+                this.isReady = true;
+                resolve();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = () => {
+                console.log('jsPDF loaded dynamically');
+                this.isReady = true;
+                resolve();
+            };
+            script.onerror = () => {
+                console.error('Failed to load jsPDF dynamically');
+                reject(new Error('Failed to load jsPDF library'));
+            };
+            document.head.appendChild(script);
+        });
     }
 
     /**
      * Generate PDF from report data (optimized for speed)
      */
     generatePDF(reportData, reportType, includeCharts = true) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
-                if (this.isReady) {
-                    // jsPDF is already loaded, generate immediately
+                if (!this.isReady) {
+                    console.log('jsPDF not ready, attempting to load...');
+                    try {
+                        await this.loadJsPDF();
+                    } catch (loadError) {
+                        reject(new Error('Failed to load jsPDF library: ' + loadError.message));
+                        return;
+                    }
+                }
+
+                if (this.isReady && typeof window.jsPDF !== 'undefined') {
+                    // jsPDF is loaded, generate PDF
                     this.createPDF(reportData, reportType, includeCharts);
                     resolve();
                 } else {
-                    // Fallback: wait for jsPDF to load
-                    const checkJsPDF = () => {
-                        if (typeof window.jsPDF !== 'undefined') {
-                            this.createPDF(reportData, reportType, includeCharts);
-                            resolve();
-                        } else {
-                            setTimeout(checkJsPDF, 50); // Reduced from 100ms to 50ms
-                        }
-                    };
-                    checkJsPDF();
+                    reject(new Error('jsPDF library is not available'));
                 }
             } catch (error) {
                 reject(error);
@@ -44,8 +76,15 @@ class ReportPDFGenerator {
      * Create the actual PDF (optimized for speed)
      */
     createPDF(reportData, reportType, includeCharts) {
-        const { jsPDF } = window.jsPDF;
-        const doc = new jsPDF();
+        try {
+            if (!window.jsPDF) {
+                throw new Error('jsPDF library not loaded');
+            }
+
+            const { jsPDF } = window.jsPDF;
+            const doc = new jsPDF();
+
+            console.log('Creating PDF with data:', reportData);
 
         // PDF settings (cached for performance)
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -258,9 +297,15 @@ class ReportPDFGenerator {
             );
         }
 
-        // Save the PDF
-        const filename = `${reportType.replace(/\s+/g, '_').toLowerCase()}_report_${new Date().toISOString().split('T')[0]}.pdf`;
-        doc.save(filename);
+            // Save the PDF
+            const filename = `${reportType.replace(/\s+/g, '_').toLowerCase()}_report_${new Date().toISOString().split('T')[0]}.pdf`;
+            console.log('Saving PDF with filename:', filename);
+            doc.save(filename);
+
+        } catch (error) {
+            console.error('Error creating PDF:', error);
+            throw error;
+        }
     }
 
     /**

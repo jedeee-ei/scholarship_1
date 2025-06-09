@@ -264,6 +264,53 @@
     <!-- Preload PDF generator for faster PDF generation -->
     <script src="{{ asset('js/pdf-generator.js') }}"></script>
     <script>
+        // Debug: Check if jsPDF and ReportPDFGenerator are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Reports page loaded');
+            console.log('jsPDF available:', typeof window.jsPDF !== 'undefined');
+            console.log('ReportPDFGenerator available:', typeof window.ReportPDFGenerator !== 'undefined');
+
+            // Test PDF generation capability
+            if (typeof window.jsPDF !== 'undefined') {
+                console.log('jsPDF version:', window.jsPDF.version || 'unknown');
+            } else {
+                console.warn('jsPDF not loaded on page load');
+                // Check again after a delay
+                setTimeout(function() {
+                    if (typeof window.jsPDF !== 'undefined') {
+                        console.log('jsPDF loaded after delay');
+                    } else {
+                        console.error('jsPDF still not loaded after delay');
+                        // Show user-friendly message
+                        showNotification('PDF library loading issue detected. Use "Test PDF" button to verify functionality.', 'warning');
+                    }
+                }, 2000);
+            }
+        });
+
+        // Add diagnostic function
+        function checkPDFStatus() {
+            console.log('=== PDF Status Diagnostic ===');
+            console.log('jsPDF available:', typeof window.jsPDF !== 'undefined');
+            console.log('ReportPDFGenerator available:', typeof window.ReportPDFGenerator !== 'undefined');
+            console.log('Window jsPDF object:', window.jsPDF);
+            console.log('All window properties containing "pdf":', Object.keys(window).filter(key => key.toLowerCase().includes('pdf')));
+
+            if (typeof window.jsPDF !== 'undefined') {
+                try {
+                    const { jsPDF } = window.jsPDF;
+                    console.log('jsPDF constructor available:', typeof jsPDF === 'function');
+                    showNotification('PDF library is working correctly!', 'success');
+                } catch (error) {
+                    console.error('Error accessing jsPDF:', error);
+                    showNotification('PDF library error: ' + error.message, 'error');
+                }
+            } else {
+                showNotification('PDF library not loaded. Check console for details.', 'error');
+            }
+        }
+    </script>
+    <script>
         // Report management functions
         function showApplicationReports() {
             showReportPanel('Application Reports');
@@ -369,8 +416,15 @@
             const exportFormat = document.getElementById('format').value;
             const includeCharts = document.getElementById('includeCharts').value;
 
+            console.log('Generate & Download clicked:', { reportType, dateRange, exportFormat, includeCharts });
+
             if (!reportType) {
                 showNotification('Please select a report type', 'error');
+                return;
+            }
+
+            if (!dateRange) {
+                showNotification('Please select a date range', 'error');
                 return;
             }
 
@@ -406,9 +460,10 @@
                 }
             }
 
-            // Handle PDF generation differently
+            // Handle PDF generation - use server-side generation for reliability
             if (exportFormat === 'pdf') {
-                generatePDFReport(reportType, dateRange, includeCharts, generateBtn, originalText);
+                console.log('Using server-side PDF generation for reliability');
+                generateServerSidePDF(formData, generateBtn, originalText);
                 return;
             }
 
@@ -484,6 +539,8 @@
 
         // PDF Generation Function (optimized for speed)
         function generatePDFReport(reportType, dateRange, includeCharts, generateBtn, originalText) {
+            console.log('Starting PDF generation for:', reportType);
+
             // Update loading message for PDF
             generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Preparing PDF data...';
 
@@ -494,6 +551,8 @@
                 include_charts: includeCharts,
                 limit: 50 // Limit data for faster PDF generation
             };
+
+            console.log('PDF form data:', formData);
 
             // Add custom date range if selected
             if (dateRange === 'custom') {
@@ -555,17 +614,23 @@
                     };
 
                     if (typeof window.ReportPDFGenerator === 'undefined') {
+                        console.log('ReportPDFGenerator not found, loading script...');
                         // Load PDF generator script (faster loading)
                         const script = document.createElement('script');
                         script.src = '/js/pdf-generator.js';
-                        script.onload = generatePDFNow;
+                        script.onload = () => {
+                            console.log('PDF generator script loaded successfully');
+                            generatePDFNow();
+                        };
                         script.onerror = () => {
+                            console.error('Failed to load PDF generator script');
                             showNotification('Error loading PDF generator. Please try again.', 'error');
                             generateBtn.innerHTML = originalText;
                             generateBtn.disabled = false;
                         };
                         document.head.appendChild(script);
                     } else {
+                        console.log('ReportPDFGenerator already available, generating PDF...');
                         // PDF generator already loaded, generate immediately
                         generatePDFNow();
                     }
@@ -576,6 +641,103 @@
             .catch(error => {
                 console.error('Error:', error);
                 showNotification('Error generating PDF report. Please try again.', 'error');
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+            });
+        }
+
+        // Server-side PDF generation
+        function generateServerSidePDF(formData, generateBtn, originalText) {
+            generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Generating PDF report...';
+
+            // Make AJAX request to generate PDF on server
+            fetch('/admin/reports/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+
+                if (contentType && contentType.includes('application/pdf')) {
+                    // Handle PDF response - direct download
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+
+                        // Extract filename from content-disposition header if available
+                        const contentDisposition = response.headers.get('content-disposition');
+                        let filename = `${formData.report_type}_report_${Date.now()}.pdf`;
+                        if (contentDisposition) {
+                            const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                            if (filenameMatch) {
+                                filename = filenameMatch[1];
+                            }
+                        }
+
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+
+                        showNotification('PDF report downloaded successfully!', 'success');
+                        return { success: true };
+                    });
+                } else if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else if (contentType && contentType.includes('text/html')) {
+                    // Handle HTML response - open in new window for printing (fallback)
+                    return response.text().then(html => {
+                        const printWindow = window.open('', '_blank');
+                        printWindow.document.write(html);
+                        printWindow.document.close();
+
+                        showNotification('Report opened in new window. Use Ctrl+P to save as PDF.', 'info');
+                        return { success: true };
+                    });
+                } else {
+                    // Handle other file downloads
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${formData.report_type}_report_${Date.now()}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+
+                        showNotification('Report downloaded successfully!', 'success');
+                        return { success: true };
+                    });
+                }
+            })
+            .then(data => {
+                if (data && data.success && data.download_url) {
+                    // Handle JSON response with download URL
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = data.download_url;
+                    downloadLink.download = `report_${formData.report_type}_${Date.now()}.pdf`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
+                    showNotification('Report generated successfully!', 'success');
+                } else if (data && !data.success && data.message) {
+                    showNotification(data.message || 'Failed to generate PDF report', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Server-side PDF generation error:', error);
+                showNotification('Error generating PDF report. Please try again.', 'error');
+            })
+            .finally(() => {
+                // Restore button state
                 generateBtn.innerHTML = originalText;
                 generateBtn.disabled = false;
             });
@@ -912,17 +1074,76 @@
             }
         }
 
+        // Test function to verify PDF generation works
+        function testPDFGeneration() {
+            console.log('Testing PDF generation...');
+
+            if (typeof window.jsPDF === 'undefined') {
+                console.error('jsPDF not loaded, attempting to load...');
+                showNotification('jsPDF library not loaded, attempting to load...', 'info');
+
+                // Try to load jsPDF dynamically
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.onload = function() {
+                    console.log('jsPDF loaded successfully, retrying test...');
+                    showNotification('jsPDF loaded successfully, generating test PDF...', 'success');
+                    setTimeout(testPDFGeneration, 500); // Retry after a short delay
+                };
+                script.onerror = function() {
+                    console.error('Failed to load jsPDF');
+                    showNotification('Failed to load jsPDF library. Please check your internet connection.', 'error');
+                };
+                document.head.appendChild(script);
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jsPDF;
+                const doc = new jsPDF();
+                doc.text('Test PDF Generation', 20, 20);
+                doc.text('This is a test to verify PDF generation is working.', 20, 40);
+                doc.text('Generated on: ' + new Date().toLocaleString(), 20, 60);
+                doc.text('jsPDF Version: ' + (window.jsPDF.version || 'Unknown'), 20, 80);
+                doc.save('test-pdf-generation.pdf');
+                showNotification('Test PDF generated successfully!', 'success');
+                console.log('Test PDF generated successfully');
+            } catch (error) {
+                console.error('Test PDF generation failed:', error);
+                showNotification('Test PDF generation failed: ' + error.message, 'error');
+            }
+        }
+
         function showNotification(message, type = 'info') {
             // Create notification element
             const notification = document.createElement('div');
             notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                padding: 16px;
+                max-width: 400px;
+                z-index: 1100;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideIn 0.3s ease-out;
+                border-left: 4px solid ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            `;
+
             notification.innerHTML = `
-                <div class="notification-content">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <div class="notification-content" style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"
+                       style="font-size: 16px; color: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};"></i>
                     <span>${message}</span>
                 </div>
-                <button class="notification-close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
+                <button class="notification-close" onclick="this.parentElement.remove()"
+                        style="background: none; border: none; cursor: pointer; padding: 4px;">
+                    <i class="fas fa-times" style="color: #666;"></i>
                 </button>
             `;
 

@@ -9,16 +9,20 @@ use App\Models\ArchivedStudent;
 use App\Models\SystemSetting;
 use App\Models\Announcement;
 use App\Models\Grantee;
+use App\Models\User;
 use App\Services\GranteeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class DashboardController extends Controller
 {
@@ -769,12 +773,30 @@ class DashboardController extends Controller
             // Create filename
             $filename = strtolower(str_replace(' ', '_', $title)) . '_' . date('Y-m-d_H-i-s') . '.pdf';
 
-            // For now, return HTML as downloadable file (can be opened in browser and printed as PDF)
-            return response()->streamDownload(function () use ($html) {
-                echo $html;
-            }, str_replace('.pdf', '.html', $filename), [
-                'Content-Type' => 'text/html',
-                'Content-Disposition' => 'attachment; filename="' . str_replace('.pdf', '.html', $filename) . '"'
+            // Configure DomPDF options
+            $options = new Options();
+            $options->set('defaultFont', 'Arial');
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isPhpEnabled', true);
+
+            // Create DomPDF instance
+            $dompdf = new Dompdf($options);
+
+            // Load HTML content
+            $dompdf->loadHtml($html);
+
+            // Set paper size and orientation
+            $dompdf->setPaper('A4', 'portrait');
+
+            // Render the PDF
+            $dompdf->render();
+
+            // Return PDF as download
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Length' => strlen($dompdf->output()),
             ]);
 
         } catch (\Exception $e) {
@@ -2819,5 +2841,92 @@ class DashboardController extends Controller
         return response($file, 200)
             ->header('Content-Type', $mimeType)
             ->header('Content-Disposition', 'inline; filename="' . ($document['original_name'] ?? 'document') . '"');
+    }
+
+    /**
+     * Show the student register page
+     */
+    public function studentRegister()
+    {
+        return view('admin.student-register');
+    }
+
+    /**
+     * Store a new student registration
+     */
+    public function storeStudentRegister(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|string|unique:users,student_id',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Create new user account for the student with default password
+            $defaultPassword = 'student123'; // Static default password
+
+            $user = User::create([
+                'name' => $request->first_name . ' ' . $request->last_name, // Combine first and last name
+                'student_id' => $request->student_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($defaultPassword),
+                'role' => 'student',
+                'status' => 'active',
+                'password_changed' => false, // Flag to force password change on first login
+            ]);
+
+            DB::commit();
+
+            Log::info('New student registered by admin', [
+                'student_id' => $user->student_id,
+                'admin_user' => Auth::user() ? Auth::user()->name : 'Admin',
+                'student_name' => $user->first_name . ' ' . $user->last_name,
+                'default_password_assigned' => true
+            ]);
+
+            return redirect()->route('admin.student-register')
+                ->with('success', 'Student registered successfully!')
+                ->with('student_data', [
+                    'student_id' => $user->student_id,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                    'email' => $user->email,
+                    'password' => $defaultPassword
+                ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Error registering new student', [
+                'student_id' => $request->student_id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '❌ Error registering student: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if student ID is available
+     */
+    public function checkStudentIdAvailability(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|string'
+        ]);
+
+        $exists = User::where('student_id', $request->student_id)->exists();
+
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'Student ID already exists' : 'Student ID is available'
+        ]);
     }
 }

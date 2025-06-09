@@ -92,6 +92,10 @@
                     class="nav-item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i> Reports
                 </a>
+                <a href="{{ route('admin.student-register') }}"
+                    class="nav-item {{ request()->routeIs('admin.student-register*') ? 'active' : '' }}">
+                    <i class="fas fa-users-cog"></i> Users Management
+                </a>
                 <a href="{{ route('admin.settings') }}"
                     class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i> Settings
@@ -108,8 +112,70 @@
     <!-- Notification Component -->
     @include('components.notification')
 
-    <!-- Preload jsPDF for faster PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Load jsPDF with multiple fallback options -->
+    <script>
+        // Global jsPDF loading function with multiple CDN sources
+        window.loadJsPDF = function() {
+            return new Promise((resolve, reject) => {
+                if (typeof window.jsPDF !== 'undefined') {
+                    console.log('jsPDF already loaded');
+                    resolve();
+                    return;
+                }
+
+                const cdnSources = [
+                    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                    'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+                    'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+                    'https://cdn.skypack.dev/jspdf@2.5.1'
+                ];
+
+                let currentIndex = 0;
+
+                function tryLoadFromCDN() {
+                    if (currentIndex >= cdnSources.length) {
+                        console.error('All jsPDF CDN sources failed');
+                        reject(new Error('Failed to load jsPDF from all CDN sources'));
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = cdnSources[currentIndex];
+
+                    script.onload = function() {
+                        console.log(`jsPDF loaded successfully from: ${cdnSources[currentIndex]}`);
+                        // Verify jsPDF is actually available
+                        setTimeout(() => {
+                            if (typeof window.jsPDF !== 'undefined') {
+                                window.jsPDFLoaded = true;
+                                resolve();
+                            } else {
+                                console.warn('jsPDF script loaded but object not available, trying next CDN...');
+                                currentIndex++;
+                                tryLoadFromCDN();
+                            }
+                        }, 100);
+                    };
+
+                    script.onerror = function() {
+                        console.warn(`Failed to load jsPDF from: ${cdnSources[currentIndex]}`);
+                        currentIndex++;
+                        tryLoadFromCDN();
+                    };
+
+                    document.head.appendChild(script);
+                }
+
+                tryLoadFromCDN();
+            });
+        };
+
+        // Try to load jsPDF immediately
+        window.loadJsPDF().catch(error => {
+            console.error('Initial jsPDF load failed:', error);
+            window.jsPDFLoadError = true;
+        });
+    </script>
 
     <!-- Base JavaScript -->
     <script>

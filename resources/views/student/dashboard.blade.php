@@ -9,6 +9,141 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/student/student-dashboard.css') }}">
+
+    <style>
+        /* Enhanced Success Message Styles */
+        @keyframes successSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes successSlideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes toastSlideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%) scale(0.8);
+            }
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 10000 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 15px !important;
+            max-width: 400px !important;
+        }
+
+        .toast {
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+            padding: 20px !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 15px !important;
+            animation: toastSlideIn 0.4s ease-out !important;
+            border-left: 5px solid #28a745 !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        .toast-success {
+            background: linear-gradient(135deg, #ffffff, #f8fff8) !important;
+        }
+
+        .toast-icon {
+            flex-shrink: 0 !important;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 18px !important;
+            background: linear-gradient(135deg, #28a745, #20c997) !important;
+            color: white !important;
+        }
+
+        .toast-content {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+
+        .toast-title {
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            color: #2c3e50 !important;
+            margin-bottom: 4px !important;
+        }
+
+        .toast-message {
+            font-size: 14px !important;
+            color: #6c757d !important;
+            line-height: 1.4 !important;
+        }
+
+        .toast-close {
+            background: none !important;
+            border: none !important;
+            color: #adb5bd !important;
+            cursor: pointer !important;
+            padding: 4px !important;
+            border-radius: 4px !important;
+            transition: all 0.2s ease !important;
+            flex-shrink: 0 !important;
+        }
+
+        .toast-close:hover {
+            background: #f8f9fa !important;
+            color: #6c757d !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,11 +171,17 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
             <div class="welcome-text">
-                Welcome, Student User!
+                <div class="welcome-greeting">Welcome, {{ $student->full_name ?? $student->name ?? 'Student' }}!</div>
+                @if($student->student_id)
+                    <div class="student-id-display">Student ID: {{ $student->student_id }}</div>
+                @endif
             </div>
             <div class="user-actions">
                 <a href="{{ route('scholarship.tracker') }}" class="action-link">
                     <i class="fas fa-search"></i> Track Application
+                </a>
+                <a href="#" class="action-link" onclick="showSettingsModal(); return false;">
+                    <i class="fas fa-cog"></i> Settings
                 </a>
             </div>
         </div>
@@ -1904,7 +2045,462 @@
                 });
             });
         }
+
+        // Settings Modal Functions
+        function showSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            console.log('Settings modal opened');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function switchSettingsTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.settings-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + '-tab-content').style.display = 'block';
+
+            // Add active class to selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Password form validation and submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('changePasswordForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submission intercepted - AJAX will be used');
+
+            const currentPassword = document.getElementById('current_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('new_password_confirmation').value;
+
+            // Clear previous errors
+            clearPasswordErrors();
+
+            // Validate passwords
+            let hasErrors = false;
+
+            if (newPassword.length < 8) {
+                showPasswordError('new_password', 'Password must be at least 8 characters long');
+                hasErrors = true;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showPasswordError('new_password_confirmation', 'Passwords do not match');
+                hasErrors = true;
+            }
+
+            if (currentPassword === newPassword) {
+                showPasswordError('new_password', 'New password must be different from current password');
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                return;
+            }
+
+            // Submit form via AJAX
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing Password...';
+            submitBtn.disabled = true;
+
+            console.log('Making AJAX request to:', this.action);
+            console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(JSON.stringify(data));
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+
+                if (data.success) {
+                    showPasswordSuccess(data.message);
+                    this.reset();
+                    // Update password status in profile tab
+                    updatePasswordStatus(true);
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            showPasswordError(field, data.errors[field][0]);
+                        });
+                    } else {
+                        showPasswordError('current_password', data.message || 'An error occurred');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                try {
+                    const errorData = JSON.parse(error.message);
+                    if (errorData.errors) {
+                        Object.keys(errorData.errors).forEach(field => {
+                            showPasswordError(field, errorData.errors[field][0]);
+                        });
+                    } else {
+                        showPasswordError('current_password', errorData.message || 'An error occurred');
+                    }
+                } catch (parseError) {
+                    showPasswordError('current_password', 'An error occurred. Please try again.');
+                }
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+                });
+            }
+        });
+
+        function clearPasswordErrors() {
+            document.querySelectorAll('.password-error').forEach(error => error.remove());
+            document.querySelectorAll('.password-success').forEach(success => success.remove());
+            document.querySelectorAll('.password-input-container input').forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+        }
+
+        function showPasswordError(fieldName, message) {
+            const field = document.getElementById(fieldName);
+            const container = field.closest('.form-group');
+
+            field.classList.add('error');
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'password-error';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            container.appendChild(errorDiv);
+        }
+
+        function showPasswordSuccess(message) {
+            console.log('showPasswordSuccess called with message:', message);
+
+            // Remove any existing success messages
+            document.querySelectorAll('.password-success').forEach(success => success.remove());
+
+            const form = document.getElementById('changePasswordForm');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'password-success';
+            successDiv.style.cssText = `
+                background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+                border: 2px solid #28a745 !important;
+                border-left: 6px solid #28a745 !important;
+                color: #155724 !important;
+                padding: 18px 20px !important;
+                border-radius: 12px !important;
+                margin-bottom: 25px !important;
+                font-size: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                font-weight: 600 !important;
+                box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2) !important;
+                animation: successSlideIn 0.5s ease-out !important;
+                position: relative !important;
+                overflow: hidden !important;
+            `;
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle" style="color: #28a745; font-size: 20px; background: white; padding: 8px; border-radius: 50%; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);"></i>
+                <div class="success-content" style="line-height: 1.4;">
+                    <strong style="font-size: 16px; display: block; margin-bottom: 4px;">Success!</strong>
+                    ${message}
+                </div>
+            `;
+            form.insertBefore(successDiv, form.firstChild);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.style.animation = 'successSlideOut 0.3s ease-in forwards';
+                    setTimeout(() => {
+                        if (successDiv.parentNode) {
+                            successDiv.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+
+            // Also show a toast notification
+            showToastNotification('Password Changed Successfully!', 'Your password has been updated and you are now using a custom password.', 'success');
+
+            // Add celebration effect
+            createCelebrationEffect();
+        }
+
+        function updatePasswordStatus(changed) {
+            const statusElement = document.querySelector('.password-status');
+            const warningElement = document.querySelector('.password-warning');
+
+            if (statusElement) {
+                statusElement.textContent = changed ? 'Custom Password Set' : 'Using Default Password';
+                statusElement.className = `password-status ${changed ? 'changed' : 'default'}`;
+            }
+
+            if (warningElement && changed) {
+                warningElement.style.display = 'none';
+            }
+        }
+
+        // Toast notification system
+        function showToastNotification(title, message, type = 'success') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'toast-container';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            // Add toast to container
+            toastContainer.appendChild(toast);
+
+            // Auto-remove after 6 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 6000);
+        }
+
+        // Celebration effect for successful password change
+        function createCelebrationEffect() {
+            const colors = ['#28a745', '#20c997', '#17a2b8', '#ffc107', '#fd7e14'];
+            const celebrationContainer = document.createElement('div');
+            celebrationContainer.className = 'celebration-container';
+            celebrationContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 9999;
+            `;
+            document.body.appendChild(celebrationContainer);
+
+            // Create confetti particles
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: -10px;
+                    left: ${Math.random() * 100}%;
+                    animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    transform: rotate(${Math.random() * 360}deg);
+                `;
+                celebrationContainer.appendChild(confetti);
+            }
+
+            // Remove celebration after animation
+            setTimeout(() => {
+                if (celebrationContainer.parentNode) {
+                    celebrationContainer.remove();
+                }
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                closeSettingsModal();
+            }
+        }
     </script>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-modal-content">
+            <div class="settings-modal-header">
+                <h2><i class="fas fa-cog"></i> Account Settings</h2>
+                <button class="close-settings-btn" onclick="closeSettingsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="settings-tabs">
+                <button id="profile-tab" class="settings-tab active" onclick="switchSettingsTab('profile')">
+                    <i class="fas fa-user"></i> Profile Details
+                </button>
+                <button id="password-tab" class="settings-tab" onclick="switchSettingsTab('password')">
+                    <i class="fas fa-lock"></i> Change Password
+                </button>
+            </div>
+
+            <div class="settings-modal-body">
+                <!-- Profile Details Tab -->
+                <div id="profile-tab-content" class="settings-tab-content">
+                    <div class="settings-section">
+                        <h3>Personal Information</h3>
+                        <div class="profile-details">
+                            <div class="detail-row">
+                                <label>Full Name:</label>
+                                <span>{{ $student->full_name ?? $student->name ?? 'Not Set' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>First Name:</label>
+                                <span>{{ $student->first_name ?? 'Not Set' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Last Name:</label>
+                                <span>{{ $student->last_name ?? 'Not Set' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Student ID:</label>
+                                <span class="student-id-badge">{{ $student->student_id ?? 'Not Set' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Email Address:</label>
+                                <span>{{ $student->email ?? 'Not Set' }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Account Status:</label>
+                                <span class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
+                                    {{ ucfirst($student->status ?? 'Unknown') }}
+                                </span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Password Status:</label>
+                                <span class="password-status {{ $student->password_changed ? 'changed' : 'default' }}">
+                                    {{ $student->password_changed ? 'Custom Password Set' : 'Using Default Password' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        @if(!$student->password_changed)
+                        <div class="password-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Security Notice:</strong> You are still using the default password. Please change it for better security.
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Change Password Tab -->
+                <div id="password-tab-content" class="settings-tab-content" style="display: none;">
+                    <div class="settings-section">
+                        <h3>Change Password</h3>
+                        <form id="changePasswordForm" action="{{ route('student.change-password') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="current_password">Current Password</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="current_password" name="current_password"
+                                           placeholder="Enter your current password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('current_password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new_password">New Password</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="new_password" name="new_password"
+                                           placeholder="Enter your new password" required minlength="8">
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new_password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="password-hint">Password must be at least 8 characters long</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new_password_confirmation">Confirm New Password</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation"
+                                           placeholder="Confirm your new password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new_password_confirmation')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i> Change Password
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="closeSettingsModal()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
