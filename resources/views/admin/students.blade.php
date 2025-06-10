@@ -4,6 +4,181 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/students.css') }}">
+    <style>
+        /* Grade Disqualification Notification Styles */
+        .main-screen-grade-disqualification-notification {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+            animation: slideDownBounce 0.5s ease-out;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .notification-icon {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .notification-text {
+            flex: 1;
+            color: #721c24;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .notification-text strong {
+            color: #dc3545;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .warning-note {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #856404;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 6px 10px;
+            border-radius: 4px;
+            border-left: 3px solid #dc3545;
+        }
+
+        .notification-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            background: rgba(220, 53, 69, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Disqualified Grade Input Styles */
+        input.grade-disqualified {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+            background-color: #fff5f5 !important;
+            animation: gradeShake 0.5s ease-in-out;
+        }
+
+        @keyframes gradeShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes slideDownBounce {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(5px) scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Responsive Design for Grade Disqualification Notification */
+        @media (max-width: 768px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 15px 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .notification-content {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .notification-icon i {
+                font-size: 1.2rem;
+            }
+
+            .notification-text {
+                font-size: 0.9rem;
+            }
+
+            .notification-text strong {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 10px 5px;
+            }
+
+            .notification-content {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .notification-text {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+
+            .notification-close {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
 @endpush
 
 @section('breadcrumbs')
@@ -1088,7 +1263,7 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="calculatedGwa">Calculated GWA</label>
-                                            <input type="number" id="calculatedGwa" name="gwa" step="0.01" min="1.0" max="4.0" readonly>
+                                            <input type="number" id="calculatedGwa" name="gwa" step="0.01" min="1.0" max="1.75" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -1632,7 +1807,8 @@
                                    min="1.0"
                                    max="4.0"
                                    step="0.01"
-                                   onchange="calculateGWA()"
+                                   onchange="calculateGWA(); validateAcademicGrades();"
+                                   oninput="validateIndividualGrade(this)"
                                    data-units="${subject.units}">
                         </div>
                     </div>
@@ -1674,6 +1850,7 @@
             let totalGradePoints = 0;
             let totalUnits = 0;
             let hasAllGrades = true;
+            let hasDisqualifyingGrade = false;
 
             gradeInputs.forEach(input => {
                 const grade = parseFloat(input.value);
@@ -1682,6 +1859,11 @@
                 if (!isNaN(grade) && grade > 0) {
                     totalGradePoints += grade * units;
                     totalUnits += units;
+
+                    // Check for disqualifying grade (2.0 and above)
+                    if (grade >= 2.0) {
+                        hasDisqualifyingGrade = true;
+                    }
                 } else {
                     hasAllGrades = false;
                 }
@@ -1693,13 +1875,125 @@
             } else {
                 gwaInput.value = '';
             }
+
+            // Check for disqualifying grades and show notification
+            if (hasDisqualifyingGrade) {
+                showGradeDisqualificationNotification();
+            } else {
+                removeGradeDisqualificationNotification();
+            }
+        }
+
+        // Show grade disqualification notification
+        function showGradeDisqualificationNotification() {
+            // Remove any existing grade disqualification notifications
+            removeGradeDisqualificationNotification();
+
+            // Create grade disqualification notification
+            const notification = document.createElement('div');
+            notification.className = 'main-screen-grade-disqualification-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Academic Scholarship Disqualification!</strong><br>
+                        You have entered one or more grades of 2.0 or below, which disqualifies this student from the Academic Scholarship program.<br>
+                        <span class="warning-note">Academic Scholarship requires all grades to be between 1.0 and 1.75 (passing grades). Grades of 2.0 and below are not eligible. Please review the grades and ensure they meet the requirements.</span>
+                    </div>
+                    <button class="notification-close" onclick="removeGradeDisqualificationNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            // Insert notification at the top of the modal content
+            const modalContent = document.querySelector('.modal-content') || document.querySelector('.container') || document.body;
+            modalContent.insertBefore(notification, modalContent.firstChild);
+
+            // Auto-scroll to show the notification
+            notification.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+            // Mark form as having disqualifying grades
+            const academicForm = document.querySelector('form input[value="academic"]');
+            if (academicForm) {
+                academicForm.closest('form').setAttribute('data-grade-disqualified', 'true');
+            }
+        }
+
+        // Remove grade disqualification notification
+        function removeGradeDisqualificationNotification() {
+            const existingNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Remove disqualification flag from form
+            const academicForm = document.querySelector('form input[value="academic"]');
+            if (academicForm) {
+                academicForm.closest('form').removeAttribute('data-grade-disqualified');
+            }
+        }
+
+        // Validate individual grade input
+        function validateIndividualGrade(input) {
+            const grade = parseFloat(input.value);
+
+            // Remove any existing grade error styling
+            input.classList.remove('grade-disqualified');
+
+            // If grade is entered and is 2.0 or above, mark as disqualified
+            if (!isNaN(grade) && grade > 0 && grade >= 2.0) {
+                input.classList.add('grade-disqualified');
+            }
+        }
+
+        // Validate all academic grades
+        function validateAcademicGrades() {
+            const gradeInputs = document.querySelectorAll('input[name^="subject_grades"]');
+            let hasDisqualifyingGrade = false;
+
+            gradeInputs.forEach(input => {
+                const grade = parseFloat(input.value);
+                if (!isNaN(grade) && grade > 0 && grade >= 2.0) {
+                    hasDisqualifyingGrade = true;
+                }
+            });
+
+            // Show or hide disqualification notification
+            if (hasDisqualifyingGrade) {
+                showGradeDisqualificationNotification();
+            } else {
+                removeGradeDisqualificationNotification();
+            }
         }
 
         function saveNewStudent(event) {
             event.preventDefault();
 
-            const formData = new FormData(document.getElementById('addStudentForm'));
+            const form = document.getElementById('addStudentForm');
+            const formData = new FormData(form);
             const studentData = Object.fromEntries(formData);
+
+            // Check for disqualifying grades in academic scholarship
+            const scholarshipType = studentData.scholarship_type;
+            if (scholarshipType === 'academic') {
+                if (form.getAttribute('data-grade-disqualified') === 'true') {
+                    // Scroll to the grade disqualification notification
+                    const gradeNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+                    if (gradeNotification) {
+                        gradeNotification.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                    return; // Prevent form submission
+                }
+            }
 
             // Here you would typically send the data to your backend
             console.log('Saving new student:', studentData);

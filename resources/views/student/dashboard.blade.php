@@ -128,6 +128,1001 @@
             background: #f8f9fa !important;
             color: #6c757d !important;
         }
+
+        /* Individual Grade Alert Styles - Critical Error */
+        .grade-alert {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #721c24;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: fadeIn 0.2s ease-out;
+            font-weight: 600;
+        }
+
+        .grade-alert .alert-icon {
+            color: #dc3545;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .grade-alert .alert-text {
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        /* GWA Disqualification Alert */
+        .gwa-disqualification-alert {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #721c24;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease-out;
+            font-weight: 600;
+        }
+
+        .gwa-disqualification-alert .alert-icon {
+            color: #dc3545;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .gwa-disqualification-alert .alert-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        /* Application Blocked Alert */
+        .application-blocked-alert {
+            background: #f8d7da;
+            border: 3px solid #dc3545;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #721c24;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        }
+
+        .application-blocked-alert .alert-icon {
+            color: #dc3545;
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .application-blocked-alert .alert-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #dc3545;
+        }
+
+        .application-blocked-alert .alert-text {
+            line-height: 1.5;
+        }
+
+        /* Disabled Submit Button */
+        .submit-btn:disabled {
+            background: #dc3545 !important;
+            border-color: #dc3545 !important;
+            cursor: not-allowed !important;
+            opacity: 0.8 !important;
+            font-weight: 700 !important;
+        }
+
+        .submit-btn:disabled:hover {
+            background: #dc3545 !important;
+            border-color: #dc3545 !important;
+            transform: none !important;
+        }
+
+        /* Disqualified Grade Input */
+        .grade-disqualified {
+            border: 2px solid #dc3545 !important;
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            font-weight: 600 !important;
+        }
+
+        .grade-disqualified:focus {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Disqualified Grade Input Styles */
+        input.grade-disqualified {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+            background-color: #fff5f5 !important;
+            animation: gradeShake 0.5s ease-in-out;
+        }
+
+        @keyframes gradeShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Auto-filled Field Styles */
+        .auto-filled-group input[readonly],
+        .student-id-group input[readonly] {
+            background-color: #f8f9fa !important;
+            border: 2px solid #e9ecef !important;
+            color: #495057 !important;
+            font-weight: 600 !important;
+            cursor: not-allowed !important;
+            position: relative;
+            padding-right: 40px !important;
+        }
+
+        .auto-filled-group input[readonly]:focus,
+        .student-id-group input[readonly]:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+            border-color: #80bdff !important;
+        }
+
+        .auto-filled-group,
+        .student-id-group {
+            position: relative;
+        }
+
+        .auto-filled-group::after,
+        .student-id-group::after {
+            content: "\f023";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            font-size: 14px;
+            color: #fd7e14;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .auto-filled-group label,
+        .student-id-group label {
+            font-weight: 600;
+            color: #052F11;
+        }
+
+        .auto-filled-group .form-help-text,
+        .student-id-group .form-help-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .auto-filled-group .form-help-text i,
+        .student-id-group .form-help-text i {
+            color: #17a2b8;
+        }
+
+        /* Contact Number Validation Styles */
+        input.contact-error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+
+        .contact-error-message {
+            color: #dc3545 !important;
+            font-size: 0.875rem !important;
+            margin-top: 5px !important;
+            display: block !important;
+        }
+
+        .contact-error-message i {
+            margin-right: 5px;
+        }
+
+        /* Contact Number Field Styling */
+        input[name="contact_number"] {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        input[name="contact_number"]:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-color: #80bdff;
+        }
+
+        /* Track Application Tab Styles */
+        .track-application-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .track-application-container {
+            background: white;
+            border-radius: 15px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .track-application-header {
+            background: linear-gradient(135deg, #052F11 0%, #0a5a1f 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .track-application-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-track-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-track-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .track-application-content {
+            padding: 30px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .application-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .application-card:hover {
+            border-color: #052F11;
+            box-shadow: 0 8px 25px rgba(5, 47, 17, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Application Card Styles */
+        .enhanced-card {
+            max-width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .application-header-enhanced {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .application-id-enhanced {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #052F11;
+        }
+
+        .application-id-enhanced i {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .application-section {
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #052F11;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #052F11;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header i {
+            color: #052F11;
+            font-size: 0.9rem;
+        }
+
+        .application-details-enhanced {
+            display: grid;
+            gap: 8px;
+        }
+
+        .detail-row-enhanced {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 6px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row-enhanced:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label-enhanced {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.85rem;
+            flex: 0 0 auto;
+            margin-right: 15px;
+            min-width: 100px;
+        }
+
+        .detail-value-enhanced {
+            color: #052F11;
+            font-size: 0.85rem;
+            text-align: right;
+            flex: 1;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .highlight-row {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin: 5px 0;
+        }
+
+        .gwa-value {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #155724;
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .application-id {
+            font-weight: 600;
+            color: #052F11;
+            font-size: 1.1rem;
+        }
+
+        .application-id i {
+            margin-right: 8px;
+            color: #6c757d;
+        }
+
+        .application-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending-review {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-under-committee-review {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-decision-made {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .application-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            flex: 0 0 auto;
+            margin-right: 15px;
+        }
+
+        .detail-value {
+            color: #052F11;
+            text-align: right;
+            flex: 1;
+        }
+
+        .application-progress {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #052F11 0%, #0a5a1f 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .application-actions {
+            text-align: center;
+        }
+
+        .view-details-btn {
+            background: linear-gradient(135deg, #052F11 0%, #0a5a1f 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .view-details-btn:hover {
+            background: linear-gradient(135deg, #0a5a1f 0%, #052F11 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 47, 17, 0.3);
+        }
+
+        .no-applications-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .no-applications-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+
+        .no-applications-message h3 {
+            color: #052F11;
+            margin-bottom: 15px;
+        }
+
+        .start-application-btn {
+            background: linear-gradient(135deg, #052F11 0%, #0a5a1f 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .start-application-btn:hover {
+            background: linear-gradient(135deg, #0a5a1f 0%, #052F11 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 47, 17, 0.3);
+        }
+
+        /* Application Details Modal */
+        .application-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .application-details-modal .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .application-details-modal .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .application-details-modal .modal-header {
+            background: linear-gradient(135deg, #052F11 0%, #0a5a1f 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .application-details-modal .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .application-details-modal .close-modal-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .application-details-modal .close-modal-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .application-details-modal .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .application-details-content .details-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .application-details-content .details-section:last-child {
+            border-bottom: none;
+        }
+
+        .application-details-content h4 {
+            color: #052F11;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .detail-item span {
+            color: #052F11;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        /* Landscape Layout Styles */
+        .landscape-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .application-header-landscape {
+            background: linear-gradient(135deg, #052F11 0%, #0a5a1f 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .application-id-landscape {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .application-id-landscape i {
+            font-size: 1rem;
+        }
+
+        .form-section-landscape {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section-landscape:last-child {
+            border-bottom: none;
+        }
+
+        .section-title-landscape {
+            background: #f8f9fa;
+            color: #052F11;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            margin: -20px -25px 20px -25px;
+            border-bottom: 2px solid #052F11;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-landscape i {
+            font-size: 0.8rem;
+        }
+
+        .form-grid-landscape {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-row-landscape {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+
+        .form-field-landscape {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-field-landscape.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field-landscape.highlight-field {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .form-field-landscape label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-field-landscape span {
+            color: #052F11;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            min-height: 20px;
+        }
+
+        .form-field-landscape.highlight-field span {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #155724;
+        }
+
+
+
+        .detail-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .detail-section h3 {
+            color: #052F11;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-section h3 i {
+            color: #28a745;
+            font-size: 1rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item span {
+            color: #052F11;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .highlight-value {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+            color: #856404 !important;
+            font-weight: 700 !important;
+            border-color: #ffeaa7 !important;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+            color: #155724 !important;
+            font-weight: 700 !important;
+            border-color: #c3e6cb !important;
+        }
+
+        .status-renewable {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%) !important;
+            color: #0c5460 !important;
+            font-weight: 700 !important;
+            border-color: #bee5eb !important;
+        }
+
+        .notes-content {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            color: #052F11;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .applications-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .track-application-container {
+                width: 98%;
+                margin: 10px;
+            }
+
+            .track-application-content {
+                padding: 20px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .application-details-modal .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+
+            .application-details-modal .modal-body {
+                padding: 20px;
+            }
+
+            /* Landscape Layout Responsive */
+            .form-row-landscape {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .section-title-landscape {
+                margin: -20px -15px 15px -15px;
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+
+            .form-section-landscape {
+                padding: 15px;
+            }
+
+            .application-header-landscape {
+                padding: 12px 15px;
+            }
+
+            .application-id-landscape {
+                font-size: 1rem;
+            }
+
+            .form-field-landscape span {
+                font-size: 0.85rem;
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-field-landscape label {
+                font-size: 0.75rem;
+            }
+
+            .form-field-landscape span {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+
+            .section-title-landscape {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+
+
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .detail-section h3 {
+                font-size: 1.1rem;
+            }
+
+            .detail-item span {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+        }
     </style>
 </head>
 
@@ -162,7 +1157,7 @@
                 @endif
             </div>
             <div class="user-actions">
-                <a href="{{ route('scholarship.tracker') }}" class="action-link">
+                <a href="#" class="action-link" onclick="showTrackApplicationTab(); return false;">
                     <i class="fas fa-search"></i> Track Application
                 </a>
                 <a href="#" class="action-link" onclick="showSettingsModal(); return false;">
@@ -309,15 +1304,24 @@
                                 <div class="form-row">
                                     <div class="form-group student-id-group">
                                         <label for="student_id">Student ID *</label>
-                                        <input type="text" id="student_id" name="student_id" required>
+                                        <input type="text" id="student_id" name="student_id" value="{{ $student->student_id }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="last_name">Last Name *</label>
-                                        <input type="text" id="last_name" name="last_name" required>
+                                        <input type="text" id="last_name" name="last_name" value="{{ $student->last_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="first_name">First Name *</label>
-                                        <input type="text" id="first_name" name="first_name" required>
+                                        <input type="text" id="first_name" name="first_name" value="{{ $student->first_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="middle_name">Middle Name *</label>
@@ -536,12 +1540,19 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="contact_number">Contact Number *</label>
-                                        <input type="number" id="contact_number" name="contact_number" required
-                                            maxlength="11" placeholder="Phone Number">
+                                        <input type="tel" id="contact_number" name="contact_number" required
+                                            maxlength="11" placeholder="09123456789"
+                                            pattern="[0-9]{11}"
+                                            oninput="validateContactNumber(this)"
+                                            onkeypress="return isNumberKey(event)"
+                                            title="Please enter exactly 11 digits">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="email">Email Address *</label>
-                                        <input type="email" id="email" name="email" required>
+                                        <input type="email" id="email" name="email" value="{{ $student->email }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="indigenous_people">Indigenous People</label>
@@ -612,15 +1623,24 @@
                                 <div class="form-row">
                                     <div class="form-group student-id-group">
                                         <label for="presidents_student_id">Student ID *</label>
-                                        <input type="text" id="presidents_student_id" name="student_id" required>
+                                        <input type="text" id="presidents_student_id" name="student_id" value="{{ $student->student_id }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="presidents_last_name">Last Name *</label>
-                                        <input type="text" id="presidents_last_name" name="last_name" required>
+                                        <input type="text" id="presidents_last_name" name="last_name" value="{{ $student->last_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="presidents_first_name">First Name *</label>
-                                        <input type="text" id="presidents_first_name" name="first_name" required>
+                                        <input type="text" id="presidents_first_name" name="first_name" value="{{ $student->first_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="presidents_middle_name">Middle Name</label>
@@ -707,8 +1727,10 @@
                                             <div class="gwa-requirements">
                                                 <small class="form-help-text">
                                                     <strong>Academic Scholarship Requirements:</strong><br>
+                                                    • All grades must be between 1.0 - 1.75 (passing grades)<br>
+                                                    • Grades of 2.0 and below are not eligible<br>
                                                     • President's Lister (PL): GWA 1.0 - 1.25<br>
-                                                    • Dean's Lister (DL): GWA 1.50
+                                                    • Dean's Lister (DL): GWA 1.50 - 1.75
                                                 </small>
                                             </div>
                                         </div>
@@ -732,12 +1754,19 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="inst_contact_number">Contact Number *</label>
-                                        <input type="number" id="inst_contact_number" name="contact_number" required
-                                            maxlength="11" placeholder="09123456789">
+                                        <input type="tel" id="inst_contact_number" name="contact_number" required
+                                            maxlength="11" placeholder="09123456789"
+                                            pattern="[0-9]{11}"
+                                            oninput="validateContactNumber(this)"
+                                            onkeypress="return isNumberKey(event)"
+                                            title="Please enter exactly 11 digits">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="inst_email">Email Address *</label>
-                                        <input type="email" id="inst_email" name="email" required>
+                                        <input type="email" id="inst_email" name="email" value="{{ $student->email }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                 </div>
 
@@ -830,15 +1859,24 @@
                                 <div class="form-row">
                                     <div class="form-group student-id-group">
                                         <label for="employees_student_id">Student ID *</label>
-                                        <input type="text" id="employees_student_id" name="student_id" required>
+                                        <input type="text" id="employees_student_id" name="student_id" value="{{ $student->student_id }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="employees_last_name">Last Name *</label>
-                                        <input type="text" id="employees_last_name" name="last_name" required>
+                                        <input type="text" id="employees_last_name" name="last_name" value="{{ $student->last_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="employees_first_name">First Name *</label>
-                                        <input type="text" id="employees_first_name" name="first_name" required>
+                                        <input type="text" id="employees_first_name" name="first_name" value="{{ $student->first_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="employees_middle_name">Middle Name</label>
@@ -878,12 +1916,19 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="employees_contact_number">Contact Number *</label>
-                                        <input type="number" id="employees_contact_number" name="contact_number"
-                                            required maxlength="11" placeholder="09123456789">
+                                        <input type="tel" id="employees_contact_number" name="contact_number"
+                                            required maxlength="11" placeholder="09123456789"
+                                            pattern="[0-9]{11}"
+                                            oninput="validateContactNumber(this)"
+                                            onkeypress="return isNumberKey(event)"
+                                            title="Please enter exactly 11 digits">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="employees_email">Email Address *</label>
-                                        <input type="email" id="employees_email" name="email" required>
+                                        <input type="email" id="employees_email" name="email" value="{{ $student->email }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                 </div>
 
@@ -972,15 +2017,24 @@
                                 <div class="form-row">
                                     <div class="form-group student-id-group">
                                         <label for="private_student_id">Student ID *</label>
-                                        <input type="text" id="private_student_id" name="student_id" required>
+                                        <input type="text" id="private_student_id" name="student_id" value="{{ $student->student_id }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="private_last_name">Last Name *</label>
-                                        <input type="text" id="private_last_name" name="last_name" required>
+                                        <input type="text" id="private_last_name" name="last_name" value="{{ $student->last_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="private_first_name">First Name *</label>
-                                        <input type="text" id="private_first_name" name="first_name" required>
+                                        <input type="text" id="private_first_name" name="first_name" value="{{ $student->first_name }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="private_middle_name">Middle Name</label>
@@ -992,12 +2046,19 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="private_contact_number">Contact Number *</label>
-                                        <input type="number" id="private_contact_number" name="contact_number"
-                                            required maxlength="11" placeholder="09123456789">
+                                        <input type="tel" id="private_contact_number" name="contact_number"
+                                            required maxlength="11" placeholder="09123456789"
+                                            pattern="[0-9]{11}"
+                                            oninput="validateContactNumber(this)"
+                                            onkeypress="return isNumberKey(event)"
+                                            title="Please enter exactly 11 digits">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group auto-filled-group">
                                         <label for="private_email">Email Address *</label>
-                                        <input type="email" id="private_email" name="email" required>
+                                        <input type="email" id="private_email" name="email" value="{{ $student->email }}" readonly required>
+                                        <small class="form-help-text">
+                                            <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                        </small>
                                     </div>
                                 </div>
 
@@ -1167,6 +2228,248 @@
         </div>
     </div>
 
+    <!-- Track Application Tab -->
+    <div class="track-application-overlay" id="trackApplicationOverlay" style="display: none;">
+        <div class="track-application-container">
+            <div class="track-application-header">
+                <h2><i class="fas fa-search"></i> Track Your Applications</h2>
+                <button class="close-track-btn" onclick="hideTrackApplicationTab()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="track-application-content">
+                @if ($applications && $applications->count() > 0)
+                    <div class="applications-grid">
+                        @foreach ($applications as $application)
+                            <div class="application-card landscape-card" data-app-id="{{ $application->application_id }}">
+                                <!-- Application Header -->
+                                <div class="application-header-landscape">
+                                    <div class="application-id-landscape">
+                                        <i class="fas fa-file-alt"></i>
+                                        {{ $application->application_id }}
+                                    </div>
+                                    <div class="application-status status-{{ strtolower(str_replace(' ', '-', $application->status)) }}">
+                                        {{ $application->status }}
+                                    </div>
+                                </div>
+
+                                <!-- Applicant Information Section -->
+                                <div class="form-section-landscape">
+                                    <div class="section-title-landscape">
+                                        <i class="fas fa-user"></i> APPLICANT INFORMATION
+                                    </div>
+                                    <div class="form-grid-landscape">
+                                        <div class="form-row-landscape">
+                                            <div class="form-field-landscape">
+                                                <label>Full Name:</label>
+                                                <span>{{ $application->first_name }} {{ $application->middle_name ?? '' }} {{ $application->last_name }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Student ID:</label>
+                                                <span>{{ $application->student_id }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Date:</label>
+                                                <span>{{ $application->created_at->format('M d, Y') }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-row-landscape">
+                                            <div class="form-field-landscape">
+                                                <label>Email Address:</label>
+                                                <span>{{ $application->email ?? 'Not provided' }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Phone:</label>
+                                                <span>{{ $application->contact_number ?? 'Not provided' }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Scholarship Type:</label>
+                                                <span>
+                                                    @if ($application->scholarship_type == 'government')
+                                                        Government Scholarship
+                                                    @elseif($application->scholarship_type == 'academic')
+                                                        Academic Scholarship
+                                                    @elseif($application->scholarship_type == 'employees')
+                                                        Employee's Scholarship
+                                                    @elseif($application->scholarship_type == 'private')
+                                                        Private Scholarship
+                                                    @elseif($application->scholarship_type == 'institutional')
+                                                        Institutional Scholarship
+                                                    @elseif($application->scholarship_type == 'presidents')
+                                                        President's Lister Scholarship
+                                                    @else
+                                                        {{ ucfirst($application->scholarship_type) }} Scholarship
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-row-landscape">
+                                            <div class="form-field-landscape full-width">
+                                                <label>Address:</label>
+                                                <span>{{ $application->address ?? 'Not provided' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Information Section -->
+                                @if($application->scholarship_type == 'academic' || $application->scholarship_type == 'institutional' || $application->scholarship_type == 'presidents')
+                                <div class="form-section-landscape">
+                                    <div class="section-title-landscape">
+                                        <i class="fas fa-graduation-cap"></i> ACADEMIC INFORMATION
+                                    </div>
+                                    <div class="form-grid-landscape">
+                                        <div class="form-row-landscape">
+                                            @if($application->department)
+                                                <div class="form-field-landscape">
+                                                    <label>Department:</label>
+                                                    <span>{{ $application->department }}</span>
+                                                </div>
+                                            @endif
+                                            @if($application->course)
+                                                <div class="form-field-landscape">
+                                                    <label>Course:</label>
+                                                    <span>{{ $application->course }}</span>
+                                                </div>
+                                            @endif
+                                            @if($application->year_level)
+                                                <div class="form-field-landscape">
+                                                    <label>Year Level:</label>
+                                                    <span>{{ $application->year_level }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="form-row-landscape">
+                                            @if($application->semester)
+                                                <div class="form-field-landscape">
+                                                    <label>Semester:</label>
+                                                    <span>{{ $application->semester }}</span>
+                                                </div>
+                                            @endif
+                                            @if($application->gwa)
+                                                <div class="form-field-landscape highlight-field">
+                                                    <label>GWA:</label>
+                                                    <span class="gwa-value">{{ number_format($application->gwa, 2) }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+
+                                <!-- Government Scholarship Specific -->
+                                @if($application->scholarship_type == 'government')
+                                <div class="form-section-landscape">
+                                    <div class="section-title-landscape">
+                                        <i class="fas fa-university"></i> GOVERNMENT DETAILS
+                                    </div>
+                                    <div class="form-grid-landscape">
+                                        <div class="form-row-landscape">
+                                            @if($application->government_benefactor_type)
+                                                <div class="form-field-landscape">
+                                                    <label>Benefactor:</label>
+                                                    <span>{{ $application->government_benefactor_type }}</span>
+                                                </div>
+                                            @endif
+                                            @if($application->education_stage)
+                                                <div class="form-field-landscape">
+                                                    <label>Education Stage:</label>
+                                                    <span>{{ $application->education_stage }}</span>
+                                                </div>
+                                            @endif
+                                            @if($application->grade_level)
+                                                <div class="form-field-landscape">
+                                                    <label>Grade Level:</label>
+                                                    <span>{{ $application->grade_level }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        @if($application->strand)
+                                        <div class="form-row-landscape">
+                                            <div class="form-field-landscape">
+                                                <label>Strand:</label>
+                                                <span>{{ $application->strand }}</span>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+
+                                <!-- Application Timeline Section -->
+                                <div class="form-section-landscape">
+                                    <div class="section-title-landscape">
+                                        <i class="fas fa-clock"></i> APPLICATION TIMELINE
+                                    </div>
+                                    <div class="form-grid-landscape">
+                                        <div class="form-row-landscape">
+                                            <div class="form-field-landscape">
+                                                <label>Submitted:</label>
+                                                <span>{{ $application->created_at->format('M d, Y \a\t g:i A') }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Last Updated:</label>
+                                                <span>{{ $application->updated_at->format('M d, Y \a\t g:i A') }}</span>
+                                            </div>
+                                            <div class="form-field-landscape">
+                                                <label>Days Since Submission:</label>
+                                                <span>{{ $application->created_at->diffInDays(now()) }} days</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="application-progress">
+                                    <div class="progress-bar">
+                                        @php
+                                            $progress = 0;
+                                            switch($application->status) {
+                                                case 'Pending Review':
+                                                    $progress = 25;
+                                                    break;
+                                                case 'Under Committee Review':
+                                                    $progress = 50;
+                                                    break;
+                                                case 'Decision Made':
+                                                    $progress = 75;
+                                                    break;
+                                                case 'Approved':
+                                                    $progress = 100;
+                                                    break;
+                                                case 'Rejected':
+                                                    $progress = 100;
+                                                    break;
+                                                default:
+                                                    $progress = 10;
+                                            }
+                                        @endphp
+                                        <div class="progress-fill" style="width: {{ $progress }}%"></div>
+                                    </div>
+                                    <div class="progress-text">{{ $progress }}% Complete</div>
+                                </div>
+                                <div class="application-actions">
+                                    <button class="view-details-btn" onclick="viewApplicationDetails('{{ $application->application_id }}')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="no-applications-message">
+                        <div class="no-applications-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h3>No Applications Found</h3>
+                        <p>You haven't submitted any scholarship applications yet.</p>
+                        <button class="start-application-btn" onclick="hideTrackApplicationTab()">
+                            <i class="fas fa-plus"></i> Start Your First Application
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1208,6 +2511,16 @@
                     if (targetForm) {
                         scholarshipCard.classList.add('active');
                         targetForm.classList.add('active');
+
+                        // Initialize academic scholarship validation if it's the academic form
+                        if (formId === 'presidents-form') {
+                            // Reset submit button to default state
+                            updateAcademicSubmitButton(false);
+                            // Remove any existing alerts
+                            removeAllGradeAlerts();
+                            removeGWADisqualificationAlert();
+                            removeApplicationBlockedAlert();
+                        }
 
                         // Smooth scroll to form
                         setTimeout(() => {
@@ -1577,7 +2890,8 @@
                                step="0.01"
                                placeholder="0.00"
                                data-units="${subject.units}"
-                               onchange="calculateGWA()">
+                               onchange="calculateGWA(); validateAcademicGrades();"
+                               oninput="validateIndividualGrade(this)">
                     </div>
                     <div class="subject-units">${subject.units}</div>
                 `;
@@ -1601,6 +2915,7 @@
             const gradeInputs = document.querySelectorAll('#presidents-subjects-list input[type="number"]');
             let totalUnits = 0;
             let totalGradePoints = 0;
+            let hasDisqualifyingGrade = false;
 
             gradeInputs.forEach(input => {
                 const grade = parseFloat(input.value) || 0;
@@ -1609,6 +2924,11 @@
                 if (grade > 0 && units > 0) {
                     totalUnits += units;
                     totalGradePoints += (grade * units);
+
+                    // Check for disqualifying grade (2.0 and above)
+                    if (grade >= 2.0) {
+                        hasDisqualifyingGrade = true;
+                    }
                 }
             });
 
@@ -1624,6 +2944,9 @@
             if (hiddenGwaField) {
                 hiddenGwaField.value = gwa.toFixed(2);
             }
+
+            // Validate all grades individually to show/hide alerts
+            validateAcademicGrades();
         }
 
         // Institutional Form (same as Presidents)
@@ -1783,17 +3106,17 @@
             const contactFields = form.querySelectorAll('input[name="contact_number"]');
             contactFields.forEach(field => {
                 if (field.value) {
-                    const contactNumber = field.value.toString();
+                    const contactNumber = field.value.toString().replace(/\D/g, '');
                     if (!/^\d+$/.test(contactNumber)) {
                         showFieldError(field, 'Contact number must contain only numbers');
                         isValid = false;
-                    } else if (contactNumber.length > 11) {
-                        showFieldError(field, 'Contact number must not exceed 11 digits');
-                        isValid = false;
-                    } else if (contactNumber.length < 1) {
-                        showFieldError(field, 'Contact number is required');
+                    } else if (contactNumber.length !== 11) {
+                        showFieldError(field, 'Contact number must be exactly 11 digits');
                         isValid = false;
                     }
+                } else {
+                    showFieldError(field, 'Contact number is required');
+                    isValid = false;
                 }
             });
 
@@ -1801,14 +3124,14 @@
             const gwaField = form.querySelector('input[name="gwa"]');
             if (gwaField && gwaField.value) {
                 const gwa = parseFloat(gwaField.value);
-                if (gwa < 1.0 || gwa > 5.0) {
-                    showFieldError(gwaField, 'GWA must be between 1.0 and 5.0');
+                if (gwa < 1.0 || gwa > 1.75) {
+                    showFieldError(gwaField, 'GWA must be between 1.0 and 1.75 for Academic Scholarship eligibility');
                     isValid = false;
                 }
             }
 
-            // Check for duplicate Student ID
-            const studentIdField = form.querySelector('input[name="student_id"]');
+            // Check for duplicate Student ID (only for non-readonly fields)
+            const studentIdField = form.querySelector('input[name="student_id"]:not([readonly])');
             if (studentIdField && studentIdField.getAttribute('data-duplicate') === 'true') {
                 showFieldError(studentIdField,
                     'This Student ID has already been used. Please check the notification above.');
@@ -1823,6 +3146,45 @@
                 }
 
                 isValid = false;
+            }
+
+            // Check for disqualifying grades/GWA in academic scholarship
+            const scholarshipTypeInput = form.querySelector('input[name="scholarship_type"]');
+            if (scholarshipTypeInput && scholarshipTypeInput.value === 'academic') {
+                if (form.getAttribute('data-grade-disqualified') === 'true') {
+                    // Check if there's an application blocked alert
+                    const blockedAlert = document.querySelector('.application-blocked-alert');
+                    const gwaAlert = document.querySelector('.gwa-disqualification-alert');
+                    const gradeAlert = document.querySelector('.grade-alert');
+
+                    if (blockedAlert) {
+                        // Scroll to application blocked alert
+                        blockedAlert.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    } else if (gwaAlert) {
+                        // Scroll to GWA alert
+                        gwaAlert.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    } else if (gradeAlert) {
+                        // Scroll to first grade alert
+                        gradeAlert.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+
+                    // Show definitive blocking message
+                    const submitButton = form.querySelector('.submit-btn');
+                    if (submitButton) {
+                        showFieldError(submitButton, 'APPLICATION BLOCKED: You are not eligible for Academic Scholarship due to disqualifying grades.');
+                    }
+
+                    isValid = false;
+                }
             }
 
             console.log('Final validation result:', isValid);
@@ -1869,7 +3231,7 @@
 
         // Duplicate ID Prevention (Laravel-based)
         function initializeDuplicateIDPrevention() {
-            const studentIdInputs = document.querySelectorAll('input[name="student_id"]');
+            const studentIdInputs = document.querySelectorAll('input[name="student_id"]:not([readonly])');
 
             studentIdInputs.forEach(input => {
                 input.addEventListener('blur', function() {
@@ -2003,6 +3365,286 @@
 
             inputElement.classList.remove('duplicate-error');
             inputElement.removeAttribute('data-duplicate');
+        }
+
+        // Show individual grade alert below specific input
+        function showIndividualGradeAlert(input) {
+            // Remove any existing alert for this input
+            removeIndividualGradeAlert(input);
+
+            // Create minimalistic grade alert
+            const alert = document.createElement('div');
+            alert.className = 'grade-alert';
+            alert.innerHTML = `
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-text">
+                    NOT QUALIFIED
+                </div>
+            `;
+
+            // Insert alert directly below the input
+            if (input.parentNode) {
+                input.parentNode.appendChild(alert);
+            }
+        }
+
+        // Remove individual grade alert for specific input
+        function removeIndividualGradeAlert(input) {
+            const existingAlert = input.parentNode.querySelector('.grade-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+        }
+
+        // Remove all grade alerts
+        function removeAllGradeAlerts() {
+            const allAlerts = document.querySelectorAll('.grade-alert');
+            allAlerts.forEach(alert => alert.remove());
+
+            // Remove disqualification flag from form
+            const academicForm = document.querySelector('form[action*="scholarship.submit"] input[value="academic"]');
+            if (academicForm) {
+                academicForm.closest('form').removeAttribute('data-grade-disqualified');
+            }
+        }
+
+        // Show GWA disqualification alert
+        function showGWADisqualificationAlert(gwa) {
+            // Remove any existing GWA alert
+            removeGWADisqualificationAlert();
+
+            // Create GWA disqualification alert
+            const alert = document.createElement('div');
+            alert.className = 'gwa-disqualification-alert';
+            alert.innerHTML = `
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-text">
+                    <strong>Academic Scholarship Disqualification!</strong><br>
+                    Your GWA of <strong>${gwa}</strong> does not meet the requirement. Academic Scholarship requires a GWA between 1.0-1.75.
+                </div>
+            `;
+
+            // Insert alert after the GWA calculation section
+            const gwaCalculation = document.querySelector('.gwa-calculation');
+            if (gwaCalculation && gwaCalculation.parentNode) {
+                gwaCalculation.parentNode.insertBefore(alert, gwaCalculation.nextSibling);
+            }
+        }
+
+        // Remove GWA disqualification alert
+        function removeGWADisqualificationAlert() {
+            const existingAlert = document.querySelector('.gwa-disqualification-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+        }
+
+        // Show application blocked alert
+        function showApplicationBlockedAlert() {
+            // Remove any existing blocked alert
+            removeApplicationBlockedAlert();
+
+            // Create application blocked alert
+            const alert = document.createElement('div');
+            alert.className = 'application-blocked-alert';
+            alert.innerHTML = `
+                <div class="alert-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="alert-title">
+                    APPLICATION BLOCKED
+                </div>
+                <div class="alert-text">
+                    You cannot apply for Academic Scholarship due to disqualifying grades.<br>
+                    <strong>Academic Scholarship Requirements:</strong><br>
+                    • All grades must be below 2.0 (1.0-1.75 range)<br>
+                    • Overall GWA must be between 1.0-1.75<br><br>
+                    Please review your grades and ensure they meet the requirements before attempting to apply.
+                </div>
+            `;
+
+            // Insert alert at the top of the form
+            const academicForm = document.getElementById('presidents-form');
+            if (academicForm) {
+                const formContent = academicForm.querySelector('.form-content') || academicForm;
+                formContent.insertBefore(alert, formContent.firstChild);
+            }
+        }
+
+        // Remove application blocked alert
+        function removeApplicationBlockedAlert() {
+            const existingAlert = document.querySelector('.application-blocked-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+        }
+
+        // Disable/Enable submit button for academic scholarship
+        function updateAcademicSubmitButton(isDisqualified) {
+            const academicForm = document.querySelector('form[action*="scholarship.submit"] input[value="academic"]');
+            if (academicForm) {
+                const submitButton = academicForm.closest('form').querySelector('.submit-btn');
+                if (submitButton) {
+                    if (isDisqualified) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-ban"></i> APPLICATION BLOCKED - Ineligible';
+                        submitButton.style.cursor = 'not-allowed';
+                        submitButton.title = 'You cannot apply due to disqualifying grades. All grades must be below 2.0 and GWA must be 1.0-1.75.';
+                    } else {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+                        submitButton.style.cursor = 'pointer';
+                        submitButton.title = '';
+                    }
+                }
+            }
+        }
+
+        // Validate individual grade input
+        function validateIndividualGrade(input) {
+            const grade = parseFloat(input.value);
+
+            // Remove any existing grade error styling and alert
+            input.classList.remove('grade-disqualified');
+            removeIndividualGradeAlert(input);
+
+            // If grade is entered and is 2.0 or above, mark as disqualified and show alert
+            if (!isNaN(grade) && grade > 0 && grade >= 2.0) {
+                input.classList.add('grade-disqualified');
+                showIndividualGradeAlert(input);
+            }
+        }
+
+        // Validate all academic grades and GWA
+        function validateAcademicGrades() {
+            const gradeInputs = document.querySelectorAll('#presidents-subjects-list input[type="number"]');
+            let hasDisqualifyingGrade = false;
+            let hasValidGrades = false;
+
+            // Check individual grades
+            gradeInputs.forEach(input => {
+                validateIndividualGrade(input);
+                const grade = parseFloat(input.value);
+                if (!isNaN(grade) && grade > 0) {
+                    hasValidGrades = true;
+                    if (grade >= 2.0) {
+                        hasDisqualifyingGrade = true;
+                    }
+                }
+            });
+
+            // Check overall GWA if there are valid grades
+            let gwaDisqualified = false;
+            if (hasValidGrades) {
+                const gwaElement = document.getElementById('presidents-calculated-gwa');
+                if (gwaElement) {
+                    const gwaText = gwaElement.textContent.trim();
+                    const gwa = parseFloat(gwaText);
+
+                    if (!isNaN(gwa) && gwa > 1.75) {
+                        gwaDisqualified = true;
+                        showGWADisqualificationAlert(gwa.toFixed(2));
+                    } else {
+                        removeGWADisqualificationAlert();
+                    }
+                }
+            } else {
+                removeGWADisqualificationAlert();
+            }
+
+            // Overall disqualification check
+            const isDisqualified = hasDisqualifyingGrade || gwaDisqualified;
+
+            // Show/hide application blocked alert
+            if (isDisqualified && hasValidGrades) {
+                showApplicationBlockedAlert();
+            } else {
+                removeApplicationBlockedAlert();
+            }
+
+            // Mark form as having disqualifying grades/GWA
+            const academicForm = document.querySelector('form[action*="scholarship.submit"] input[value="academic"]');
+            if (academicForm) {
+                if (isDisqualified) {
+                    academicForm.closest('form').setAttribute('data-grade-disqualified', 'true');
+                } else {
+                    academicForm.closest('form').removeAttribute('data-grade-disqualified');
+                }
+            }
+
+            // Update submit button state
+            updateAcademicSubmitButton(isDisqualified);
+        }
+
+        // Validate contact number input
+        function validateContactNumber(input) {
+            // Remove any non-digit characters
+            let value = input.value.replace(/\D/g, '');
+
+            // Limit to 11 digits
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
+
+            // Update the input value
+            input.value = value;
+
+            // Remove any existing error styling
+            input.classList.remove('contact-error');
+            const existingError = input.parentNode.querySelector('.contact-error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            // Validate length and show error if needed
+            if (value.length > 0 && value.length < 11) {
+                input.classList.add('contact-error');
+
+                // Add error message
+                const errorMessage = document.createElement('small');
+                errorMessage.className = 'contact-error-message';
+                errorMessage.style.color = '#dc3545';
+                errorMessage.style.fontSize = '0.875rem';
+                errorMessage.style.marginTop = '5px';
+                errorMessage.style.display = 'block';
+                errorMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Contact number must be exactly 11 digits (${value.length}/11)`;
+
+                input.parentNode.appendChild(errorMessage);
+            }
+        }
+
+        // Allow only numeric input for contact numbers
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+            // Allow backspace, delete, tab, escape, enter
+            if (charCode == 8 || charCode == 9 || charCode == 27 || charCode == 13 ||
+                charCode == 46 || charCode == 37 || charCode == 39) {
+                return true;
+            }
+
+            // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            if ((charCode == 65 || charCode == 67 || charCode == 86 || charCode == 88) &&
+                (evt.ctrlKey === true || evt.metaKey === true)) {
+                return true;
+            }
+
+            // Ensure that it is a number and stop the keypress
+            if (charCode < 48 || charCode > 57) {
+                return false;
+            }
+
+            // Check if adding this digit would exceed 11 characters
+            const currentValue = evt.target.value || '';
+            if (currentValue.length >= 11) {
+                return false;
+            }
+
+            return true;
         }
 
 
@@ -2304,6 +3946,55 @@
 
 
 
+
+        // Track Application Tab Functions
+        function showTrackApplicationTab() {
+            const overlay = document.getElementById('trackApplicationOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Add animation
+                setTimeout(() => {
+                    overlay.style.opacity = '1';
+                }, 10);
+            }
+        }
+
+        function hideTrackApplicationTab() {
+            const overlay = document.getElementById('trackApplicationOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }, 300);
+            }
+        }
+
+        function viewApplicationDetails(applicationId) {
+            // For now, just show an alert with the application ID
+            // In a full implementation, this would open a detailed modal
+            alert(`Viewing details for Application ID: ${applicationId}\n\nThis would show detailed information about the application including:\n- Complete application data\n- Status history\n- Documents submitted\n- Review comments`);
+        }
+
+        // Close track application tab when clicking outside
+        document.addEventListener('click', function(e) {
+            const overlay = document.getElementById('trackApplicationOverlay');
+            if (overlay && e.target === overlay) {
+                hideTrackApplicationTab();
+            }
+        });
+
+        // Close track application tab with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const overlay = document.getElementById('trackApplicationOverlay');
+                if (overlay && overlay.style.display === 'flex') {
+                    hideTrackApplicationTab();
+                }
+            }
+        });
 
         // Close modal when clicking outside
         window.onclick = function(event) {

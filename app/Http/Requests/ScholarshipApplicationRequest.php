@@ -40,7 +40,7 @@ class ScholarshipApplicationRequest extends FormRequest
             'last_name' => 'required|string|max:100',
             'middle_name' => 'nullable|string|max:100',
             'email' => 'required|email|max:255',
-            'contact_number' => 'required|string|regex:/^[0-9]+$/|min:1|max:11',
+            'contact_number' => 'required|string|regex:/^[0-9]{11}$/|size:11',
         ];
 
         // Add scholarship-specific validation rules
@@ -104,7 +104,7 @@ class ScholarshipApplicationRequest extends FormRequest
             'year_level' => 'required|string|max:50',
             'semester' => 'required|string|max:50',
             'academic_year' => 'required|string|max:20',
-            'gwa' => 'required|numeric|min:1.0|max:5.0',
+            'gwa' => 'required|numeric|min:1.0|max:1.75',
             'street' => 'required|string|max:255',
             'barangay' => 'required|string|max:100',
             'city' => 'required|string|max:100',
@@ -164,9 +164,8 @@ class ScholarshipApplicationRequest extends FormRequest
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'contact_number.required' => 'Contact number is required.',
-            'contact_number.regex' => 'Contact number must be a valid number.',
-            'contact_number.min' => 'Contact number must be at least 1 digit.',
-            'contact_number.max' => 'Contact number must not exceed 11 digits.',
+            'contact_number.regex' => 'Contact number must be exactly 11 digits and contain only numbers.',
+            'contact_number.size' => 'Contact number must be exactly 11 digits.',
             'sex.required' => 'Please select your sex.',
             'birthdate.required' => 'Birthdate is required.',
             'birthdate.before' => 'Birthdate must be before today.',
