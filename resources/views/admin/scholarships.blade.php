@@ -355,11 +355,11 @@
             });
         });
 
-        function executeUpdate() {
+        async function executeUpdate() {
             const selectedType = document.querySelector('input[name="updateType"]:checked');
 
             if (!selectedType) {
-                alert('Please select an update type first.');
+                await customConfirm('Please select an update type first.', 'Selection Required', 'warning');
                 return;
             }
 
@@ -382,13 +382,17 @@
                 const currentSemester = data.current_semester;
                 const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
 
-                if (confirm(
-                        `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`
-                    )) {
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`,
+                    'Update Semester',
+                    'warning'
+                );
+
+                if (confirmed) {
                     // Get CSRF token
                     const csrfToken = document.querySelector('meta[name="csrf-token"]');
                     if (!csrfToken) {
-                        alert('Security token not found. Please refresh the page.');
+                        await customConfirm('Security token not found. Please refresh the page.', 'Error', 'danger');
                         return;
                     }
 
@@ -411,21 +415,22 @@
                             }
                             return response.json();
                         })
-                        .then(data => {
+                        .then(async data => {
                             if (data.success) {
-                                alert('Semester updated successfully!');
+                                await customConfirm('Semester updated successfully!', 'Success', 'default');
                                 closeUpdateSemesterYearModal();
                                 window.location.reload();
                             } else {
-                                alert('Failed to update semester: ' + (data.message || 'Unknown error'));
+                                await customConfirm('Failed to update semester: ' + (data.message ||
+                                    'Unknown error'), 'Error', 'danger');
                             }
                         })
-                        .catch(error => {
-                            alert('Error updating semester: ' + error.message);
+                        .catch(async error => {
+                            await customConfirm('Error updating semester: ' + error.message, 'Error', 'danger');
                         });
                 }
             } catch (error) {
-                alert('Error fetching current data: ' + error.message);
+                await customConfirm('Error fetching current data: ' + error.message, 'Error', 'danger');
             }
         }
 
@@ -442,13 +447,17 @@
                 const yearParts = currentYear.split('-');
                 const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
 
-                if (confirm(
-                        `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`
-                    )) {
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`,
+                    'Update Academic Year',
+                    'warning'
+                );
+
+                if (confirmed) {
                     // Get CSRF token
                     const csrfToken = document.querySelector('meta[name="csrf-token"]');
                     if (!csrfToken) {
-                        alert('Security token not found. Please refresh the page.');
+                        await customConfirm('Security token not found. Please refresh the page.', 'Error', 'danger');
                         return;
                     }
 
@@ -471,21 +480,24 @@
                             }
                             return response.json();
                         })
-                        .then(data => {
+                        .then(async data => {
                             if (data.success) {
-                                alert('Academic year updated successfully!');
+                                await customConfirm('Academic year updated successfully!', 'Success',
+                                    'default');
                                 closeUpdateSemesterYearModal();
                                 window.location.reload();
                             } else {
-                                alert('Failed to update academic year: ' + (data.message || 'Unknown error'));
+                                await customConfirm('Failed to update academic year: ' + (data.message ||
+                                    'Unknown error'), 'Error', 'danger');
                             }
                         })
-                        .catch(error => {
-                            alert('Error updating academic year: ' + error.message);
+                        .catch(async error => {
+                            await customConfirm('Error updating academic year: ' + error.message, 'Error',
+                                'danger');
                         });
                 }
             } catch (error) {
-                alert('Error fetching current data: ' + error.message);
+                await customConfirm('Error fetching current data: ' + error.message, 'Error', 'danger');
             }
         }
 

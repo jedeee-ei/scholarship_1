@@ -37,6 +37,8 @@ class ScholarshipTrackerController extends Controller
         ]);
     }
 
+
+
     public function trackApplication(Request $request)
     {
         $applicationId = $request->input('application_id');

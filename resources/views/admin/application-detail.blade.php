@@ -601,7 +601,7 @@
                                     @elseif ($application->gwa)
                                         @if ($application->gwa >= 1.0 && $application->gwa <= 1.25)
                                             <span class="classification-badge">President's Lister (PL) - Eligible</span>
-                                        @elseif ($application->gwa == 1.5)
+                                        @elseif ($application->gwa >= 1.3 && $application->gwa <= 1.6)
                                             <span class="classification-badge">Dean's Lister (DL) - Eligible</span>
                                         @else
                                             <span class="status-badge rejected">Not Qualified (GWA:
@@ -711,26 +711,46 @@
             const approveForm = document.querySelectorAll('.action-buttons form')[0];
             const rejectForm = document.querySelectorAll('.action-buttons form')[1];
 
-            statusForm.addEventListener('submit', function(e) {
+            statusForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 const status = document.getElementById('status').value;
                 const currentStatus = '{{ $application->status }}';
 
                 if (status !== currentStatus) {
-                    if (!confirm(`Are you sure you want to change the status to "${status}"?`)) {
-                        e.preventDefault();
+                    const confirmed = await customConfirm(
+                        `Are you sure you want to change the status to "${status}"?`,
+                        'Confirm Status Change',
+                        'warning'
+                    );
+                    if (confirmed) {
+                        this.submit();
                     }
+                } else {
+                    this.submit();
                 }
             });
 
-            approveForm.addEventListener('submit', function(e) {
-                if (!confirm('Are you sure you want to approve this application?')) {
-                    e.preventDefault();
+            approveForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const confirmed = await customConfirm(
+                    'Are you sure you want to approve this application?',
+                    'Approve Application',
+                    'warning'
+                );
+                if (confirmed) {
+                    this.submit();
                 }
             });
 
-            rejectForm.addEventListener('submit', function(e) {
-                if (!confirm('Are you sure you want to reject this application?')) {
-                    e.preventDefault();
+            rejectForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const confirmed = await customConfirm(
+                    'Are you sure you want to reject this application?',
+                    'Reject Application',
+                    'danger'
+                );
+                if (confirmed) {
+                    this.submit();
                 }
             });
 

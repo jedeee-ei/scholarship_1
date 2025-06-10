@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.student')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Submitted - St. Paul University Philippines</title>
+@section('title', 'Application Submitted')
+
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/scholarship.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
+
+@section('content')
     <style>
         .success-container {
             text-align: center;
@@ -290,144 +290,122 @@
             line-height: 1.5;
         }
     </style>
-</head>
 
-<body>
-    <!-- University Header -->
-    <header class="university-header">
-        <div class="header-content">
-            <div class="university-logo-title">
-                <img src="{{ asset('images/5x5 ft_LOGO.png') }}" alt="St. Paul University Philippines Logo"
-                    class="university-logo">
-                <div class="university-title">
-                    <h1>St. Paul University Philippines</h1>
-                    <h2>OFFICE OF THE REGISTRAR</h2>
+
+    <div class="page-container">
+        <div class="application-container">
+            <div class="success-container">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
                 </div>
-            </div>
-            <div class="user-actions">
-                <a href="{{ route('logout') }}" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Log Out
-                </a>
-            </div>
-        </div>
-    </header>
+                <h1 class="success-title">Application Submitted Successfully!</h1>
+                <p class="success-message">
+                    Your scholarship application has been received and is now being processed.
+                    You will receive updates on your application status via email
+                </p>
 
-    <!-- Dashboard Banner -->
-    <div class="dashboard-banner">
-        <div class="banner-container">
-            <h2>STUDENT DASHBOARD</h2>
-        </div>
-    </div>
-
-    <div class="application-container">
-        <div class="success-container">
-            <div class="success-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            <h1 class="success-title">Application Submitted Successfully!</h1>
-            <p class="success-message">
-                Your scholarship application has been received and is now being processed.
-                You will receive updates on your application status via email
-            </p>
-
-            <div class="application-details">
-                <div class="detail-row">
-                    <div class="detail-label">Application ID:</div>
-                    <div class="detail-value">{{ session('application_id', 'Not Available') }}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Scholarship Type:</div>
-                    <div class="detail-value">
-                        @if (session('scholarship_type') == 'government')
-                            Government Scholarship
-                        @elseif(session('scholarship_type') == 'presidents')
-                            Institutional Scholarship
-                        @elseif(session('scholarship_type') == 'employees')
-                            Employees Scholar
-                        @elseif(session('scholarship_type') == 'private')
-                            Private Scholarship
-                        @else
-                            {{ ucfirst(session('scholarship_type', 'Scholarship')) }}
-                        @endif
+                <div class="application-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Application ID:</div>
+                        <div class="detail-value">{{ session('application_id', 'Not Available') }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Scholarship Type:</div>
+                        <div class="detail-value">
+                            @if (session('scholarship_type') == 'government')
+                                Government Scholarship
+                            @elseif(session('scholarship_type') == 'presidents')
+                                Institutional Scholarship
+                            @elseif(session('scholarship_type') == 'employees')
+                                Employees Scholar
+                            @elseif(session('scholarship_type') == 'private')
+                                Private Scholarship
+                            @else
+                                {{ ucfirst(session('scholarship_type', 'Scholarship')) }}
+                            @endif
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Submission Date:</div>
+                        <div class="detail-value">{{ date('F d, Y') }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Current Status:</div>
+                        <div class="detail-value">Pending Review</div>
                     </div>
                 </div>
-                <div class="detail-row">
-                    <div class="detail-label">Submission Date:</div>
-                    <div class="detail-value">{{ date('F d, Y') }}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Current Status:</div>
-                    <div class="detail-value">Pending Review</div>
-                </div>
-            </div>
 
-            <div class="next-steps">
-                <h3>What Happens Next?</h3>
-                <ul class="steps-list">
-                    <li>
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <div class="step-title">Initial Review</div>
-                            <div class="step-description">
-                                Your application will be reviewed by the Scholarship Committee to ensure all
-                                requirements are met.
-                                This typically takes 3-5 business days.
+                <div class="next-steps">
+                    <h3>What Happens Next?</h3>
+                    <ul class="steps-list">
+                        <li>
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Initial Review</div>
+                                <div class="step-description">
+                                    Your application will be reviewed by the Scholarship Committee to ensure all
+                                    requirements are met.
+                                    This typically takes 3-5 business days.
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <div class="step-title">Committee Evaluation</div>
-                            <div class="step-description">
-                                If your application passes the initial review, it will be forwarded to the Scholarship
-                                Committee for evaluation.
-                                This process may take 1-2 weeks.
+                        </li>
+                        <li>
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Committee Evaluation</div>
+                                <div class="step-description">
+                                    If your application passes the initial review, it will be forwarded to the Scholarship
+                                    Committee for evaluation.
+                                    This process may take 1-2 weeks.
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <div class="step-title">Decision Notification</div>
-                            <div class="step-description">
-                                You will be notified of the committee's decision via email and SMS. If approved, you
-                                will receive further instructions
-                                on the next steps to complete your scholarship process.
+                        </li>
+                        <li>
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Decision Notification</div>
+                                <div class="step-description">
+                                    You will be notified of the committee's decision via email and SMS. If approved, you
+                                    will receive further instructions
+                                    on the next steps to complete your scholarship process.
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Call to Action Section -->
-            <div class="cta-section">
-                <div class="cta-content">
-                    <div class="cta-title">
-                        <i class="fas fa-bell cta-icon"></i>
-                        Stay Updated on Your Application!
-                    </div>
-                    <div class="cta-description">
-                        Click the "Track Your Application Status" button below to monitor your application progress in
-                        real-time.
+                <!-- Call to Action Section -->
+                <div class="cta-section">
+                    <div class="cta-content">
+                        <div class="cta-title">
+                            <i class="fas fa-bell cta-icon"></i>
+                            Stay Updated on Your Application!
+                        </div>
+                        <div class="cta-description">
+                            Click the "Track Your Application Status" button below to monitor your application progress in
+                            real-time.
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="action-buttons">
-                <a href="{{ route('student.dashboard') }}" class="action-btn back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
-                @if (session('application_id'))
-                    <a href="{{ route('scholarship.tracker', ['id' => session('application_id')]) }}"
-                        class="action-btn track-btn">
-                        <i class="fas fa-search"></i> Track Your Application Status
+                <div class="action-buttons">
+                    <a href="{{ route('student.dashboard') }}" class="action-btn back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
                     </a>
-                @endif
+                    @if (session('application_id'))
+                        <a href="{{ route('scholarship.tracker', ['id' => session('application_id')]) }}"
+                            class="action-btn track-btn">
+                            <i class="fas fa-search"></i> Track Your Application Status
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
+@endsection
+
+@push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Success page loaded');
@@ -438,6 +416,4 @@
             @endif
         });
     </script>
-</body>
-
-</html>
+@endpush

@@ -98,9 +98,19 @@
         }
 
         @keyframes gradeShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
 
         @keyframes slideDownBounce {
@@ -108,10 +118,12 @@
                 opacity: 0;
                 transform: translateY(-30px) scale(0.9);
             }
+
             60% {
                 opacity: 1;
                 transform: translateY(5px) scale(1.02);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0) scale(1);
@@ -119,9 +131,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 1;
             }
+
             50% {
                 opacity: 0.6;
             }
@@ -353,7 +368,7 @@
                                     <span class="classification-badge">
                                         @if ($student['gwa'] >= 1.0 && $student['gwa'] <= 1.25)
                                             PL (President's Lister)
-                                        @elseif($student['gwa'] == 1.5)
+                                        @elseif($student['gwa'] >= 1.3 && $student['gwa'] <= 1.6)
                                             DL (Dean's Lister)
                                         @else
                                             N/A
@@ -1909,7 +1924,8 @@
             `;
 
             // Insert notification at the top of the modal content
-            const modalContent = document.querySelector('.modal-content') || document.querySelector('.container') || document.body;
+            const modalContent = document.querySelector('.modal-content') || document.querySelector('.container') ||
+                document.body;
             modalContent.insertBefore(notification, modalContent.firstChild);
 
             // Auto-scroll to show the notification

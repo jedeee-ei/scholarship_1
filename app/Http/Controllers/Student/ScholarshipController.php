@@ -85,7 +85,7 @@ class ScholarshipController extends Controller
             $gwa = floatval($request->gwa);
             if ($gwa >= 1.0 && $gwa <= 1.25) {
                 $application->scholarship_subtype = "PL";
-            } elseif ($gwa == 1.50) {
+            } elseif ($gwa >= 1.30 && $gwa <= 1.60) {
                 $application->scholarship_subtype = "DL";
             }
         }

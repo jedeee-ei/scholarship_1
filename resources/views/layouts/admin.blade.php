@@ -150,7 +150,9 @@
                                 window.jsPDFLoaded = true;
                                 resolve();
                             } else {
-                                console.warn('jsPDF script loaded but object not available, trying next CDN...');
+                                console.warn(
+                                    'jsPDF script loaded but object not available, trying next CDN...'
+                                    );
                                 currentIndex++;
                                 tryLoadFromCDN();
                             }
@@ -176,6 +178,9 @@
             window.jsPDFLoadError = true;
         });
     </script>
+
+    <!-- Custom Confirm Dialog -->
+    <script src="{{ asset('js/custom-confirm.js') }}"></script>
 
     <!-- Base JavaScript -->
     <script>

@@ -814,15 +814,22 @@
             showNotification('Download started', 'success');
         }
 
-        function deleteArchive(fileId) {
-            if (confirm('Are you sure you want to delete this archive file?')) {
+        async function deleteArchive(fileId) {
+            const confirmed = await customConfirm(
+                'Are you sure you want to delete this archive file?',
+                'Delete Archive File',
+                'danger'
+            );
+
+            if (confirmed) {
                 showNotification('Deleting file...', 'info');
 
                 // Make AJAX request to delete file
                 fetch(`/admin/archive/delete/${fileId}`, {
                         method: 'DELETE',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
                         }
                     })
                     .then(response => response.json())

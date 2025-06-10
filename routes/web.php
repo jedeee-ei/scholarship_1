@@ -47,9 +47,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Student password change
     Route::post('/student/change-password', [\App\Http\Controllers\Student\DashboardController::class, 'changePassword'])->name('student.change-password');
 
-    Route::get('/student/profile', function () {
-        return view('student.profile');
-    })->name('student.profile');
+
 
     // Scholarship routes
     Route::post('/scholarship/submit', [ScholarshipController::class, 'submitApplication'])->name('scholarship.submit');
