@@ -47,8 +47,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Student password change
     Route::post('/student/change-password', [\App\Http\Controllers\Student\DashboardController::class, 'changePassword'])->name('student.change-password');
 
-
-
     // Scholarship routes
     Route::post('/scholarship/submit', [ScholarshipController::class, 'submitApplication'])->name('scholarship.submit');
 

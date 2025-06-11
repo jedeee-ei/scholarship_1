@@ -151,9 +151,44 @@ class ScholarshipController extends Controller
             if (is_array($grades) && !empty($grades)) {
                 // Filter out empty grades and convert to proper format
                 $subjectGrades = [];
+                $hasDisqualifyingGrade = false;
+
                 foreach ($grades as $subjectCode => $grade) {
                     if (!empty($grade) && is_numeric($grade)) {
-                        $subjectGrades[$subjectCode] = floatval($grade);
+                        $gradeValue = floatval($grade);
+                        $subjectGrades[$subjectCode] = $gradeValue;
+
+                        // Check for disqualifying grades (2.0 and above)
+                        if ($gradeValue >= 2.0) {
+                            $hasDisqualifyingGrade = true;
+                        }
+                    }
+                }
+
+                // Prevent submission if any grade is 2.0 or above
+                if ($hasDisqualifyingGrade) {
+                    Log::warning('Academic scholarship application blocked due to disqualifying grades', [
+                        'student_id' => $request->student_id,
+                        'grades' => $subjectGrades
+                    ]);
+
+                    return back()->withErrors([
+                        'grades' => 'Academic Scholarship application blocked: All grades must be between 1.0-1.75. Grades of 2.0 and above are not eligible.'
+                    ])->withInput();
+                }
+
+                // Check GWA if provided
+                if ($request->has('gwa')) {
+                    $gwa = floatval($request->gwa);
+                    if ($gwa < 1.0 || $gwa > 1.75) {
+                        Log::warning('Academic scholarship application blocked due to disqualifying GWA', [
+                            'student_id' => $request->student_id,
+                            'gwa' => $gwa
+                        ]);
+
+                        return back()->withErrors([
+                            'gwa' => 'Academic Scholarship application blocked: GWA must be between 1.0-1.75.'
+                        ])->withInput();
                     }
                 }
 

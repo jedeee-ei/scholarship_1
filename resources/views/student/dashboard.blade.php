@@ -178,36 +178,128 @@
             line-height: 1.4;
         }
 
-        /* Application Blocked Alert */
-        .application-blocked-alert {
-            background: #f8d7da;
-            border: 3px solid #dc3545;
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin: 20px 0;
-            font-size: 16px;
+        /* Main Screen Grade Disqualification Notification - Minimalistic */
+        .main-screen-grade-disqualification-notification {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+            animation: slideDownBounce 0.5s ease-out;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-content {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-icon {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-text {
+            flex: 1;
             color: #721c24;
-            text-align: center;
-            animation: fadeIn 0.3s ease-out;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
-        }
-
-        .application-blocked-alert .alert-icon {
-            color: #dc3545;
-            font-size: 24px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .application-blocked-alert .alert-title {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: #dc3545;
-        }
-
-        .application-blocked-alert .alert-text {
+            font-size: 1rem;
             line-height: 1.5;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-text strong {
+            color: #dc3545;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .main-screen-grade-disqualification-notification .notification-close:hover {
+            background: rgba(220, 53, 69, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design for Main Screen Grade Disqualification Notification */
+        @media (max-width: 768px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 15px 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .main-screen-grade-disqualification-notification .notification-content {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-icon i {
+                font-size: 1.2rem;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-text {
+                font-size: 0.9rem;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-text strong {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 10px 5px;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-content {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-text {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+
+            .main-screen-grade-disqualification-notification .notification-close {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
         }
 
         /* Disabled Submit Button */
@@ -1091,12 +1183,50 @@
                 </div>
             </div>
 
-            <!-- Backend Error Notifications -->
-            @if ($errors->has('student_id'))
-                <div class="alert alert-danger">
-                    <strong>Duplicate Student ID:</strong> {{ $errors->first('student_id') }}
+        <!-- Backend Error Notifications -->
+        @if ($errors->has('student_id'))
+            <div class="main-screen-duplicate-notification">
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Duplicate Student ID Detected!</strong><br>
+                        {{ $errors->first('student_id') }}
+                    </div>
+                    <button class="notification-close" onclick="removeMainScreenDuplicateNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-            @endif
+            </div>
+        @endif
+
+        <!-- Backend Grade Error Notifications -->
+        @if ($errors->has('grades') || $errors->has('gwa'))
+            <div class="main-screen-grade-disqualification-notification">
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Academic Scholarship Application Blocked!</strong><br>
+                        @if ($errors->has('grades'))
+                            {{ $errors->first('grades') }}<br>
+                        @endif
+                        @if ($errors->has('gwa'))
+                            {{ $errors->first('gwa') }}<br>
+                        @endif
+                        Please review your grades and ensure they meet the requirements before attempting to apply.
+                    </div>
+                    <button class="notification-close" onclick="removeMainScreenGradeDisqualificationNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        <!-- Grade Disqualification Notification Placeholder -->
+        <div id="grade-disqualification-notification-placeholder"></div>
 
             <!-- Main Content -->
             <div class="main-content">
@@ -2199,15 +2329,15 @@
                             scholarshipCard.classList.add('active');
                             targetForm.classList.add('active');
 
-                            // Initialize academic scholarship validation if it's the academic form
-                            if (formId === 'presidents-form') {
-                                // Reset submit button to default state
-                                updateAcademicSubmitButton(false);
-                                // Remove any existing alerts
-                                removeAllGradeAlerts();
-                                removeGWADisqualificationAlert();
-                                removeApplicationBlockedAlert();
-                            }
+                        // Initialize academic scholarship validation if it's the academic form
+                        if (formId === 'presidents-form') {
+                            // Reset submit button to default state
+                            updateAcademicSubmitButton(false);
+                            // Remove any existing alerts
+                            removeAllGradeAlerts();
+                            removeGWADisqualificationAlert();
+                            removeMainScreenGradeDisqualificationNotification();
+                        }
 
                             // Smooth scroll to form
                             setTimeout(() => {
@@ -2246,7 +2376,18 @@
 
 
 
-            });
+            // Check for backend grade disqualification notifications and scroll to them
+            const backendGradeNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+            if (backendGradeNotification) {
+                setTimeout(() => {
+                    backendGradeNotification.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 500);
+            }
+
+        });
 
             // Tab Functionality
             function initializeTabFunctionality() {
@@ -2815,42 +2956,27 @@
                     isValid = false;
                 }
 
-                // Check for disqualifying grades/GWA in academic scholarship
-                const scholarshipTypeInput = form.querySelector('input[name="scholarship_type"]');
-                if (scholarshipTypeInput && scholarshipTypeInput.value === 'academic') {
-                    if (form.getAttribute('data-grade-disqualified') === 'true') {
-                        // Check if there's an application blocked alert
-                        const blockedAlert = document.querySelector('.application-blocked-alert');
-                        const gwaAlert = document.querySelector('.gwa-disqualification-alert');
-                        const gradeAlert = document.querySelector('.grade-alert');
+            // Check for disqualifying grades/GWA in academic scholarship
+            const scholarshipTypeInput = form.querySelector('input[name="scholarship_type"]');
+            if (scholarshipTypeInput && scholarshipTypeInput.value === 'academic') {
+                if (form.getAttribute('data-grade-disqualified') === 'true') {
+                    // Show main screen grade disqualification notification
+                    showMainScreenGradeDisqualificationNotification();
 
-                        if (blockedAlert) {
-                            // Scroll to application blocked alert
-                            blockedAlert.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                        } else if (gwaAlert) {
-                            // Scroll to GWA alert
-                            gwaAlert.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                        } else if (gradeAlert) {
-                            // Scroll to first grade alert
-                            gradeAlert.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                        }
+                    // Scroll to the main screen notification
+                    const notification = document.querySelector('.main-screen-grade-disqualification-notification');
+                    if (notification) {
+                        notification.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
 
-                        // Show definitive blocking message
-                        const submitButton = form.querySelector('.submit-btn');
-                        if (submitButton) {
-                            showFieldError(submitButton,
-                                'APPLICATION BLOCKED: You are not eligible for Academic Scholarship due to disqualifying grades.'
-                            );
-                        }
+                    // Show field error on submit button
+                    const submitButton = form.querySelector('.submit-btn');
+                    if (submitButton) {
+                        showFieldError(submitButton, 'APPLICATION BLOCKED: Check the notification above for details.');
+                    }
 
                         isValid = false;
                     }
@@ -3062,45 +3188,54 @@
                 }
             }
 
-            // Show application blocked alert
-            function showApplicationBlockedAlert() {
-                // Remove any existing blocked alert
-                removeApplicationBlockedAlert();
+        // Show main screen grade disqualification notification
+        function showMainScreenGradeDisqualificationNotification() {
+            // Remove any existing grade disqualification notifications
+            removeMainScreenGradeDisqualificationNotification();
 
-                // Create application blocked alert
-                const alert = document.createElement('div');
-                alert.className = 'application-blocked-alert';
-                alert.innerHTML = `
-                <div class="alert-icon">
-                    <i class="fas fa-ban"></i>
-                </div>
-                <div class="alert-title">
-                    APPLICATION BLOCKED
-                </div>
-                <div class="alert-text">
-                    You cannot apply for Academic Scholarship due to disqualifying grades.<br>
-                    <strong>Academic Scholarship Requirements:</strong><br>
-                    • All grades must be below 2.0 (1.0-1.75 range)<br>
-                    • Overall GWA must be between 1.0-1.60<br><br>
-                    Please review your grades and ensure they meet the requirements before attempting to apply.
+            // Create main screen notification
+            const notification = document.createElement('div');
+            notification.className = 'main-screen-grade-disqualification-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Academic Scholarship Application Blocked!</strong><br>
+                        You cannot apply for Academic Scholarship due to disqualifying grades.<br><br>
+                        <strong>Requirements:</strong> All grades must be between 1.0-1.75 (grades of 2.0 and above are not eligible)<br>
+                        <strong>GWA Requirement:</strong> Overall GWA must be between 1.0-1.75<br><br>
+                        Please review your grades and ensure they meet the requirements before attempting to apply.
+                    </div>
+                    <button class="notification-close" onclick="removeMainScreenGradeDisqualificationNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             `;
 
-                // Insert alert at the top of the form
-                const academicForm = document.getElementById('presidents-form');
-                if (academicForm) {
-                    const formContent = academicForm.querySelector('.form-content') || academicForm;
-                    formContent.insertBefore(alert, formContent.firstChild);
-                }
+            // Insert notification at the placeholder
+            const placeholder = document.getElementById('grade-disqualification-notification-placeholder');
+            if (placeholder) {
+                placeholder.appendChild(notification);
             }
 
-            // Remove application blocked alert
-            function removeApplicationBlockedAlert() {
-                const existingAlert = document.querySelector('.application-blocked-alert');
-                if (existingAlert) {
-                    existingAlert.remove();
-                }
+            // Scroll to notification
+            setTimeout(() => {
+                notification.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+
+        // Remove main screen grade disqualification notification
+        function removeMainScreenGradeDisqualificationNotification() {
+            const existingNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+            if (existingNotification) {
+                existingNotification.remove();
             }
+        }
 
             // Disable/Enable submit button for academic scholarship
             function updateAcademicSubmitButton(isDisqualified) {
@@ -3179,12 +3314,12 @@
                 // Overall disqualification check
                 const isDisqualified = hasDisqualifyingGrade || gwaDisqualified;
 
-                // Show/hide application blocked alert
-                if (isDisqualified && hasValidGrades) {
-                    showApplicationBlockedAlert();
-                } else {
-                    removeApplicationBlockedAlert();
-                }
+            // Show/hide main screen grade disqualification notification
+            if (isDisqualified && hasValidGrades) {
+                showMainScreenGradeDisqualificationNotification();
+            } else {
+                removeMainScreenGradeDisqualificationNotification();
+            }
 
                 // Mark form as having disqualifying grades/GWA
                 const academicForm = document.querySelector('form[action*="scholarship.submit"] input[value="academic"]');
