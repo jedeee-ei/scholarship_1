@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ScholarshipApplication;
 use App\Models\Grantee;
-use Illuminate\Http\Request;
+use App\Models\ArchivedStudent;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -80,89 +80,59 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get chart data for dashboard using real grantee data
+     * Get chart data for dashboard (simplified to 2 charts)
      */
     private function getChartData()
     {
-        // Grantee approvals over time (last 6 months) - using approved_date
-        $months = [];
-        $applicationCounts = [];
+        // 1. Pie Chart: Grantees by Benefactor Type
+        $benefactorDistribution = [];
 
-        for ($i = 5; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $months[] = $date->format('M');
-            // Count grantees approved in this month + any pending applications created
-            $granteeCount = Grantee::whereYear('approved_date', $date->year)
-                ->whereMonth('approved_date', $date->month)
-                ->count();
-            $pendingCount = ScholarshipApplication::whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->count();
-            $applicationCounts[] = $granteeCount + $pendingCount;
+        // Get government grantees by benefactor type
+        $governmentGrantees = Grantee::where('scholarship_type', 'government')
+            ->select('government_benefactor_type', DB::raw('count(*) as count'))
+            ->whereNotNull('government_benefactor_type')
+            ->groupBy('government_benefactor_type')
+            ->pluck('count', 'government_benefactor_type')
+            ->toArray();
+
+        // Get employee grantees
+        $employeeCount = Grantee::where('scholarship_type', 'employee')->count();
+        if ($employeeCount > 0) {
+            $benefactorDistribution['Employee'] = $employeeCount;
         }
 
-        // GWA distribution using grantee data (use current_gwa or gwa field)
-        $gwaRanges = [
-            '1.00-1.25' => Grantee::where(function ($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>=', 1.00)->where('gwa', '<=', 1.25)
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.00)->where('current_gwa', '<=', 1.25);
-                    });
-            })->count(),
-            '1.26-1.50' => Grantee::where(function ($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>=', 1.26)->where('gwa', '<=', 1.50)
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.26)->where('current_gwa', '<=', 1.50);
-                    });
-            })->count(),
-            '1.51-1.75' => Grantee::where(function ($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>=', 1.51)->where('gwa', '<=', 1.75)
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.51)->where('current_gwa', '<=', 1.75);
-                    });
-            })->count(),
-            '1.76-2.00' => Grantee::where(function ($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>=', 1.76)->where('gwa', '<=', 2.00)
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('current_gwa')->where('current_gwa', '>=', 1.76)->where('current_gwa', '<=', 2.00);
-                    });
-            })->count(),
-            '2.01+' => Grantee::where(function ($query) {
-                $query->whereNotNull('gwa')->where('gwa', '>', 2.00)
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('current_gwa')->where('current_gwa', '>', 2.00);
-                    });
-            })->count(),
-        ];
+        // Get private grantees
+        $privateCount = Grantee::where('scholarship_type', 'private')->count();
+        if ($privateCount > 0) {
+            $benefactorDistribution['Private'] = $privateCount;
+        }
 
-        // Status distribution using real data
-        $statusDistribution = [
-            'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
-            'under_review' => ScholarshipApplication::where('status', 'Under Committee Review')->count(),
-            'approved' => Grantee::where('status', 'Active')->count(), // Use grantees for approved
-            'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
-        ];
+        // Add government benefactor types
+        foreach ($governmentGrantees as $type => $count) {
+            $benefactorDistribution[$type] = $count;
+        }
 
-        // Department distribution using grantee data
-        $departmentDistribution = Grantee::select('department', DB::raw('count(*) as count'))
-            ->whereNotNull('department')
-            ->groupBy('department')
-            ->pluck('count', 'department')
-            ->toArray();
+        // 2. Line Chart: Scholarships through the years (last 5 years)
+        $years = [];
+        $scholarshipCounts = [];
 
-        // Scholarship type distribution using grantee data
-        $scholarshipTypeDistribution = Grantee::select('scholarship_type', DB::raw('count(*) as count'))
-            ->groupBy('scholarship_type')
-            ->pluck('count', 'scholarship_type')
-            ->toArray();
+        for ($i = 4; $i >= 0; $i--) {
+            $year = now()->subYears($i)->year;
+            $years[] = $year;
+
+            // Count grantees created in this year
+            $count = Grantee::whereYear('created_at', $year)->count();
+
+            // Also count archived students from this year
+            $archivedCount = ArchivedStudent::whereYear('archived_at', $year)->count();
+
+            $scholarshipCounts[] = $count + $archivedCount;
+        }
 
         return [
-            'months' => $months,
-            'applicationCounts' => $applicationCounts,
-            'gwaRanges' => $gwaRanges,
-            'statusDistribution' => $statusDistribution,
-            'departmentDistribution' => $departmentDistribution,
-            'scholarshipTypeDistribution' => $scholarshipTypeDistribution,
+            'benefactorDistribution' => $benefactorDistribution,
+            'years' => $years,
+            'scholarshipCounts' => $scholarshipCounts,
         ];
     }
 

@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Grantee;
-use App\Models\ArchivedStudent;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class GranteeController extends Controller
 {
@@ -23,13 +20,13 @@ class GranteeController extends Controller
         $currentAcademicYear = SystemSetting::where('key', 'current_academic_year')->value('value') ?? '2024-2025';
 
         // Get scholarship type filter
-        $scholarshipTypeFilter = $request->get('scholarship_type', 'all');
+        $scholarshipTypeFilter = $request->get('scholarship_type');
 
         // Base query for grantees
         $query = Grantee::query();
 
         // Apply scholarship type filter
-        if ($scholarshipTypeFilter !== 'all') {
+        if ($scholarshipTypeFilter && $scholarshipTypeFilter !== 'all') {
             $query->where('scholarship_type', $scholarshipTypeFilter);
         }
 
@@ -40,16 +37,21 @@ class GranteeController extends Controller
         $students = $allGrantees->map(function ($grantee) use ($currentSemester, $currentAcademicYear) {
             return [
                 'id' => $grantee->grantee_id,
-                'application_id' => $grantee->original_application_id,
+                'application_id' => $grantee->application_id,
                 'student_id' => $grantee->student_id,
                 'name' => trim($grantee->first_name . ' ' . ($grantee->middle_name ? $grantee->middle_name . ' ' : '') . $grantee->last_name),
-                'course' => $this->getCourseOrStrand($grantee),
+                'course' => $grantee->course ?: $grantee->strand,
+                'strand' => $grantee->strand,
                 'department' => $grantee->department,
                 'year_level' => $grantee->year_level,
                 'gwa' => $grantee->gwa ?: $grantee->current_gwa,
                 'scholarship_type' => $grantee->scholarship_type,
-                'current_semester' => $grantee->current_semester ?: $currentSemester,
-                'current_academic_year' => $grantee->current_academic_year ?: $currentAcademicYear,
+                'government_benefactor_type' => $grantee->government_benefactor_type,
+                'employee_name' => $grantee->employee_name,
+                'employee_relationship' => $grantee->employee_relationship,
+                'scholarship_name' => $grantee->scholarship_name,
+                'current_semester' => $grantee->semester ?: $grantee->current_semester ?: $currentSemester,
+                'current_academic_year' => $grantee->academic_year ?: $grantee->current_academic_year ?: $currentAcademicYear,
                 'status' => $grantee->status ?: 'Active',
                 'approved_date' => $grantee->approved_date,
                 'created_at' => $grantee->created_at
@@ -131,15 +133,13 @@ class GranteeController extends Controller
             $newStatus = $request->status;
             $remarks = $request->remarks;
 
-            // If changing to inactive, archive the grantee
-            if ($newStatus === 'Inactive' && $grantee->status !== 'Inactive') {
-                $this->archiveGranteeAsInactive($grantee, $remarks);
-            }
+            // Note: Manual status changes to Inactive do not create archive records
+            // Only semester/year updates create archive records
 
             // Update grantee status
             $grantee->status = $newStatus;
             if ($remarks) {
-                $grantee->remarks = $remarks;
+                $grantee->notes = $remarks; // Use 'notes' field instead of 'remarks'
             }
             $grantee->save();
 
@@ -288,38 +288,5 @@ class GranteeController extends Controller
             return $grantee->strand;
         }
         return $grantee->course;
-    }
-
-    /**
-     * Archive a grantee as inactive
-     */
-    private function archiveGranteeAsInactive(Grantee $grantee, $remarks)
-    {
-        // Create archived student record
-        ArchivedStudent::create([
-            'original_application_id' => $grantee->original_application_id,
-            'student_id' => $grantee->student_id,
-            'first_name' => $grantee->first_name,
-            'last_name' => $grantee->last_name,
-            'email' => $grantee->email,
-            'contact_number' => $grantee->contact_number,
-            'course' => $grantee->course,
-            'department' => $grantee->department,
-            'year_level' => $grantee->year_level,
-            'gwa' => $grantee->gwa ?: $grantee->current_gwa,
-            'scholarship_type' => $grantee->scholarship_type,
-            'archived_semester' => $grantee->current_semester,
-            'archived_academic_year' => $grantee->current_academic_year,
-            'archive_type' => 'inactive',
-            'remarks' => $remarks,
-            'archived_at' => now(),
-            'archived_by' => Auth::user() ? Auth::user()->name : 'Admin'
-        ]);
-
-        Log::info('Grantee archived as inactive', [
-            'grantee_id' => $grantee->grantee_id,
-            'student_id' => $grantee->student_id,
-            'remarks' => $remarks
-        ]);
     }
 }

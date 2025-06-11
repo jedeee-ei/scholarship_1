@@ -107,30 +107,16 @@
     <!-- Charts Section -->
     <div class="charts-section">
         <div class="chart-container">
-            <h3 class="chart-title">Applications Trend (Last 6 Months)</h3>
+            <h3 class="chart-title">Grantees by Benefactor Type</h3>
             <div class="chart-canvas">
-                <canvas id="applicationsChart"></canvas>
+                <canvas id="benefactorChart"></canvas>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 class="chart-title">Application Status</h3>
+            <h3 class="chart-title">Scholarships Through the Years</h3>
             <div class="chart-canvas">
-                <canvas id="statusChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h3 class="chart-title">GWA Distribution</h3>
-            <div class="chart-canvas">
-                <canvas id="gwaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h3 class="chart-title">Department Distribution</h3>
-            <div class="chart-canvas">
-                <canvas id="departmentChart"></canvas>
+                <canvas id="yearlyChart"></canvas>
             </div>
         </div>
     </div>
@@ -155,65 +141,31 @@
             });
         }
 
-        // Chart initialization with real grantee data
+        // Chart initialization with simplified 2 charts
         function initializeCharts() {
             const chartData = {!! json_encode($chartData) !!};
             console.log('Dashboard Chart Data:', chartData); // Debug log to see what data we have
 
-            // 1. Applications Trend Chart (Line Chart)
-            const applicationsCtx = document.getElementById('applicationsChart').getContext('2d');
-            new Chart(applicationsCtx, {
-                type: 'line',
+            // 1. Benefactor Distribution Chart (Pie Chart)
+            const benefactorCtx = document.getElementById('benefactorChart').getContext('2d');
+            const benefactorData = chartData.benefactorDistribution || {};
+            new Chart(benefactorCtx, {
+                type: 'pie',
                 data: {
-                    labels: chartData.months,
+                    labels: Object.keys(benefactorData),
                     datasets: [{
-                        label: 'Applications',
-                        data: chartData.applicationCounts,
-                        borderColor: '#1e5631',
-                        backgroundColor: 'rgba(30, 86, 49, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#1e5631',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-            // 2. Status Distribution Chart (Doughnut) - Using real data
-            const statusCtx = document.getElementById('statusChart').getContext('2d');
-            const statusData = chartData.statusDistribution || {};
-            new Chart(statusCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pending', 'Under Review', 'Approved', 'Rejected'],
-                    datasets: [{
-                        data: [
-                            statusData.pending || 0,
-                            statusData.under_review || 0,
-                            statusData.approved || 0,
-                            statusData.rejected || 0
+                        data: Object.values(benefactorData),
+                        backgroundColor: [
+                            '#1e5631', // CHED
+                            '#2d7a3d', // DOST
+                            '#3e8e4a', // DSWD
+                            '#4fa256', // DOLE
+                            '#60b662', // Employee
+                            '#71c66e', // Private
+                            '#82d67a' // Others
                         ],
-                        backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
+                        borderColor: '#ffffff',
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -234,7 +186,7 @@
                                     const value = context.parsed || 0;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} (${percentage}%)`;
+                                    return `${label}: ${value} grantees (${percentage}%)`;
                                 }
                             }
                         }
@@ -242,25 +194,23 @@
                 }
             });
 
-            // 3. GWA Distribution Chart (Bar) - Using real grantee data
-            const gwaCtx = document.getElementById('gwaChart').getContext('2d');
-            const gwaRanges = chartData.gwaRanges || {};
-            new Chart(gwaCtx, {
-                type: 'bar',
+            // 2. Yearly Scholarships Chart (Line Chart)
+            const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+            new Chart(yearlyCtx, {
+                type: 'line',
                 data: {
-                    labels: Object.keys(gwaRanges),
+                    labels: chartData.years,
                     datasets: [{
-                        label: 'Grantees',
-                        data: Object.values(gwaRanges),
-                        backgroundColor: [
-                            '#1e5631', // 1.00-1.25 (Excellent)
-                            '#2d7a3d', // 1.26-1.50 (Very Good)
-                            '#3e8e4a', // 1.51-1.75 (Good)
-                            '#4fa256', // 1.76-2.00 (Satisfactory)
-                            '#60b662' // 2.01+ (Needs Improvement)
-                        ],
-                        borderColor: '#164023',
-                        borderWidth: 1
+                        label: 'Scholarships',
+                        data: chartData.scholarshipCounts,
+                        borderColor: '#1e5631',
+                        backgroundColor: 'rgba(30, 86, 49, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#1e5631',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 3,
+                        pointRadius: 5
                     }]
                 },
                 options: {
@@ -273,11 +223,11 @@
                         tooltip: {
                             callbacks: {
                                 title: function(context) {
-                                    return 'GWA Range: ' + context[0].label;
+                                    return 'Year: ' + context[0].label;
                                 },
                                 label: function(context) {
                                     const count = context.parsed.y;
-                                    return count + ' grantee' + (count !== 1 ? 's' : '');
+                                    return count + ' scholarship' + (count !== 1 ? 's' : '') + ' awarded';
                                 }
                             }
                         }
@@ -290,74 +240,18 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Number of Grantees'
+                                text: 'Number of Scholarships'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'GWA Range'
+                                text: 'Year'
                             }
                         }
                     }
                 }
             });
-
-            // 4. Department Distribution Chart (Bar) - Using real grantee data
-            const departmentCtx = document.getElementById('departmentChart').getContext('2d');
-            const departmentData = chartData.departmentDistribution || {};
-            new Chart(departmentCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(departmentData),
-                    datasets: [{
-                        label: 'Grantees',
-                        data: Object.values(departmentData),
-                        backgroundColor: '#1e5631',
-                        borderColor: '#164023',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Department: ' + context[0].label;
-                                },
-                                label: function(context) {
-                                    const count = context.parsed.y;
-                                    return count + ' grantee' + (count !== 1 ? 's' : '');
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            },
-                            title: {
-                                display: true,
-                                text: 'Number of Grantees'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Department'
-                            }
-                        }
-                    }
-                }
-            });
-
 
         }
 

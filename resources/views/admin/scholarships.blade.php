@@ -85,8 +85,8 @@
                                 @php
                                     $scholarshipKey = strtolower($scholarship['type']);
                                 @endphp
-                                <a href="{{ route('admin.students', ['type' => $scholarshipKey]) }}" class="action-btn view"
-                                    title="View Grantees">
+                                <a href="{{ route('admin.students', ['scholarship_type' => $scholarshipKey]) }}"
+                                    class="action-btn view" title="View Grantees">
                                     <i class="fas fa-users"></i>
                                 </a>
                             </td>
@@ -271,10 +271,14 @@
 
         function saveNewScholarship(event) {
             event.preventDefault();
+            console.log('Form submission started'); // Debug log
 
             const formData = new FormData(event.target);
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
+
+            // Debug: Log form data
+            console.log('Form data:', Object.fromEntries(formData));
 
             // Show loading state
             submitBtn.textContent = 'Adding...';
@@ -284,8 +288,13 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
                 console.error('Security token not found. Please refresh the page.');
+                alert('Security token not found. Please refresh the page.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
                 return;
             }
+
+            console.log('CSRF token found:', csrfToken.getAttribute('content')); // Debug log
 
             // Send request to add scholarship
             fetch('/admin/scholarships/add', {
@@ -298,6 +307,7 @@
                     body: JSON.stringify(Object.fromEntries(formData))
                 })
                 .then(response => {
+                    console.log('Response status:', response.status); // Debug log
                     if (response.status === 419) {
                         throw new Error('Session expired. Please refresh the page and try again.');
                     }
@@ -307,15 +317,19 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Response data:', data); // Debug log
                     if (data.success) {
+                        alert('Benefactor added successfully!');
                         closeAddScholarshipModal();
                         window.location.reload();
                     } else {
+                        alert('Failed to add benefactor: ' + (data.message || 'Unknown error'));
                         console.error(data.message || 'Failed to add scholarship program.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('Error adding benefactor: ' + error.message);
                 })
                 .finally(() => {
                     // Reset button state

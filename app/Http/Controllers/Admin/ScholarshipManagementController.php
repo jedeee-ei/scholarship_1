@@ -11,8 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SemesterUpdateNotification;
+// Mail functionality temporarily disabled
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\SemesterUpdateNotification;
 
 class ScholarshipManagementController extends Controller
 {
@@ -25,37 +26,27 @@ class ScholarshipManagementController extends Controller
         $currentSemester = SystemSetting::where('key', 'current_semester')->value('value') ?? '1st Semester';
         $currentAcademicYear = SystemSetting::where('key', 'current_academic_year')->value('value') ?? '2024-2025';
 
-        // Get scholarship statistics in the format expected by the view
-        $scholarshipStats = [
-            'government' => [
-                'name' => 'Government Scholarship',
-                'type' => 'Government',
-                'active_grantees' => Grantee::where('scholarship_type', 'government')->count(),
-                'semester' => $currentSemester,
-                'academic_year' => $currentAcademicYear
-            ],
-            'academic' => [
-                'name' => 'Academic Scholarship',
-                'type' => 'Academic',
-                'active_grantees' => Grantee::where('scholarship_type', 'academic')->count(),
-                'semester' => $currentSemester,
-                'academic_year' => $currentAcademicYear
-            ],
-            'employees' => [
-                'name' => 'Employee Scholarship',
-                'type' => 'Employee',
-                'active_grantees' => Grantee::where('scholarship_type', 'employees')->count(),
-                'semester' => $currentSemester,
-                'academic_year' => $currentAcademicYear
-            ],
-            'private' => [
-                'name' => 'Private Scholarship',
-                'type' => 'Private',
-                'active_grantees' => Grantee::where('scholarship_type', 'private')->count(),
-                'semester' => $currentSemester,
-                'academic_year' => $currentAcademicYear
-            ]
-        ];
+        // Get scholarships from database instead of hardcoded data
+        $scholarships = Scholarship::all();
+        $scholarshipStats = [];
+
+        // If no scholarships exist in database, return empty array
+        if ($scholarships->isEmpty()) {
+            $scholarshipStats = [];
+        } else {
+            // Build scholarship stats from database
+            foreach ($scholarships as $scholarship) {
+                $key = strtolower(str_replace(' ', '', $scholarship->type));
+                $scholarshipStats[$key] = [
+                    'name' => $scholarship->name,
+                    'type' => $scholarship->type,
+                    'active_grantees' => Grantee::where('scholarship_type', strtolower($scholarship->type))->count(),
+                    'semester' => $currentSemester,
+                    'academic_year' => $currentAcademicYear,
+                    'is_custom' => true
+                ];
+            }
+        }
 
         // Get benefactor statistics for government scholarships
         $benefactorStats = [
@@ -85,6 +76,8 @@ class ScholarshipManagementController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string',
+            'semester' => 'required|string',
+            'academic_year' => 'required|string',
             'description' => 'nullable|string',
             'requirements' => 'nullable|string',
             'benefits' => 'nullable|string',
@@ -96,6 +89,8 @@ class ScholarshipManagementController extends Controller
             $scholarship = Scholarship::create([
                 'name' => $request->name,
                 'type' => $request->type,
+                'semester' => $request->semester,
+                'academic_year' => $request->academic_year,
                 'description' => $request->description,
                 'requirements' => $request->requirements,
                 'benefits' => $request->benefits,
@@ -123,6 +118,11 @@ class ScholarshipManagementController extends Controller
      */
     public function updateSemester(Request $request)
     {
+        Log::info('Semester update request received', [
+            'request_data' => $request->all(),
+            'user' => Auth::user() ? Auth::user()->name : 'Unknown'
+        ]);
+
         $request->validate([
             'current_semester' => 'required|string',
             'new_semester' => 'required|string|different:current_semester'
@@ -135,40 +135,47 @@ class ScholarshipManagementController extends Controller
             $allGrantees = Grantee::all();
             $archivedCount = 0;
 
-            // Archive all current grantees to masterlist
-            foreach ($allGrantees as $grantee) {
-                try {
-                    ArchivedStudent::create([
-                        'original_application_id' => $grantee->original_application_id,
-                        'student_id' => $grantee->student_id,
-                        'first_name' => $grantee->first_name,
-                        'last_name' => $grantee->last_name,
-                        'email' => $grantee->email,
-                        'contact_number' => $grantee->contact_number,
-                        'course' => $grantee->course ?: 'N/A',
-                        'department' => $grantee->department ?: 'N/A',
-                        'year_level' => $grantee->year_level ?: 'N/A',
-                        'gwa' => $grantee->gwa ?: $grantee->current_gwa ?: 0,
-                        'scholarship_type' => $grantee->scholarship_type,
-                        'archived_semester' => $request->current_semester,
-                        'archived_academic_year' => $grantee->current_academic_year ?: '2024-2025',
-                        'archive_type' => $grantee->status === 'Inactive' ? 'inactive' : 'masterlist',
-                        'remarks' => $grantee->status === 'Inactive' ? $grantee->remarks : null,
-                        'archived_at' => now(),
-                        'archived_by' => Auth::user() ? Auth::user()->name : 'Admin'
-                    ]);
+            // Check if there are any grantees to process
+            if ($allGrantees->isEmpty()) {
+                Log::info('No grantees found to archive during semester update');
+            } else {
+                // Archive all current grantees to masterlist
+                foreach ($allGrantees as $grantee) {
+                    try {
+                        ArchivedStudent::create([
+                            'original_application_id' => $grantee->application_id,
+                            'student_id' => $grantee->student_id,
+                            'first_name' => $grantee->first_name,
+                            'last_name' => $grantee->last_name,
+                            'email' => $grantee->email,
+                            'contact_number' => $grantee->contact_number,
+                            'course' => $grantee->course ?: 'N/A',
+                            'department' => $grantee->department ?: 'N/A',
+                            'year_level' => $grantee->year_level ?: 'N/A',
+                            'gwa' => $grantee->gwa ?: $grantee->current_gwa ?: 0,
+                            'scholarship_type' => $grantee->scholarship_type,
+                            'archived_semester' => $request->current_semester,
+                            'archived_academic_year' => $grantee->academic_year ?: $grantee->current_academic_year ?: '2024-2025',
+                            'archive_type' => $grantee->status === 'Inactive' ? 'inactive' : 'masterlist',
+                            'remarks' => $grantee->status === 'Inactive' ? ($grantee->notes ?: 'No specific reason provided') : null,
+                            'archived_at' => now(),
+                            'archived_by' => Auth::user() ? Auth::user()->name : 'Admin'
+                        ]);
 
-                    $archivedCount++;
-                } catch (\Exception $e) {
-                    Log::error('Failed to archive grantee during semester update', [
-                        'grantee_id' => $grantee->grantee_id,
-                        'error' => $e->getMessage()
-                    ]);
+                        $archivedCount++;
+                    } catch (\Exception $e) {
+                        Log::error('Failed to archive grantee during semester update', [
+                            'grantee_id' => $grantee->grantee_id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
                 }
             }
 
-            // Delete all grantees from the current table
-            Grantee::truncate();
+            // Delete all grantees from the current table (only if there were grantees)
+            if (!$allGrantees->isEmpty()) {
+                Grantee::query()->delete(); // Use delete() instead of truncate() to maintain transaction
+            }
 
             // Update system settings
             SystemSetting::updateOrCreate(
@@ -176,38 +183,12 @@ class ScholarshipManagementController extends Controller
                 ['value' => $request->new_semester]
             );
 
-            // Send email notifications to all archived grantees about semester update
-            if ($archivedCount > 0) {
-                foreach ($allGrantees as $grantee) {
-                    try {
-                        $studentName = $grantee->first_name . ' ' . $grantee->last_name;
-                        $studentEmail = $grantee->email;
-
-                        if ($studentEmail) {
-                            Mail::to($studentEmail)->send(new SemesterUpdateNotification(
-                                $studentName,
-                                $studentEmail,
-                                $request->new_semester,
-                                null, // No academic year change
-                                'semester'
-                            ));
-
-                            Log::info('Semester update email sent successfully', [
-                                'student_id' => $grantee->student_id,
-                                'email' => $studentEmail,
-                                'new_semester' => $request->new_semester
-                            ]);
-                        }
-                    } catch (\Exception $e) {
-                        Log::error('Failed to send semester update email', [
-                            'student_id' => $grantee->student_id,
-                            'email' => $grantee->email ?? 'N/A',
-                            'error' => $e->getMessage()
-                        ]);
-                        // Continue with other emails even if one fails
-                    }
-                }
-            }
+            // Email notifications temporarily disabled to prevent 500 errors
+            // TODO: Configure mail settings and re-enable email notifications
+            Log::info('Semester update completed without email notifications', [
+                'archived_count' => $archivedCount,
+                'new_semester' => $request->new_semester
+            ]);
 
             DB::commit();
 
@@ -218,11 +199,15 @@ class ScholarshipManagementController extends Controller
                 'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
             ]);
 
-            return response()->json([
+            $response = [
                 'success' => true,
-                'message' => "Semester updated successfully! {$archivedCount} grantees have been archived and email notifications sent.",
+                'message' => "Semester updated successfully! {$archivedCount} grantees have been archived.",
                 'archived_count' => $archivedCount
-            ]);
+            ];
+
+            Log::info('Sending successful response', ['response' => $response]);
+
+            return response()->json($response);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Semester update failed: ' . $e->getMessage(), [
@@ -254,40 +239,47 @@ class ScholarshipManagementController extends Controller
             $allGrantees = Grantee::all();
             $archivedCount = 0;
 
-            // Archive all current grantees to masterlist
-            foreach ($allGrantees as $grantee) {
-                try {
-                    ArchivedStudent::create([
-                        'original_application_id' => $grantee->original_application_id,
-                        'student_id' => $grantee->student_id,
-                        'first_name' => $grantee->first_name,
-                        'last_name' => $grantee->last_name,
-                        'email' => $grantee->email,
-                        'contact_number' => $grantee->contact_number,
-                        'course' => $grantee->course ?: 'N/A',
-                        'department' => $grantee->department ?: 'N/A',
-                        'year_level' => $grantee->year_level ?: 'N/A',
-                        'gwa' => $grantee->gwa ?: $grantee->current_gwa ?: 0,
-                        'scholarship_type' => $grantee->scholarship_type,
-                        'archived_semester' => $grantee->current_semester ?: '2nd Semester',
-                        'archived_academic_year' => $request->current_year,
-                        'archive_type' => $grantee->status === 'Inactive' ? 'inactive' : 'masterlist',
-                        'remarks' => $grantee->status === 'Inactive' ? $grantee->remarks : null,
-                        'archived_at' => now(),
-                        'archived_by' => Auth::user() ? Auth::user()->name : 'Admin'
-                    ]);
+            // Check if there are any grantees to process
+            if ($allGrantees->isEmpty()) {
+                Log::info('No grantees found to archive during academic year update');
+            } else {
+                // Archive all current grantees to masterlist
+                foreach ($allGrantees as $grantee) {
+                    try {
+                        ArchivedStudent::create([
+                            'original_application_id' => $grantee->application_id,
+                            'student_id' => $grantee->student_id,
+                            'first_name' => $grantee->first_name,
+                            'last_name' => $grantee->last_name,
+                            'email' => $grantee->email,
+                            'contact_number' => $grantee->contact_number,
+                            'course' => $grantee->course ?: 'N/A',
+                            'department' => $grantee->department ?: 'N/A',
+                            'year_level' => $grantee->year_level ?: 'N/A',
+                            'gwa' => $grantee->gwa ?: $grantee->current_gwa ?: 0,
+                            'scholarship_type' => $grantee->scholarship_type,
+                            'archived_semester' => $grantee->semester ?: $grantee->current_semester ?: '2nd Semester',
+                            'archived_academic_year' => $request->current_year,
+                            'archive_type' => $grantee->status === 'Inactive' ? 'inactive' : 'masterlist',
+                            'remarks' => $grantee->status === 'Inactive' ? ($grantee->notes ?: 'No specific reason provided') : null,
+                            'archived_at' => now(),
+                            'archived_by' => Auth::user() ? Auth::user()->name : 'Admin'
+                        ]);
 
-                    $archivedCount++;
-                } catch (\Exception $e) {
-                    Log::error('Failed to archive grantee during academic year update', [
-                        'grantee_id' => $grantee->grantee_id,
-                        'error' => $e->getMessage()
-                    ]);
+                        $archivedCount++;
+                    } catch (\Exception $e) {
+                        Log::error('Failed to archive grantee during academic year update', [
+                            'grantee_id' => $grantee->grantee_id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
                 }
             }
 
-            // Delete all grantees from the current table
-            Grantee::truncate();
+            // Delete all grantees from the current table (only if there were grantees)
+            if (!$allGrantees->isEmpty()) {
+                Grantee::query()->delete(); // Use delete() instead of truncate() to maintain transaction
+            }
 
             // Update system settings
             SystemSetting::updateOrCreate(
@@ -301,38 +293,12 @@ class ScholarshipManagementController extends Controller
                 ['value' => '1st Semester']
             );
 
-            // Send email notifications to all archived grantees about academic year update
-            if ($archivedCount > 0) {
-                foreach ($allGrantees as $grantee) {
-                    try {
-                        $studentName = $grantee->first_name . ' ' . $grantee->last_name;
-                        $studentEmail = $grantee->email;
-
-                        if ($studentEmail) {
-                            Mail::to($studentEmail)->send(new SemesterUpdateNotification(
-                                $studentName,
-                                $studentEmail,
-                                '1st Semester', // Reset to 1st semester
-                                $request->new_year,
-                                'academic_year'
-                            ));
-
-                            Log::info('Academic year update email sent successfully', [
-                                'student_id' => $grantee->student_id,
-                                'email' => $studentEmail,
-                                'new_academic_year' => $request->new_year
-                            ]);
-                        }
-                    } catch (\Exception $e) {
-                        Log::error('Failed to send academic year update email', [
-                            'student_id' => $grantee->student_id,
-                            'email' => $grantee->email ?? 'N/A',
-                            'error' => $e->getMessage()
-                        ]);
-                        // Continue with other emails even if one fails
-                    }
-                }
-            }
+            // Email notifications temporarily disabled to prevent 500 errors
+            // TODO: Configure mail settings and re-enable email notifications
+            Log::info('Academic year update completed without email notifications', [
+                'archived_count' => $archivedCount,
+                'new_academic_year' => $request->new_year
+            ]);
 
             DB::commit();
 
@@ -345,7 +311,7 @@ class ScholarshipManagementController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Academic year updated successfully! {$archivedCount} grantees have been archived and email notifications sent. Semester reset to 1st Semester.",
+                'message' => "Academic year updated successfully! {$archivedCount} grantees have been archived. Semester reset to 1st Semester.",
                 'archived_count' => $archivedCount
             ]);
         } catch (\Exception $e) {

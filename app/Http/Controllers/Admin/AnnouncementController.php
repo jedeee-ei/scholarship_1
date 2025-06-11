@@ -16,7 +16,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         $announcements = Announcement::orderBy('created_at', 'desc')->get();
-        
+
         return view('admin.announcements', [
             'announcements' => $announcements
         ]);
@@ -29,24 +29,15 @@ class AnnouncementController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'type' => 'required|string|in:general,scholarship,deadline,maintenance',
-            'priority' => 'required|string|in:low,medium,high,urgent',
-            'is_published' => 'boolean',
-            'publish_date' => 'nullable|date',
-            'expiry_date' => 'nullable|date|after:publish_date'
+            'content' => 'required|string'
         ]);
 
         try {
             $announcement = Announcement::create([
                 'title' => $request->title,
                 'content' => $request->content,
-                'type' => $request->type,
-                'priority' => $request->priority,
-                'is_published' => $request->has('is_published'),
-                'publish_date' => $request->publish_date ?: now(),
-                'expiry_date' => $request->expiry_date,
-                'created_by' => Auth::user() ? Auth::user()->name : 'Admin'
+                'created_by' => Auth::user() ? Auth::user()->name : 'Admin',
+                'published_at' => now() // Auto-publish when created
             ]);
 
             Log::info('Announcement created', [
@@ -126,7 +117,7 @@ class AnnouncementController extends Controller
         try {
             $announcement = Announcement::findOrFail($id);
             $title = $announcement->title;
-            
+
             $announcement->delete();
 
             Log::info('Announcement deleted', [
