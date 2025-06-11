@@ -68,6 +68,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/scholarship/track', [ScholarshipTrackerController::class, 'trackApplication'])->name('scholarship.track');
 });
 
+// API route for loading subjects (used by student dashboard) - accessible to authenticated users
+Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard'])->middleware('auth');
+
 // Admin routes with authentication and authorization
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -141,9 +144,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // API route for checking duplicate student IDs
     Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
-
-    // API route for loading subjects (used by student dashboard)
-    Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard']);
 
     // CSRF token refresh route
     Route::get('/csrf-token', function () {
