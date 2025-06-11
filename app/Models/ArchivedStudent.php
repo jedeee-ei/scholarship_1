@@ -20,6 +20,8 @@ class ArchivedStudent extends Model
         'scholarship_type',
         'archived_semester',
         'archived_academic_year',
+        'archive_type',
+        'remarks',
         'archived_at',
         'archived_by'
     ];

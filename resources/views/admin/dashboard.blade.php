@@ -409,8 +409,8 @@
                                 <label for="scholarshipType">Scholarship Type:</label>
                                 <select id="scholarshipType" name="scholarship_type" required>
                                     <option value="">Select Type</option>
-                                    <option value="ched">CHED Scholarship</option>
-                                    <option value="presidents">President's Scholarship</option>
+                                    <option value="government">Government Scholarship</option>
+                                    <option value="academic">Academic Scholarship</option>
                                     <option value="employees">Employee Scholarship</option>
                                     <option value="private">Private Scholarship</option>
                                 </select>

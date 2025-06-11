@@ -24,7 +24,7 @@ class GranteeFactory extends Factory
      */
     public function definition(): array
     {
-        $scholarshipTypes = ['ched', 'academic', 'employees', 'private'];
+        $scholarshipTypes = ['government', 'academic', 'employees', 'private'];
         $scholarshipType = fake()->randomElement($scholarshipTypes);
 
         return [

@@ -601,7 +601,7 @@
                                     @elseif ($application->gwa)
                                         @if ($application->gwa >= 1.0 && $application->gwa <= 1.25)
                                             <span class="classification-badge">President's Lister (PL) - Eligible</span>
-                                        @elseif ($application->gwa >= 1.3 && $application->gwa <= 1.6)
+                                        @elseif ($application->gwa >= 1.26 && $application->gwa <= 1.74)
                                             <span class="classification-badge">Dean's Lister (DL) - Eligible</span>
                                         @else
                                             <span class="status-badge rejected">Not Qualified (GWA:

@@ -119,7 +119,7 @@ class GranteeService
      */
     private function isRenewableScholarship(string $scholarshipType): bool
     {
-        return in_array($scholarshipType, ['ched', 'academic']);
+        return in_array($scholarshipType, ['government', 'academic']);
     }
 
     /**

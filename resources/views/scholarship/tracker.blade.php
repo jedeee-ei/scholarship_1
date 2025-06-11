@@ -289,7 +289,7 @@
                                         <div class="application-meta">
                                             @if ($app->scholarship_type == 'government')
                                                 Government Scholarship
-                                            @elseif($app->scholarship_type == 'presidents')
+                                            @elseif($app->scholarship_type == 'academic')
                                                 President's Scholarship
                                             @elseif($app->scholarship_type == 'employees')
                                                 Employees Scholar
@@ -353,7 +353,7 @@
                                 <div class="detail-value">
                                     @if ($application->scholarship_type == 'government')
                                         Government Scholarship
-                                    @elseif($application->scholarship_type == 'presidents')
+                                    @elseif($application->scholarship_type == 'academic')
                                         President's Scholarship
                                     @elseif($application->scholarship_type == 'employees')
                                         Employees Scholar

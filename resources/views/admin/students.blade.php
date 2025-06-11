@@ -285,6 +285,7 @@
                             <th>Benefactor Type</th>
                             <th>Semester</th>
                             <th>Academic Year</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         @elseif($scholarshipTypeFilter == 'academic')
                             <th>Grantee ID</th>
@@ -294,6 +295,7 @@
                             <th>Classification</th>
                             <th>Semester</th>
                             <th>Academic Year</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         @elseif($scholarshipTypeFilter == 'employees')
                             <th>Grantee ID</th>
@@ -303,6 +305,7 @@
                             <th>Relationship</th>
                             <th>Semester</th>
                             <th>Academic Year</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         @elseif($scholarshipTypeFilter == 'private')
                             <th>Grantee ID</th>
@@ -311,6 +314,7 @@
                             <th>Scholarship Name</th>
                             <th>Semester</th>
                             <th>Academic Year</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         @endif
                     @else
@@ -321,6 +325,7 @@
                         <th>Benefactor Type</th>
                         <th>Semester</th>
                         <th>Academic Year</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     @endif
                 </tr>
@@ -353,6 +358,11 @@
                                         class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
                                 </td>
                                 <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
                                     <button class="action-btn edit"
                                         onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
                                         title="Edit Grantee">
@@ -368,7 +378,7 @@
                                     <span class="classification-badge">
                                         @if ($student['gwa'] >= 1.0 && $student['gwa'] <= 1.25)
                                             PL (President's Lister)
-                                        @elseif($student['gwa'] >= 1.3 && $student['gwa'] <= 1.6)
+                                        @elseif($student['gwa'] >= 1.26 && $student['gwa'] <= 1.74)
                                             DL (Dean's Lister)
                                         @else
                                             N/A
@@ -380,6 +390,11 @@
                                 </td>
                                 <td><span
                                         class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
                                 </td>
                                 <td>
                                     <button class="action-btn edit"
@@ -401,6 +416,11 @@
                                         class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
                                 </td>
                                 <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
                                     <button class="action-btn edit"
                                         onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
                                         title="Edit Grantee">
@@ -417,6 +437,11 @@
                                 </td>
                                 <td><span
                                         class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
                                 </td>
                                 <td>
                                     <button class="action-btn edit"
@@ -446,6 +471,11 @@
                                     class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
                             </td>
                             <td>
+                                <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                    {{ $student['status'] ?? 'Active' }}
+                                </span>
+                            </td>
+                            <td>
                                 <button class="action-btn edit"
                                     onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
                                     title="Edit Grantee">
@@ -456,7 +486,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '7' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'private' ? '6' : '7') }}"
+                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'private' ? '8' : '8') }}"
                             class="empty-state">
                             No grantees found. Grantees will appear here once benefactor applications are approved.
                         </td>
@@ -488,43 +518,27 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="editStudentEmail">Email</label>
-                        <input type="email" id="editStudentEmail" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStudentContact">Contact Number</label>
-                        <input type="text" id="editStudentContact" name="contact_number">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editStudentCourse">Course</label>
-                        <input type="text" id="editStudentCourse" name="course" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStudentDepartment">Department</label>
-                        <input type="text" id="editStudentDepartment" name="department">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editStudentYear">Year Level</label>
-                        <select id="editStudentYear" name="year_level">
-                            <option value="">Select Year</option>
-                            <option value="1st Year">1st Year</option>
-                            <option value="2nd Year">2nd Year</option>
-                            <option value="3rd Year">3rd Year</option>
-                            <option value="4th Year">4th Year</option>
-                            <option value="5th Year">5th Year</option>
+                        <label for="editStudentStatus">Status</label>
+                        <select id="editStudentStatus" name="status" required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-row" id="remarksRow" style="display: none;">
                     <div class="form-group">
-                        <label for="editStudentGwa">GWA</label>
-                        <input type="number" id="editStudentGwa" name="gwa" step="0.01" min="1"
-                            max="4">
+                        <label for="editStudentRemarks">Remarks (Required if status is Inactive)</label>
+                        <select id="editStudentRemarks" name="notes" required>
+                            <option value="">Select Reason</option>
+                            <option value="Transferred">Transferred</option>
+                            <option value="Graduated">Graduated</option>
+                            <option value="Failure to Meet Academic Requirements">Failure to Meet Academic Requirements
+                            </option>
+                        </select>
                     </div>
                 </div>
                 <input type="hidden" id="editApplicationId" name="application_id">
+                <input type="hidden" id="editGranteeId" name="grantee_id">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
@@ -549,7 +563,7 @@
                         <label for="scholarshipType">Benefactor Type *</label>
                         <select id="scholarshipType" name="scholarship_type" required onchange="updateFormFields()">
                             <option value="">Select Benefactor Type</option>
-                            <option value="ched">CHED Benefactor</option>
+                            <option value="government">Government Benefactor</option>
                             <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
                             <option value="private">Private Benefactor</option>
@@ -634,7 +648,7 @@
                         <label for="scholarshipTypeSelect">Benefactor Type *</label>
                         <select id="scholarshipTypeSelect" required>
                             <option value="">Select Benefactor Type</option>
-                            <option value="ched">CHED Benefactor</option>
+                            <option value="government">Government Benefactor</option>
                             <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
                             <option value="private">Private Benefactor</option>
@@ -730,11 +744,11 @@
                 }
 
                 // Check for Government form
-                const chedDeptSelect = document.getElementById('governmentDepartment');
-                const chedCourseSelect = document.getElementById('governmentCourse');
+                const govDeptSelect = document.getElementById('governmentDepartment');
+                const govCourseSelect = document.getElementById('governmentCourse');
 
-                if (chedDeptSelect && chedCourseSelect && chedDeptSelect.value) {
-                    console.log('Found Government form, department:', chedDeptSelect.value);
+                if (govDeptSelect && govCourseSelect && govDeptSelect.value) {
+                    console.log('Found Government form, department:', govDeptSelect.value);
                     const siteCourses = [
                         'Bachelor of Science in Information Technology',
                         'Bachelor of Science in Computer Science',
@@ -743,14 +757,14 @@
                         'Bachelor of Science in Civil Engineering'
                     ];
 
-                    chedCourseSelect.innerHTML = '<option value="">Select Course</option>';
+                    govCourseSelect.innerHTML = '<option value="">Select Course</option>';
                     siteCourses.forEach(course => {
                         const option = document.createElement('option');
                         option.value = course;
                         option.textContent = course;
-                        chedCourseSelect.appendChild(option);
+                        govCourseSelect.appendChild(option);
                     });
-                    chedCourseSelect.disabled = false;
+                    govCourseSelect.disabled = false;
                     console.log('Courses populated for Government form');
                     return;
                 }
@@ -1108,7 +1122,7 @@
                     courseSelect.appendChild(option);
                 });
                 courseSelect.disabled = false;
-                console.log('CHED Courses populated successfully for', department);
+                console.log('Government Courses populated successfully for', department);
             }
         }
 
@@ -2022,19 +2036,29 @@
         }
 
         function editStudent(applicationId, studentId) {
-            // Get the button that was clicked to access data attributes
+            // Find the grantee data from the table row
             const button = event.target.closest('button');
+            const row = button.closest('tr');
 
-            // Populate modal with student data
-            document.getElementById('editStudentId').value = button.dataset.studentId;
-            document.getElementById('editStudentName').value = button.dataset.studentName;
-            document.getElementById('editStudentEmail').value = button.dataset.studentEmail;
-            document.getElementById('editStudentContact').value = button.dataset.studentContact;
-            document.getElementById('editStudentCourse').value = button.dataset.studentCourse;
-            document.getElementById('editStudentDepartment').value = button.dataset.studentDepartment;
-            document.getElementById('editStudentYear').value = button.dataset.studentYear;
-            document.getElementById('editStudentGwa').value = button.dataset.studentGwa;
-            document.getElementById('editApplicationId').value = button.dataset.applicationId;
+            // Get grantee data from the row
+            const cells = row.querySelectorAll('td');
+            const granteeId = cells[0].textContent.trim();
+            const fullName = cells[1].textContent.trim();
+
+            // Get status from the status badge
+            const statusBadge = row.querySelector('.status-badge');
+            const status = statusBadge ? statusBadge.textContent.trim() : 'Active';
+
+            // Populate modal with grantee data
+            document.getElementById('editStudentId').value = granteeId;
+            document.getElementById('editStudentName').value = fullName;
+            document.getElementById('editStudentStatus').value = status;
+            document.getElementById('editStudentRemarks').value = '';
+            document.getElementById('editApplicationId').value = applicationId;
+            document.getElementById('editGranteeId').value = granteeId;
+
+            // Show/hide remarks field based on status
+            toggleRemarksField();
 
             // Show modal
             document.getElementById('editStudentModal').style.display = 'block';
@@ -2044,11 +2068,41 @@
             document.getElementById('editStudentModal').style.display = 'none';
         }
 
+        function toggleRemarksField() {
+            const statusSelect = document.getElementById('editStudentStatus');
+            const remarksRow = document.getElementById('remarksRow');
+            const remarksSelect = document.getElementById('editStudentRemarks');
+
+            if (statusSelect.value === 'Inactive') {
+                remarksRow.style.display = 'block';
+                remarksSelect.required = true;
+            } else {
+                remarksRow.style.display = 'none';
+                remarksSelect.required = false;
+                remarksSelect.value = '';
+            }
+        }
+
+        // Add event listener for status change
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelect = document.getElementById('editStudentStatus');
+            if (statusSelect) {
+                statusSelect.addEventListener('change', toggleRemarksField);
+            }
+        });
+
         function saveStudentChanges(event) {
             event.preventDefault();
 
             const formData = new FormData(event.target);
             const applicationId = formData.get('application_id');
+            const granteeId = formData.get('grantee_id');
+
+            // Validate required fields
+            if (formData.get('status') === 'Inactive' && !formData.get('notes')) {
+                alert('Please select a reason when setting status to Inactive.');
+                return;
+            }
 
             // Show loading state
             const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -2057,7 +2111,7 @@
             submitBtn.disabled = true;
 
             // Send update request
-            fetch(`/admin/students/${applicationId}/update`, {
+            fetch(`/admin/grantees/${granteeId}/update`, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2068,15 +2122,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update the table row with new data
-                        updateTableRow(formData);
                         closeEditModal();
+                        // Simply reload to show updated data (grantee stays in the list)
+                        window.location.reload();
                     } else {
-                        console.error(data.message || 'Failed to update student information.');
+                        alert(data.message || 'Failed to update grantee information.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('An error occurred while updating grantee information.');
                 })
                 .finally(() => {
                     // Reset button state

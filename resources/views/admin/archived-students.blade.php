@@ -3,6 +3,7 @@
 @section('title', 'Archives')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/pages/students.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages/archived-students.css') }}">
 @endpush
 
@@ -16,59 +17,70 @@
         <div class="date">{{ date('F d, Y') }}</div>
     </div>
 
-
-
-    <!-- Archived Grantees Table -->
-    <div class="table-container">
-        <div class="table-header">
-            <h3>Archived Grantees History</h3>
-            <div class="table-actions">
+    <!-- Archive Categories -->
+    <div class="student-categories">
+        <div class="category-tabs">
+            <div class="tab-group">
+                <button class="tab-btn active" onclick="showArchiveCategory('masterlist', this)">Masterlist</button>
+                <button class="tab-btn" onclick="showArchiveCategory('inactive', this)">Inactive</button>
+            </div>
+            <div class="archive-actions">
                 <button class="export-btn" onclick="exportArchivedStudents()">
                     <i class="fas fa-download"></i> Export
                 </button>
             </div>
         </div>
+    </div>
 
-        <div class="table-wrapper">
-            <table class="archived-students-table" id="archivedStudentsTable">
-                <thead>
-                    <tr>
-                        <th>Grantee ID</th>
-                        <th>Name</th>
-                        <th>Benefactor Type</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="archivedStudentsTableBody">
-                    @forelse($archivedStudents as $student)
-                        <tr data-year="{{ $student->archived_academic_year }}"
-                            data-semester="{{ $student->archived_semester }}" data-type="{{ $student->scholarship_type }}"
-                            data-search="{{ strtolower($student->first_name . ' ' . $student->last_name . ' ' . $student->student_id) }}">
-                            <td>{{ $student->student_id }}</td>
-                            <td>
-                                <div class="student-info">
-                                    <span class="student-name">{{ $student->first_name }}
-                                        {{ $student->last_name }}</span>
-                                    <small class="student-email">{{ $student->email }}</small>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="scholarship-type {{ $student->scholarship_type }}">
-                                    {{ ucfirst($student->scholarship_type) }}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn view" onclick="viewArchivedStudent({{ $student->id }})"
-                                    title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                    @endforelse
-                </tbody>
-            </table>
+    <!-- Archived Grantees Table -->
+    <div class="student-table-container">
+        <div class="table-header" style="display: none;">
+            <h3 id="archiveTableTitle"></h3>
         </div>
+        <table class="students-table">
+            <thead>
+                <tr>
+                    <th>Grantee ID</th>
+                    <th>Name</th>
+                    <th>Benefactor Type</th>
+                    <th>Remarks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="archivedStudentsTableBody">
+                @forelse($archivedStudents as $student)
+                    <tr data-year="{{ $student->archived_academic_year }}" data-semester="{{ $student->archived_semester }}"
+                        data-type="{{ $student->scholarship_type }}"
+                        data-archive-type="{{ $student->archive_type ?? 'masterlist' }}"
+                        data-search="{{ strtolower($student->first_name . ' ' . $student->last_name . ' ' . $student->student_id) }}">
+                        <td>{{ $student->student_id }}</td>
+                        <td>{{ $student->first_name }} {{ $student->last_name }}</td>
+                        <td>
+                            <span class="benefactor-badge">
+                                {{ ucfirst($student->scholarship_type) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="remarks-badge">
+                                {{ $student->remarks ?? 'N/A' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view" onclick="viewArchivedStudent({{ $student->id }})"
+                                title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            No archived grantees found.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 @endsection
 
@@ -77,6 +89,8 @@
         // Initialize navigation to ensure proper link behavior
         document.addEventListener('DOMContentLoaded', function() {
             initializeNavigation();
+            // Initialize masterlist tab as active on page load
+            showArchiveCategory('masterlist', document.querySelector('.tab-btn.active'));
         });
 
         function initializeNavigation() {
@@ -120,8 +134,39 @@
         }
 
         function exportArchivedStudents() {
-            console.log('Exporting archived grantees...');
-            // TODO: Implement export functionality
+            // Get the currently active tab to determine export type
+            const activeTab = document.querySelector('.tab-btn.active');
+            const archiveType = activeTab.textContent.toLowerCase().trim();
+
+            // Build export URL with type parameter
+            let exportUrl = '{{ route('admin.archived-students.export') }}';
+            if (archiveType !== 'all') {
+                exportUrl += '?type=' + archiveType;
+            }
+
+            // Trigger download
+            window.location.href = exportUrl;
+        }
+
+        function showArchiveCategory(category, button) {
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to clicked button
+            button.classList.add('active');
+
+            // Filter table rows based on category (no title update for cleaner look)
+            const rows = document.querySelectorAll('#archivedStudentsTableBody tr');
+            rows.forEach(row => {
+                const archiveType = row.dataset.archiveType;
+                if (category === 'all' || archiveType === category) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
 
         function toggleDropdown(event) {

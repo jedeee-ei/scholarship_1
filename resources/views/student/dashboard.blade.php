@@ -1183,50 +1183,50 @@
                 </div>
             </div>
 
-        <!-- Backend Error Notifications -->
-        @if ($errors->has('student_id'))
-            <div class="main-screen-duplicate-notification">
-                <div class="notification-content">
-                    <div class="notification-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+            <!-- Backend Error Notifications -->
+            @if ($errors->has('student_id'))
+                <div class="main-screen-duplicate-notification">
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="notification-text">
+                            <strong>Duplicate Student ID Detected!</strong><br>
+                            {{ $errors->first('student_id') }}
+                        </div>
+                        <button class="notification-close" onclick="removeMainScreenDuplicateNotification()">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <div class="notification-text">
-                        <strong>Duplicate Student ID Detected!</strong><br>
-                        {{ $errors->first('student_id') }}
-                    </div>
-                    <button class="notification-close" onclick="removeMainScreenDuplicateNotification()">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        <!-- Backend Grade Error Notifications -->
-        @if ($errors->has('grades') || $errors->has('gwa'))
-            <div class="main-screen-grade-disqualification-notification">
-                <div class="notification-content">
-                    <div class="notification-icon">
-                        <i class="fas fa-ban"></i>
+            <!-- Backend Grade Error Notifications -->
+            @if ($errors->has('grades') || $errors->has('gwa'))
+                <div class="main-screen-grade-disqualification-notification">
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="notification-text">
+                            <strong>Academic Scholarship Application Blocked!</strong><br>
+                            @if ($errors->has('grades'))
+                                {{ $errors->first('grades') }}<br>
+                            @endif
+                            @if ($errors->has('gwa'))
+                                {{ $errors->first('gwa') }}<br>
+                            @endif
+                            Please review your grades and ensure they meet the requirements before attempting to apply.
+                        </div>
+                        <button class="notification-close" onclick="removeMainScreenGradeDisqualificationNotification()">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <div class="notification-text">
-                        <strong>Academic Scholarship Application Blocked!</strong><br>
-                        @if ($errors->has('grades'))
-                            {{ $errors->first('grades') }}<br>
-                        @endif
-                        @if ($errors->has('gwa'))
-                            {{ $errors->first('gwa') }}<br>
-                        @endif
-                        Please review your grades and ensure they meet the requirements before attempting to apply.
-                    </div>
-                    <button class="notification-close" onclick="removeMainScreenGradeDisqualificationNotification()">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        <!-- Grade Disqualification Notification Placeholder -->
-        <div id="grade-disqualification-notification-placeholder"></div>
+            <!-- Grade Disqualification Notification Placeholder -->
+            <div id="grade-disqualification-notification-placeholder"></div>
 
             <!-- Main Content -->
             <div class="main-content">
@@ -1250,12 +1250,12 @@
                                     </div>
 
                                     <!-- Academic Scholarship -->
-                                    <div class="scholarship-card" data-scholarship="presidents">
+                                    <div class="scholarship-card" data-scholarship="academic">
                                         <h3 class="scholarship-title">Academic Scholarship</h3>
                                         <p class="scholarship-description">For students with exceptional academic
                                             performance.
                                         </p>
-                                        <button class="apply-btn" data-form="presidents-form">
+                                        <button class="apply-btn" data-form="academic-form">
                                             <i class="fas fa-paper-plane"></i> Apply Now
                                         </button>
                                     </div>
@@ -1621,7 +1621,7 @@
                         </div>
 
                         <!-- Academic Scholarship Application Form -->
-                        <div class="application-form-container" id="presidents-form">
+                        <div class="application-form-container" id="academic-form">
                             <div class="form-header">
                                 <div class="application-forms-header">
                                     <h3>Academic Scholarship Application</h3>
@@ -1669,39 +1669,39 @@
                                     <div class="form-section-title">Personal Information</div>
                                     <div class="form-row">
                                         <div class="form-group student-id-group">
-                                            <label for="presidents_student_id">Student ID *</label>
-                                            <input type="text" id="presidents_student_id" name="student_id"
+                                            <label for="academic_student_id">Student ID *</label>
+                                            <input type="text" id="academic_student_id" name="student_id"
                                                 value="{{ $student->student_id }}" readonly required>
                                             <small class="form-help-text">
                                                 <i class="fas fa-info-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
-                                            <label for="presidents_last_name">Last Name *</label>
-                                            <input type="text" id="presidents_last_name" name="last_name"
+                                            <label for="academic_last_name">Last Name *</label>
+                                            <input type="text" id="academic_last_name" name="last_name"
                                                 value="{{ $student->last_name }}" readonly required>
                                             <small class="form-help-text">
                                                 <i class="fas fa-info-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
-                                            <label for="presidents_first_name">First Name *</label>
-                                            <input type="text" id="presidents_first_name" name="first_name"
+                                            <label for="academic_first_name">First Name *</label>
+                                            <input type="text" id="academic_first_name" name="first_name"
                                                 value="{{ $student->first_name }}" readonly required>
                                             <small class="form-help-text">
                                                 <i class="fas fa-info-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
-                                            <label for="presidents_middle_name">Middle Name</label>
-                                            <input type="text" id="presidents_middle_name" name="middle_name">
+                                            <label for="academic_middle_name">Middle Name</label>
+                                            <input type="text" id="academic_middle_name" name="middle_name">
                                         </div>
                                     </div>
 
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="presidents_department">College/Department *</label>
-                                            <select id="presidents_department" name="department" required>
+                                            <label for="academic_department">College/Department *</label>
+                                            <select id="academic_department" name="department" required>
                                                 <option value="">Select College/Department</option>
                                                 <option value="SITE">School of Information Technology and Engineering
                                                     (SITE)
@@ -1716,16 +1716,16 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="presidents_course">Course *</label>
-                                            <select id="presidents_course" name="course" required>
+                                            <label for="academic_course">Course *</label>
+                                            <select id="academic_course" name="course" required>
                                                 <option value="">Select Course</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="presidents_year_level">Year Level *</label>
-                                            <select id="presidents_year_level" name="year_level" required>
+                                            <label for="academic_year_level">Year Level *</label>
+                                            <select id="academic_year_level" name="year_level" required>
                                                 <option value="">Select Year Level</option>
                                                 <option value="1st Year">1st Year</option>
                                                 <option value="2nd Year">2nd Year</option>
@@ -1735,8 +1735,8 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="presidents_semester">Semester *</label>
-                                            <select id="presidents_semester" name="semester" required>
+                                            <label for="academic_semester">Semester *</label>
+                                            <select id="academic_semester" name="semester" required>
                                                 <option value="">Select Semester</option>
                                                 <option value="1st Semester">1st Semester</option>
                                                 <option value="2nd Semester">2nd Semester</option>
@@ -1746,7 +1746,7 @@
                                     </div>
 
                                     <!-- Subjects and Grades Section -->
-                                    <div class="subjects-section" id="presidents-subjects-section"
+                                    <div class="subjects-section" id="academic-subjects-section"
                                         style="display: none;">
                                         <div class="form-section-title">Academic Performance - Subjects and Grades</div>
                                         <div class="subjects-container">
@@ -1755,22 +1755,22 @@
                                                 <div class="grades-header">Grades</div>
                                                 <div class="units-header">Units</div>
                                             </div>
-                                            <div class="subjects-list" id="presidents-subjects-list">
+                                            <div class="subjects-list" id="academic-subjects-list">
                                                 <!-- Subjects will be dynamically populated here -->
                                             </div>
                                             <div class="gwa-calculation">
                                                 <div class="gwa-row">
                                                     <div class="gwa-label">Total Units:</div>
-                                                    <div class="gwa-value" id="presidents-total-units">0</div>
+                                                    <div class="gwa-value" id="academic-total-units">0</div>
                                                 </div>
                                                 <div class="gwa-row">
                                                     <div class="gwa-label">Total Grade Points:</div>
-                                                    <div class="gwa-value" id="presidents-total-grade-points">0.00</div>
+                                                    <div class="gwa-value" id="academic-total-grade-points">0.00</div>
                                                 </div>
                                                 <div class="gwa-row gwa-final">
                                                     <div class="gwa-label"><strong>GWA (General Weighted Average):</strong>
                                                     </div>
-                                                    <div class="gwa-value" id="presidents-calculated-gwa">
+                                                    <div class="gwa-value" id="academic-calculated-gwa">
                                                         <strong>0.00</strong>
                                                     </div>
                                                 </div>
@@ -2329,15 +2329,15 @@
                             scholarshipCard.classList.add('active');
                             targetForm.classList.add('active');
 
-                        // Initialize academic scholarship validation if it's the academic form
-                        if (formId === 'presidents-form') {
-                            // Reset submit button to default state
-                            updateAcademicSubmitButton(false);
-                            // Remove any existing alerts
-                            removeAllGradeAlerts();
-                            removeGWADisqualificationAlert();
-                            removeMainScreenGradeDisqualificationNotification();
-                        }
+                            // Initialize academic scholarship validation if it's the academic form
+                            if (formId === 'academic-form') {
+                                // Reset submit button to default state
+                                updateAcademicSubmitButton(false);
+                                // Remove any existing alerts
+                                removeAllGradeAlerts();
+                                removeGWADisqualificationAlert();
+                                removeMainScreenGradeDisqualificationNotification();
+                            }
 
                             // Smooth scroll to form
                             setTimeout(() => {
@@ -2376,18 +2376,19 @@
 
 
 
-            // Check for backend grade disqualification notifications and scroll to them
-            const backendGradeNotification = document.querySelector('.main-screen-grade-disqualification-notification');
-            if (backendGradeNotification) {
-                setTimeout(() => {
-                    backendGradeNotification.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 500);
-            }
+                // Check for backend grade disqualification notifications and scroll to them
+                const backendGradeNotification = document.querySelector(
+                    '.main-screen-grade-disqualification-notification');
+                if (backendGradeNotification) {
+                    setTimeout(() => {
+                        backendGradeNotification.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 500);
+                }
 
-        });
+            });
 
             // Tab Functionality
             function initializeTabFunctionality() {
@@ -2590,35 +2591,35 @@
                 };
 
                 // Department change handler for Presidents form
-                const presidentsDepartmentSelect = document.getElementById('presidents_department');
-                const presidentsCourseSelect = document.getElementById('presidents_course');
+                const academicDepartmentSelect = document.getElementById('academic_department');
+                const academicCourseSelect = document.getElementById('academic_course');
 
-                if (presidentsDepartmentSelect && presidentsCourseSelect) {
-                    presidentsDepartmentSelect.addEventListener('change', function() {
+                if (academicDepartmentSelect && academicCourseSelect) {
+                    academicDepartmentSelect.addEventListener('change', function() {
                         const selectedDepartment = this.value;
                         const courses = departmentCourses[selectedDepartment] || [];
 
                         // Clear existing options
-                        presidentsCourseSelect.innerHTML = '<option value="">Select Course</option>';
+                        academicCourseSelect.innerHTML = '<option value="">Select Course</option>';
 
                         // Add new options
                         courses.forEach(course => {
                             const option = document.createElement('option');
                             option.value = course;
                             option.textContent = course;
-                            presidentsCourseSelect.appendChild(option);
+                            academicCourseSelect.appendChild(option);
                         });
                     });
                 }
 
                 // Show subjects section when all required fields are filled
-                const presidentsYearLevelSelect = document.getElementById('presidents_year_level');
-                const presidentsSemesterSelect = document.getElementById('presidents_semester');
+                const academicYearLevelSelect = document.getElementById('academic_year_level');
+                const academicSemesterSelect = document.getElementById('academic_semester');
 
                 function checkPresidentsFormCompletion() {
-                    const selectedCourse = presidentsCourseSelect.value;
-                    const selectedYearLevel = presidentsYearLevelSelect.value;
-                    const selectedSemester = presidentsSemesterSelect.value;
+                    const selectedCourse = academicCourseSelect.value;
+                    const selectedYearLevel = academicYearLevelSelect.value;
+                    const selectedSemester = academicSemesterSelect.value;
 
                     if (selectedCourse && selectedSemester && selectedYearLevel) {
                         // Create semester key based on year level and semester
@@ -2642,22 +2643,22 @@
                     }
                 }
 
-                if (presidentsCourseSelect) {
-                    presidentsCourseSelect.addEventListener('change', checkPresidentsFormCompletion);
+                if (academicCourseSelect) {
+                    academicCourseSelect.addEventListener('change', checkPresidentsFormCompletion);
                 }
-                if (presidentsYearLevelSelect) {
-                    presidentsYearLevelSelect.addEventListener('change', checkPresidentsFormCompletion);
+                if (academicYearLevelSelect) {
+                    academicYearLevelSelect.addEventListener('change', checkPresidentsFormCompletion);
                 }
-                if (presidentsSemesterSelect) {
-                    presidentsSemesterSelect.addEventListener('change', checkPresidentsFormCompletion);
+                if (academicSemesterSelect) {
+                    academicSemesterSelect.addEventListener('change', checkPresidentsFormCompletion);
                 }
             }
 
             // Load subjects from API
             function loadSubjectsFromAPI(course, yearLevel, semester) {
                 // Show loading state
-                const subjectsSection = document.getElementById('presidents-subjects-section');
-                const subjectsList = document.getElementById('presidents-subjects-list');
+                const subjectsSection = document.getElementById('academic-subjects-section');
+                const subjectsList = document.getElementById('academic-subjects-list');
 
                 if (!subjectsSection || !subjectsList) return;
 
@@ -2685,7 +2686,7 @@
 
             // Display subjects in the form
             function displaySubjects(subjects) {
-                const subjectsList = document.getElementById('presidents-subjects-list');
+                const subjectsList = document.getElementById('academic-subjects-list');
                 if (!subjectsList) return;
 
                 // Clear existing content
@@ -2723,7 +2724,7 @@
 
             // Hide subjects section
             function hideSubjectsSection() {
-                const subjectsSection = document.getElementById('presidents-subjects-section');
+                const subjectsSection = document.getElementById('academic-subjects-section');
                 if (subjectsSection) {
                     subjectsSection.style.display = 'none';
                 }
@@ -2731,7 +2732,7 @@
 
             // Calculate GWA
             function calculateGWA() {
-                const gradeInputs = document.querySelectorAll('#presidents-subjects-list input[type="number"]');
+                const gradeInputs = document.querySelectorAll('#academic-subjects-list input[type="number"]');
                 let totalUnits = 0;
                 let totalGradePoints = 0;
                 let hasDisqualifyingGrade = false;
@@ -2754,9 +2755,9 @@
                 const gwa = totalUnits > 0 ? (totalGradePoints / totalUnits) : 0;
 
                 // Update display
-                document.getElementById('presidents-total-units').textContent = totalUnits;
-                document.getElementById('presidents-total-grade-points').textContent = totalGradePoints.toFixed(2);
-                document.getElementById('presidents-calculated-gwa').innerHTML = `<strong>${gwa.toFixed(2)}</strong>`;
+                document.getElementById('academic-total-units').textContent = totalUnits;
+                document.getElementById('academic-total-grade-points').textContent = totalGradePoints.toFixed(2);
+                document.getElementById('academic-calculated-gwa').innerHTML = `<strong>${gwa.toFixed(2)}</strong>`;
 
                 // Update hidden field for form submission
                 const hiddenGwaField = document.getElementById('inst_calculated_gwa');
@@ -2956,27 +2957,27 @@
                     isValid = false;
                 }
 
-            // Check for disqualifying grades/GWA in academic scholarship
-            const scholarshipTypeInput = form.querySelector('input[name="scholarship_type"]');
-            if (scholarshipTypeInput && scholarshipTypeInput.value === 'academic') {
-                if (form.getAttribute('data-grade-disqualified') === 'true') {
-                    // Show main screen grade disqualification notification
-                    showMainScreenGradeDisqualificationNotification();
+                // Check for disqualifying grades/GWA in academic scholarship
+                const scholarshipTypeInput = form.querySelector('input[name="scholarship_type"]');
+                if (scholarshipTypeInput && scholarshipTypeInput.value === 'academic') {
+                    if (form.getAttribute('data-grade-disqualified') === 'true') {
+                        // Show main screen grade disqualification notification
+                        showMainScreenGradeDisqualificationNotification();
 
-                    // Scroll to the main screen notification
-                    const notification = document.querySelector('.main-screen-grade-disqualification-notification');
-                    if (notification) {
-                        notification.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
+                        // Scroll to the main screen notification
+                        const notification = document.querySelector('.main-screen-grade-disqualification-notification');
+                        if (notification) {
+                            notification.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
 
-                    // Show field error on submit button
-                    const submitButton = form.querySelector('.submit-btn');
-                    if (submitButton) {
-                        showFieldError(submitButton, 'APPLICATION BLOCKED: Check the notification above for details.');
-                    }
+                        // Show field error on submit button
+                        const submitButton = form.querySelector('.submit-btn');
+                        if (submitButton) {
+                            showFieldError(submitButton, 'APPLICATION BLOCKED: Check the notification above for details.');
+                        }
 
                         isValid = false;
                     }
@@ -3188,15 +3189,15 @@
                 }
             }
 
-        // Show main screen grade disqualification notification
-        function showMainScreenGradeDisqualificationNotification() {
-            // Remove any existing grade disqualification notifications
-            removeMainScreenGradeDisqualificationNotification();
+            // Show main screen grade disqualification notification
+            function showMainScreenGradeDisqualificationNotification() {
+                // Remove any existing grade disqualification notifications
+                removeMainScreenGradeDisqualificationNotification();
 
-            // Create main screen notification
-            const notification = document.createElement('div');
-            notification.className = 'main-screen-grade-disqualification-notification';
-            notification.innerHTML = `
+                // Create main screen notification
+                const notification = document.createElement('div');
+                notification.className = 'main-screen-grade-disqualification-notification';
+                notification.innerHTML = `
                 <div class="notification-content">
                     <div class="notification-icon">
                         <i class="fas fa-ban"></i>
@@ -3214,28 +3215,28 @@
                 </div>
             `;
 
-            // Insert notification at the placeholder
-            const placeholder = document.getElementById('grade-disqualification-notification-placeholder');
-            if (placeholder) {
-                placeholder.appendChild(notification);
+                // Insert notification at the placeholder
+                const placeholder = document.getElementById('grade-disqualification-notification-placeholder');
+                if (placeholder) {
+                    placeholder.appendChild(notification);
+                }
+
+                // Scroll to notification
+                setTimeout(() => {
+                    notification.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
             }
 
-            // Scroll to notification
-            setTimeout(() => {
-                notification.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 100);
-        }
-
-        // Remove main screen grade disqualification notification
-        function removeMainScreenGradeDisqualificationNotification() {
-            const existingNotification = document.querySelector('.main-screen-grade-disqualification-notification');
-            if (existingNotification) {
-                existingNotification.remove();
+            // Remove main screen grade disqualification notification
+            function removeMainScreenGradeDisqualificationNotification() {
+                const existingNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
             }
-        }
 
             // Disable/Enable submit button for academic scholarship
             function updateAcademicSubmitButton(isDisqualified) {
@@ -3276,7 +3277,7 @@
 
             // Validate all academic grades and GWA
             function validateAcademicGrades() {
-                const gradeInputs = document.querySelectorAll('#presidents-subjects-list input[type="number"]');
+                const gradeInputs = document.querySelectorAll('#academic-subjects-list input[type="number"]');
                 let hasDisqualifyingGrade = false;
                 let hasValidGrades = false;
 
@@ -3295,12 +3296,12 @@
                 // Check overall GWA if there are valid grades
                 let gwaDisqualified = false;
                 if (hasValidGrades) {
-                    const gwaElement = document.getElementById('presidents-calculated-gwa');
+                    const gwaElement = document.getElementById('academic-calculated-gwa');
                     if (gwaElement) {
                         const gwaText = gwaElement.textContent.trim();
                         const gwa = parseFloat(gwaText);
 
-                        if (!isNaN(gwa) && gwa > 1.60) {
+                        if (!isNaN(gwa) && gwa > 1.74) {
                             gwaDisqualified = true;
                             showGWADisqualificationAlert(gwa.toFixed(2));
                         } else {
@@ -3314,12 +3315,12 @@
                 // Overall disqualification check
                 const isDisqualified = hasDisqualifyingGrade || gwaDisqualified;
 
-            // Show/hide main screen grade disqualification notification
-            if (isDisqualified && hasValidGrades) {
-                showMainScreenGradeDisqualificationNotification();
-            } else {
-                removeMainScreenGradeDisqualificationNotification();
-            }
+                // Show/hide main screen grade disqualification notification
+                if (isDisqualified && hasValidGrades) {
+                    showMainScreenGradeDisqualificationNotification();
+                } else {
+                    removeMainScreenGradeDisqualificationNotification();
+                }
 
                 // Mark form as having disqualifying grades/GWA
                 const academicForm = document.querySelector('form[action*="scholarship.submit"] input[value="academic"]');

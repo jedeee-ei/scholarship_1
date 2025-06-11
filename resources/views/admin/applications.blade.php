@@ -23,7 +23,7 @@
                     <option value="">All Types</option>
                     <option value="government" {{ $currentType == 'government' ? 'selected' : '' }}>Government Scholarship
                     </option>
-                    <option value="presidents" {{ $currentType == 'presidents' ? 'selected' : '' }}>President's
+                    <option value="academic" {{ $currentType == 'academic' ? 'selected' : '' }}>Academic
                         Scholarship</option>
                     <option value="employees" {{ $currentType == 'employees' ? 'selected' : '' }}>Employees
                         Scholar</option>
@@ -61,7 +61,7 @@
                                 @if ($application->government_benefactor_type)
                                     <br><small class="text-muted">({{ $application->government_benefactor_type }})</small>
                                 @endif
-                            @elseif($application->scholarship_type == 'presidents')
+                            @elseif($application->scholarship_type == 'academic')
                                 President's Scholarship
                             @elseif($application->scholarship_type == 'employees')
                                 Employees Scholar

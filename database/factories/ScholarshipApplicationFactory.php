@@ -17,7 +17,7 @@ class ScholarshipApplicationFactory extends Factory
      */
     public function definition(): array
     {
-        $scholarshipTypes = ['ched', 'presidents', 'employees', 'private'];
+        $scholarshipTypes = ['government', 'academic', 'employees', 'private'];
         $statuses = ['Pending Review', 'Under Committee Review', 'Approved', 'Rejected'];
 
         return [

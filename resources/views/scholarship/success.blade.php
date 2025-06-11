@@ -314,7 +314,7 @@
                         <div class="detail-value">
                             @if (session('scholarship_type') == 'government')
                                 Government Scholarship
-                            @elseif(session('scholarship_type') == 'presidents')
+                            @elseif(session('scholarship_type') == 'academic')
                                 Institutional Scholarship
                             @elseif(session('scholarship_type') == 'employees')
                                 Employees Scholar

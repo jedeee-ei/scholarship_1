@@ -14,12 +14,15 @@ class StudentMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role === 'student') {
-            return $next($request);
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to access student features.');
         }
 
-        return redirect()->route('login');
+        $user = Auth::user();
+        if ($user->role !== 'student') {
+            return redirect()->route('login')->with('error', 'Student access required.');
+        }
+
+        return $next($request);
     }
 }
-
-

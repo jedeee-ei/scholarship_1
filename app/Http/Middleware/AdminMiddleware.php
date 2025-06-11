@@ -24,8 +24,7 @@ class AdminMiddleware
         // Check if user has administrator role
         $user = Auth::user();
         if ($user->role !== 'administrator') {
-            $message = "🚫 Access Denied: Administrator privileges required. You are currently logged in as a {$user->role}. Please log in with an administrator account to access the admin panel.";
-            return redirect()->route('student.dashboard')->with('error', $message);
+            return redirect()->route('login')->with('error', 'Administrator access required.');
         }
 
         return $next($request);

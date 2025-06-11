@@ -40,7 +40,7 @@
                         <p>Automatically approve applications that meet Government criteria</p>
                     </div>
                     <div class="setting-control">
-                        <div class="toggle-switch {{ $settings['auto_approve_ched'] ? 'active' : '' }}"
+                        <div class="toggle-switch {{ $settings['auto_approve_government'] ? 'active' : '' }}"
                             onclick="toggleSetting(this)">
                             <div class="toggle-slider"></div>
                         </div>

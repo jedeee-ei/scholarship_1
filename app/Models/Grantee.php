@@ -137,9 +137,8 @@ class Grantee extends Model
     public function getFormattedScholarshipTypeAttribute(): string
     {
         return match ($this->scholarship_type) {
-            'ched' => 'CHED Scholarship',
-            'presidents' => 'President\'s Scholarship',
-            'institutional' => 'Institutional Scholarship',
+            'government' => 'Government Scholarship',
+            'academic' => 'Academic Scholarship',
             'employees' => 'Employee\'s Scholarship',
             'private' => 'Private Scholarship',
             default => ucfirst($this->scholarship_type) . ' Scholarship'

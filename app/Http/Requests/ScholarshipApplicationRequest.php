@@ -26,7 +26,7 @@ class ScholarshipApplicationRequest extends FormRequest
 
         $rules = [
             // Basic required fields for all scholarship types
-            'scholarship_type' => 'required|in:government,academic,institutional,employees,private',
+            'scholarship_type' => 'required|in:government,academic,employees,private',
             'student_id' => [
                 'required',
                 'string',
