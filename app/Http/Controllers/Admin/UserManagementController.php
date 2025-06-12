@@ -52,7 +52,14 @@ class UserManagementController extends Controller
             'student_id' => 'required|string|unique:users,student_id',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+                'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'
+            ],
+        ], [
+            'email.regex' => 'Email address must be a Gmail account (@gmail.com)',
         ]);
 
         try {

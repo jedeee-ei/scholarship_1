@@ -587,7 +587,10 @@
                 <div class="form-group">
                     <label for="email">Email Address <span class="required">*</span></label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}"
-                        placeholder="Enter email address" required>
+                        placeholder="Enter Email Address" required
+                        pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
+                        title="Please enter a valid Email Address">
+                    <div id="email-feedback" class="feedback-message"></div>
                 </div>
 
                 <!-- Default Password Information -->
@@ -719,6 +722,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const studentIdInput = document.getElementById('student_id');
             const feedback = document.getElementById('student-id-feedback');
+            const emailInput = document.getElementById('email');
+            const emailFeedback = document.getElementById('email-feedback');
             const submitBtn = document.querySelector('.submit-btn');
             let checkTimeout;
 
@@ -743,6 +748,30 @@
                     feedback.style.display = 'none';
                 }
             });
+
+            // Email validation
+            emailInput.addEventListener('input', function(e) {
+                const email = e.target.value.trim();
+                if (email.length > 0) {
+                    if (isValidGmail(email)) {
+                        emailFeedback.className = 'feedback-message success';
+                        emailFeedback.textContent = '✓ Valid Gmail address';
+                        emailFeedback.style.display = 'block';
+                    } else {
+                        emailFeedback.className = 'feedback-message error';
+                        emailFeedback.textContent = '✗ Please enter a valid Email Address.';
+                        emailFeedback.style.display = 'block';
+                    }
+                } else {
+                    emailFeedback.style.display = 'none';
+                }
+            });
+
+            // Function to validate Gmail address
+            function isValidGmail(email) {
+                const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                return gmailRegex.test(email);
+            }
 
             // Function to check student ID availability
             function checkStudentIdAvailability(studentId) {
@@ -782,6 +811,8 @@
                 e.preventDefault(); // Always prevent default form submission
 
                 const studentId = studentIdInput.value.trim();
+                const email = emailInput.value.trim();
+
                 if (studentId.length < 3) {
                     alert('Please enter a valid Student ID');
                     studentIdInput.focus();
@@ -792,6 +823,13 @@
                 if (feedback.classList.contains('error')) {
                     alert('Student ID already exists. Please use a different Student ID.');
                     studentIdInput.focus();
+                    return false;
+                }
+
+                // Check if email is valid Gmail
+                if (!isValidGmail(email)) {
+                    alert('Please enter a valid Gmail address (@gmail.com)');
+                    emailInput.focus();
                     return false;
                 }
 
@@ -984,7 +1022,10 @@
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" name="email" value="${email}" required>
+                                <input type="email" name="email" value="${email}" required
+                                       pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
+                                       title="Please enter a valid Gmail address">
+                                <small style="color: #666; font-size: 12px;">Only Gmail accounts (@gmail.com) are accepted</small>
                             </div>
                             <div class="form-actions">
                                 <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
