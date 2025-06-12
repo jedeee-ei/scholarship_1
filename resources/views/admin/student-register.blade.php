@@ -558,6 +558,7 @@
                 </div>
             @endif
 
+            <!-- Temporarily commented out student registration form
             <form action="{{ route('admin.student-register.store') }}" method="POST">
                 @csrf
 
@@ -608,6 +609,13 @@
                     <i class="fas fa-user-plus"></i> Create User Account
                 </button>
             </form>
+            -->
+
+            <div style="text-align: center; padding: 40px; color: #666;">
+                <i class="fas fa-user-plus" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                <h3>Student Registration Temporarily Disabled</h3>
+                <p>The student registration form is currently disabled for maintenance.</p>
+            </div>
             </div>
         </div>
 

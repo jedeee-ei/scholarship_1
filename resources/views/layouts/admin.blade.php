@@ -96,10 +96,7 @@
                     class="nav-item {{ request()->routeIs('admin.student-register*') ? 'active' : '' }}">
                     <i class="fas fa-users-cog"></i> Users Management
                 </a>
-                <a href="{{ route('admin.settings') }}"
-                    class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="fas fa-cog"></i> Settings
-                </a>
+
             </nav>
         </div>
 

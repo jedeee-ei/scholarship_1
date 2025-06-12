@@ -67,17 +67,34 @@
 
 
 
-    <!-- Charts Section -->
+    <!-- Pie Charts Section -->
     <div class="charts-section">
         <div class="chart-container">
-            <h3 class="chart-title">Grantees by Scholarship Type</h3>
+            <h3 class="chart-title">Grantees per Scholarship Type</h3>
             <div class="chart-canvas">
-                <canvas id="scholarshipChart"></canvas>
+                <canvas id="studentsChart"></canvas>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 class="chart-title">Scholarships Through the Years</h3>
+            <h3 class="chart-title">Scholarship Types</h3>
+            <div class="chart-canvas">
+                <canvas id="scholarshipTypesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Graduates per Academic Year</h3>
+            <div class="chart-canvas">
+                <canvas id="graduatesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line Chart Section -->
+    <div class="charts-section line-chart-section">
+        <div class="chart-container">
+            <h3 class="chart-title">Total Scholarship Recipients Growth</h3>
             <div class="chart-canvas">
                 <canvas id="yearlyChart"></canvas>
             </div>
@@ -283,7 +300,7 @@
             }, 3000);
         }
 
-        // Chart initialization with simplified 2 charts
+        // Chart initialization with 4 charts
         function initializeCharts() {
             try {
                 const chartData = {!! json_encode($chartData) !!};
@@ -295,24 +312,24 @@
                     return;
                 }
 
-                // 1. Scholarship Distribution Chart (Pie Chart)
-                const scholarshipCtx = document.getElementById('scholarshipChart').getContext('2d');
-                const scholarshipData = chartData.scholarshipDistribution || {};
+                // 1. Students per Scholarship Type Chart (Pie Chart)
+                const studentsCtx = document.getElementById('studentsChart').getContext('2d');
+                const studentsData = chartData.studentsPerScholarshipType || {};
 
                 // Check if we have data
-                if (Object.keys(scholarshipData).length === 0) {
+                if (Object.keys(studentsData).length === 0) {
                     // Show "No data" message
-                    scholarshipCtx.font = "16px Arial";
-                    scholarshipCtx.fillStyle = "#666";
-                    scholarshipCtx.textAlign = "center";
-                    scholarshipCtx.fillText("No grantee data available", scholarshipCtx.canvas.width / 2, scholarshipCtx.canvas.height / 2);
+                    studentsCtx.font = "16px Arial";
+                    studentsCtx.fillStyle = "#666";
+                    studentsCtx.textAlign = "center";
+                    studentsCtx.fillText("No student data available", studentsCtx.canvas.width / 2, studentsCtx.canvas.height / 2);
                 } else {
-                    new Chart(scholarshipCtx, {
+                    new Chart(studentsCtx, {
                         type: 'pie',
                         data: {
-                            labels: Object.keys(scholarshipData),
+                            labels: Object.keys(studentsData),
                             datasets: [{
-                                data: Object.values(scholarshipData),
+                                data: Object.values(studentsData),
                                 backgroundColor: [
                                     '#3498db', // Government - Blue
                                     '#e74c3c', // Academic - Red
@@ -345,7 +362,7 @@
                                             const value = context.parsed || 0;
                                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                            return `${label}: ${value} grantee${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                            return `${label}: ${value} student${value !== 1 ? 's' : ''} (${percentage}%)`;
                                         }
                                     }
                                 }
@@ -354,14 +371,132 @@
                     });
                 }
 
-                // 2. Yearly Scholarships Chart (Line Chart)
+                // 2. Scholarship Types Count Chart (Pie Chart)
+                const scholarshipTypesCtx = document.getElementById('scholarshipTypesChart').getContext('2d');
+                const scholarshipTypesData = chartData.scholarshipTypesCount || {};
+
+                // Check if we have scholarship types data
+                if (Object.keys(scholarshipTypesData).length === 0) {
+                    // Show "No data" message
+                    scholarshipTypesCtx.font = "16px Arial";
+                    scholarshipTypesCtx.fillStyle = "#666";
+                    scholarshipTypesCtx.textAlign = "center";
+                    scholarshipTypesCtx.fillText("No scholarship types data available", scholarshipTypesCtx.canvas.width / 2, scholarshipTypesCtx.canvas.height / 2);
+                } else {
+                    new Chart(scholarshipTypesCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(scholarshipTypesData),
+                            datasets: [{
+                                data: Object.values(scholarshipTypesData),
+                                backgroundColor: [
+                                    '#27ae60', // Government - Green
+                                    '#8e44ad', // Academic - Purple
+                                    '#e67e22', // Employee - Orange
+                                    '#2980b9', // Alumni - Blue
+                                    '#f39c12', // Others - Yellow
+                                    '#95a5a6', // Additional - Gray
+                                    '#c0392b', // Extra - Red
+                                    '#16a085'  // Extra - Teal
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} type${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 3. Graduates Chart (Pie Chart)
+                const graduatesCtx = document.getElementById('graduatesChart').getContext('2d');
+                const graduatesData = chartData.graduatesData || {};
+
+                // Check if we have graduates data
+                if (Object.keys(graduatesData).length === 0) {
+                    // Show "No data" message
+                    graduatesCtx.font = "16px Arial";
+                    graduatesCtx.fillStyle = "#666";
+                    graduatesCtx.textAlign = "center";
+                    graduatesCtx.fillText("No graduates data available", graduatesCtx.canvas.width / 2, graduatesCtx.canvas.height / 2);
+                } else {
+                    new Chart(graduatesCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(graduatesData),
+                            datasets: [{
+                                data: Object.values(graduatesData),
+                                backgroundColor: [
+                                    '#2ecc71', // Green
+                                    '#3498db', // Blue
+                                    '#e74c3c', // Red
+                                    '#f39c12', // Orange
+                                    '#9b59b6', // Purple
+                                    '#1abc9c', // Teal
+                                    '#34495e', // Dark Gray
+                                    '#e67e22'  // Dark Orange
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} graduate${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 4. Yearly Scholarships Chart (Line Chart)
                 const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
                 new Chart(yearlyCtx, {
                     type: 'line',
                     data: {
                         labels: chartData.years,
                         datasets: [{
-                            label: 'Scholarships',
+                            label: 'Total Recipients',
                             data: chartData.scholarshipCounts,
                             borderColor: '#1e5631',
                             backgroundColor: 'rgba(30, 86, 49, 0.1)',
@@ -387,7 +522,7 @@
                                     },
                                     label: function(context) {
                                         const count = context.parsed.y;
-                                        return count + ' scholarship' + (count !== 1 ? 's' : '') + ' awarded';
+                                        return 'Total: ' + count + ' scholarship recipient' + (count !== 1 ? 's' : '');
                                     }
                                 }
                             }
@@ -400,7 +535,7 @@
                                 },
                                 title: {
                                     display: true,
-                                    text: 'Number of Scholarships'
+                                    text: 'Total Recipients'
                                 }
                             },
                             x: {

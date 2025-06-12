@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\ArchiveController;
 use App\Http\Controllers\Admin\SettingsController;
+
 use App\Http\Controllers\Admin\ImportExportController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -159,8 +160,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/grantees/{id}/update', [GranteeController::class, 'updateGrantee'])->name('admin.grantee.update');
     Route::get('/admin/scholarships', [ScholarshipManagementController::class, 'index'])->name('admin.scholarships');
     Route::post('/admin/scholarships/add', [ScholarshipManagementController::class, 'addScholarship'])->name('admin.scholarship.add');
-    Route::post('/admin/settings/update-semester', [SettingsController::class, 'updateSemester'])->name('admin.settings.update-semester');
-    Route::post('/admin/settings/update-year', [SettingsController::class, 'updateAcademicYear'])->name('admin.settings.update-year');
+
     Route::get('/admin/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements');
     Route::post('/admin/announcements/store', [AnnouncementController::class, 'store'])->name('admin.announcements.store');
     Route::put('/admin/announcements/{id}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
@@ -172,11 +172,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/archived-students/{id}/details', [ArchiveController::class, 'getArchivedStudentDetails'])->name('admin.archived-students.details');
     Route::get('/admin/archived-scholarships', [ArchiveController::class, 'index'])->name('admin.archived-scholarships');
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports');
-    Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings');
-
     // New admin functionality routes
     Route::post('/admin/students/import', [ImportExportController::class, 'bulkImportStudents'])->name('admin.students.import');
-    Route::post('/admin/settings/update', [SettingsController::class, 'updateSettings'])->name('admin.settings.update');
     Route::get('/admin/applications/export', [ImportExportController::class, 'exportApplicationsData'])->name('admin.applications.export');
 
     // Reports and Archive routes
@@ -230,8 +227,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return response()->json(['status' => 'alive', 'csrf_token' => csrf_token()]);
     });
 
-    // Get current semester/year route
-    Route::get('/admin/current-semester-year', [SettingsController::class, 'getCurrentSemesterYear']);
+
 
     // Toggle application status route
     Route::post('/admin/toggle-application-status', [DashboardController::class, 'toggleApplicationStatus'])->name('admin.toggle-application-status');
@@ -240,9 +236,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/bulk-import', [ImportExportController::class, 'bulkImport'])->name('admin.bulk-import');
     Route::get('/admin/download-template', [ImportExportController::class, 'downloadTemplate'])->name('admin.download-template');
     Route::get('/admin/export/{type}', [ImportExportController::class, 'exportData'])->name('admin.export');
-    Route::post('/admin/settings', [SettingsController::class, 'saveSettings'])->name('admin.settings.save');
+
 
     // Student import routes
     Route::post('/admin/import-students', [ImportExportController::class, 'importStudents'])->name('admin.import-students');
+    Route::post('/admin/import-grantees', [ImportExportController::class, 'importGrantees'])->name('admin.import-grantees');
+    Route::post('/admin/import-grantees-dynamic', [ImportExportController::class, 'importGranteesDynamic'])->name('admin.import-grantees-dynamic');
+    Route::post('/admin/add-grantee', [GranteeController::class, 'addGrantee'])->name('admin.add-grantee');
+
+    // Test route to debug
+    Route::post('/admin/test-route', function() {
+        return response()->json(['message' => 'Test route works']);
+    })->name('admin.test-route');
     Route::get('/admin/download-student-template', [ImportExportController::class, 'downloadStudentTemplate'])->name('admin.download-student-template');
+    Route::get('/admin/download-grantee-template', [ImportExportController::class, 'downloadGranteeTemplate'])->name('admin.download-grantee-template');
+
+    // Settings routes
+    Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings');
+    Route::get('/admin/current-semester-year', [SettingsController::class, 'getCurrentSemesterYear'])->name('admin.current-semester-year');
+    Route::post('/admin/settings', [SettingsController::class, 'saveSettings'])->name('admin.settings.save');
+    Route::post('/admin/settings/update-semester', [SettingsController::class, 'updateSemester'])->name('admin.settings.update-semester');
+    Route::post('/admin/settings/update-year', [SettingsController::class, 'updateAcademicYear'])->name('admin.settings.update-year');
 });

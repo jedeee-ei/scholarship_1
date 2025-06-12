@@ -7,7 +7,7 @@
     <style>
         /* Grade Disqualification Notification Styles */
         .main-screen-grade-disqualification-notification {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            background: #f8d7da;
             border: 2px solid #dc3545;
             border-radius: 12px;
             margin: 20px auto;
@@ -268,10 +268,12 @@
                     style="display: {{ isset($scholarshipTypeFilter) ? 'none' : 'block' }};">
                     <i class="fas fa-upload"></i> Import
                 </button>
+                <!-- Temporarily commented out Add Grantee button
                 <button class="btn-primary" onclick="showAddStudentForm()"
                     style="display: {{ isset($scholarshipTypeFilter) ? 'none' : 'block' }};">
                     <i class="fas fa-plus"></i> Add Grantee
                 </button>
+                -->
             </div>
         </div>
         <table class="students-table">
@@ -546,7 +548,8 @@
     </div>
 </div>
 
-<!-- Add Grantee Modal -->
+<!--
+Temporarily commented out Add Grantee Modal
 <div id="addStudentModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
@@ -556,44 +559,41 @@
         <form id="addStudentForm" onsubmit="saveNewStudent(event)">
             <div class="modal-body">
                 <!-- Scholarship Type Selection -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="scholarshipType">Benefactor Type *</label>
-                        <select id="scholarshipType" name="scholarship_type" required onchange="updateFormFields()">
-                            <option value="">Select Benefactor Type</option>
-                            <option value="government">Government Benefactor</option>
-                            <option value="academic">Academic Benefactor</option>
-                            <option value="employees">Employee Benefactor</option>
-                            <option value="alumni">Alumni Benefactor</option>
-                        </select>
+                <div class="form-section">
+                    <h3>Scholarship Type</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scholarshipType">Scholarship Type *</label>
+                            <select id="scholarshipType" name="scholarship_type" required onchange="updateFormFields()">
+                                <option value="">Select Scholarship Type</option>
+                                <option value="government">Government</option>
+                                <option value="academic">Academic</option>
+                                <option value="employees">Employees</option>
+                                <option value="alumni">Alumni</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Basic Information (Common for all types) -->
+                <!-- Personal Information -->
                 <div class="form-section">
-                    <h3>Basic Information</h3>
+                    <h3>Personal Information</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="studentId">Grantee ID *</label>
+                            <label for="studentId">Student ID *</label>
                             <input type="text" id="studentId" name="student_id" required>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
                             <input type="text" id="firstName" name="first_name" required>
                         </div>
                         <div class="form-group">
-                            <label for="middleName">Middle Name</label>
-                            <input type="text" id="middleName" name="middle_name">
-                        </div>
-                        <div class="form-group">
                             <label for="lastName">Last Name *</label>
                             <input type="text" id="lastName" name="last_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" id="middleName" name="middle_name">
                         </div>
                     </div>
                     <div class="form-row">
@@ -609,7 +609,55 @@
                             <label for="birthdate">Birthdate *</label>
                             <input type="date" id="birthdate" name="birthdate" required>
                         </div>
+                    </div>
+                </div>
 
+                <!-- Contact Information -->
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactNumber">Contact Number *</label>
+                            <input type="tel" id="contactNumber" name="contact_number" required maxlength="11"
+                                   placeholder="09123456789" pattern="[0-9]{11}" title="Please enter exactly 11 digits">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="indigenous">Indigenous People</label>
+                            <input type="text" id="indigenous" name="indigenous" placeholder="Indigenous People">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information -->
+                <div class="form-section">
+                    <h3>Address Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="street">Street *</label>
+                            <input type="text" id="street" name="street" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="barangay">Barangay *</label>
+                            <input type="text" id="barangay" name="barangay" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="province">Province *</label>
+                            <input type="text" id="province" name="province" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipcode">Zipcode *</label>
+                            <input type="text" id="zipcode" name="zipcode" required>
+                        </div>
                     </div>
                 </div>
 
@@ -623,33 +671,22 @@
         </form>
     </div>
 </div>
+-->
 
 <!-- Hidden file input for import -->
 <input type="file" id="hiddenFileInput" accept=".xlsx,.xls,.csv" style="display: none;"
     onchange="handleFileSelection(event)">
 
-<!-- Scholarship Type Selection Modal (shown after file selection) -->
-<div id="scholarshipTypeModal" class="modal" style="display: none;">
+<!-- Import Confirmation Modal (shown after file selection) -->
+<div id="importConfirmationModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Select Scholarship Type</h2>
-            <span class="close" onclick="closeScholarshipTypeModal()">&times;</span>
+            <h2>Import Grantees</h2>
+            <span class="close" onclick="closeImportConfirmationModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div class="form-section">
                 <p>Selected file: <strong id="selectedFileName"></strong></p>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="scholarshipTypeSelect">Benefactor Type *</label>
-                        <select id="scholarshipTypeSelect" required>
-                            <option value="">Select Benefactor Type</option>
-                            <option value="government">Government Benefactor</option>
-                            <option value="academic">Academic Benefactor</option>
-                            <option value="employees">Employee Benefactor</option>
-                            <option value="alumni">Alumni Benefactor</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>
@@ -658,21 +695,55 @@
                         </label>
                     </div>
                 </div>
-                <div class="import-info">
-                    <p><strong>Import Instructions:</strong></p>
-                    <ul>
-                        <li>Excel file should contain columns: Grantee ID, First Name, Last Name, Middle Name,
-                            Email, Course, Department, Year Level, GWA</li>
-                        <li>Grantee ID, First Name, and Last Name are required</li>
-                        <li>The first row should contain column headers</li>
-                        <li><a href="/admin/download-student-template" target="_blank">Download Excel Template</a>
-                        </li>
-                    </ul>
+                <div class="import-instructions">
+                    <div class="instruction-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>Import Instructions</h4>
+                    </div>
+                    <div class="instruction-content">
+                        <p>Excel file should contain the following columns:</p>
+                        <div class="column-list">
+                            <span class="required-column">Student ID</span>
+                            <span class="required-column">First Name</span>
+                            <span class="required-column">Last Name</span>
+                            <span class="required-column">Scholarship Type</span>
+                            <span class="optional-column">Middle Name</span>
+                            <span class="optional-column">Email</span>
+                            <span class="optional-column">Course</span>
+                            <span class="optional-column">Department</span>
+                            <span class="optional-column">Year Level</span>
+                            <span class="optional-column">GWA</span>
+                        </div>
+                        <div class="import-notes">
+                            <div class="note-item">
+                                <i class="fas fa-asterisk"></i>
+                                <span>Required fields: Student ID, First Name, Last Name, Scholarship Type</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-table"></i>
+                                <span>First row should contain column headers</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-users"></i>
+                                <span>Students will be automatically grouped by their scholarship type from the file</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-list"></i>
+                                <span>Valid scholarship types: government, academic, employees, alumni</span>
+                            </div>
+                        </div>
+                        <div class="template-download">
+                            <a href="/admin/download-student-template" target="_blank" class="download-link">
+                                <i class="fas fa-download"></i>
+                                Download Template
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-secondary" onclick="closeScholarshipTypeModal()">Cancel</button>
+            <button type="button" class="btn-secondary" onclick="closeImportConfirmationModal()">Cancel</button>
             <button type="button" class="btn-primary" onclick="proceedWithImport()">Import Students</button>
         </div>
     </div>
@@ -845,6 +916,8 @@
             });
         }
 
+
+
         // Student management functions
         let isTabSwitching = false;
 
@@ -905,13 +978,12 @@
             if (file) {
                 selectedFile = file;
                 document.getElementById('selectedFileName').textContent = file.name;
-                document.getElementById('scholarshipTypeModal').style.display = 'block';
+                document.getElementById('importConfirmationModal').style.display = 'block';
             }
         }
 
-        function closeScholarshipTypeModal() {
-            document.getElementById('scholarshipTypeModal').style.display = 'none';
-            document.getElementById('scholarshipTypeSelect').value = '';
+        function closeImportConfirmationModal() {
+            document.getElementById('importConfirmationModal').style.display = 'none';
             document.getElementById('updateExistingCheckbox').checked = false;
             selectedFile = null;
             // Reset the file input
@@ -919,18 +991,17 @@
         }
 
         async function proceedWithImport() {
-            const scholarshipType = document.getElementById('scholarshipTypeSelect').value;
             const updateExisting = document.getElementById('updateExistingCheckbox').checked;
-
-            if (!scholarshipType) {
-                alert('Please select a scholarship type.');
-                return;
-            }
 
             if (!selectedFile) {
                 alert('No file selected.');
                 return;
             }
+
+            const endpoint = '/admin/import-grantees-dynamic';
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('update_existing', updateExisting ? '1' : '0');
 
             const submitBtn = event.target;
             const originalText = submitBtn.textContent;
@@ -940,12 +1011,7 @@
             submitBtn.disabled = true;
 
             try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                formData.append('scholarship_type', scholarshipType);
-                formData.append('update_existing', updateExisting ? '1' : '0');
-
-                const response = await fetch('/admin/import-students', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -957,8 +1023,27 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert(`Import successful! ${result.message}`);
-                    closeScholarshipTypeModal();
+                    let message = result.message;
+                    if (result.details) {
+                        message += `\n\nDetails:\n- Total imported: ${result.details.total_imported}`;
+                        if (result.details.users_created) {
+                            message += `\n- Users created: ${result.details.users_created}`;
+                        }
+                        if (result.details.grantees_created) {
+                            message += `\n- Grantees created: ${result.details.grantees_created}`;
+                        }
+                        if (result.details.scholarship_types) {
+                            message += `\n- Scholarship types found: ${result.details.scholarship_types.join(', ')}`;
+                        }
+                        if (result.details.errors && result.details.errors.length > 0) {
+                            message += `\n\nErrors encountered:\n${result.details.errors.slice(0, 5).join('\n')}`;
+                            if (result.details.errors.length > 5) {
+                                message += `\n... and ${result.details.errors.length - 5} more errors`;
+                            }
+                        }
+                    }
+                    alert(message);
+                    closeImportConfirmationModal();
                     // Reload the page to show new grantees
                     window.location.reload();
                 } else {
@@ -1121,6 +1206,67 @@
             }
         }
 
+        function populateAcademicCoursesDirectly(department) {
+            console.log('Direct course population for Academic:', department);
+
+            const courseSelect = document.getElementById('academicCourse');
+            if (!courseSelect) {
+                console.error('Academic Course select not found');
+                return;
+            }
+
+            // Clear existing options
+            courseSelect.innerHTML = '<option value="">Select Course</option>';
+            courseSelect.disabled = true;
+
+            if (!department) return;
+
+            const courses = {
+                'SITE': [
+                    'Bachelor of Science in Information Technology',
+                    'Bachelor of Science in Computer Science',
+                    'Bachelor of Science in Computer Engineering',
+                    'Bachelor of Library and Information Science',
+                    'Bachelor of Science in Civil Engineering',
+                    'Bachelor of Science in Environmental and Sanitary Engineering'
+                ],
+                'SASTE': [
+                    'Bachelor of Elementary Education',
+                    'Bachelor of Secondary Education',
+                    'Bachelor of Science in Psychology',
+                    'Bachelor of Arts in English Language Studies',
+                    'Bachelor of Science in Biology',
+                    'Bachelor of Science in Social Work',
+                    'Bachelor of Science in Public Administration',
+                    'Bachelor of Physical Education'
+                ],
+                'SBAHM': [
+                    'Bachelor of Science in Business Administration',
+                    'Bachelor of Science in Hospitality Management',
+                    'Bachelor of Science in Tourism Management',
+                    'Bachelor of Science in Entrepreneurship'
+                ],
+                'SNAHS': [
+                    'Bachelor of Science in Nursing',
+                    'Bachelor of Science in Medical Technology',
+                    'Bachelor of Science in Pharmacy',
+                    'Bachelor of Science in Physical Therapy'
+                ]
+            };
+
+            if (courses[department]) {
+                courses[department].forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course;
+                    option.textContent = course;
+                    courseSelect.appendChild(option);
+                });
+                courseSelect.disabled = false;
+                console.log('Academic Courses populated successfully for', department);
+            }
+        }
+
+        /* Temporarily commented out Add Grantee functions
         function showAddStudentForm() {
             console.log('Add Student button clicked');
             const modal = document.getElementById('addStudentModal');
@@ -1155,7 +1301,9 @@
             document.getElementById('addStudentForm').reset();
             document.getElementById('dynamicFields').innerHTML = '';
         }
+        */
 
+        /* Temporarily commented out updateFormFields function
         function updateFormFields() {
             const scholarshipType = document.getElementById('scholarshipType').value;
             const dynamicFields = document.getElementById('dynamicFields');
@@ -1170,6 +1318,7 @@
             switch (scholarshipType) {
                 case 'government':
                     fieldsHTML = `
+                        <!-- Government Benefactor Type -->
                         <div class="form-section">
                             <h3>Government Scholarship Information</h3>
                             <div class="form-row">
@@ -1183,68 +1332,141 @@
                                         <option value="DOLE">DOLE (Department of Labor and Employment)</option>
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Information -->
+                        <div class="form-section">
+                            <h3>Academic Information</h3>
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label for="educationStage">Education Stage *</label>
-                                    <select id="educationStage" name="education_stage" required onchange="updateGovernmentEducationFields()">
+                                    <select id="educationStage" name="education_stage" required onchange="updateEducationStageFields()">
                                         <option value="">Select Education Stage</option>
-                                        <option value="College">College</option>
                                         <option value="BEU">BEU (Basic Education Unit)</option>
+                                        <option value="College">College</option>
                                     </select>
                                 </div>
                             </div>
-                            <div id="governmentEducationSpecificFields"></div>
 
-                            <!-- Parents Information -->
-                            <div class="form-section">
-                                <h3>Parents Information</h3>
+                            <!-- BEU Fields -->
+                            <div id="beuFields" style="display: none;">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="fatherFirstName">Father's First Name</label>
-                                        <input type="text" id="fatherFirstName" name="father_first_name">
+                                        <label for="gradeLevel">Grade Level *</label>
+                                        <select id="gradeLevel" name="grade_level">
+                                            <option value="">Select Grade Level</option>
+                                            <option value="Grade 7">Grade 7</option>
+                                            <option value="Grade 8">Grade 8</option>
+                                            <option value="Grade 9">Grade 9</option>
+                                            <option value="Grade 10">Grade 10</option>
+                                            <option value="Grade 11">Grade 11</option>
+                                            <option value="Grade 12">Grade 12</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="fatherLastName">Father's Last Name</label>
-                                        <input type="text" id="fatherLastName" name="father_last_name">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="motherFirstName">Mother's First Name</label>
-                                        <input type="text" id="motherFirstName" name="mother_first_name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="motherLastName">Mother's Last Name</label>
-                                        <input type="text" id="motherLastName" name="mother_last_name">
+                                        <label for="strand">Strand</label>
+                                        <select id="strand" name="strand">
+                                            <option value="">Select Strand</option>
+                                            <option value="STEM">STEM (Science, Technology, Engineering, Mathematics)</option>
+                                            <option value="ABM">ABM (Accountancy, Business, Management)</option>
+                                            <option value="HUMSS">HUMSS (Humanities and Social Sciences)</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Address Information -->
-                            <div class="form-section">
-                                <h3>Address Information</h3>
+                            <!-- College Fields -->
+                            <div id="collegeFields" style="display: none;">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="street">Street</label>
-                                        <input type="text" id="street" name="street">
+                                        <label for="department">Department *</label>
+                                        <select id="department" name="department" onchange="populateCoursesDirectly(this.value)">
+                                            <option value="">Select Department</option>
+                                            <option value="SITE">SITE</option>
+                                            <option value="SASTE">SASTE</option>
+                                            <option value="SBAHM">SBAHM</option>
+                                            <option value="SNAHS">SNAHS</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="barangay">Barangay</label>
-                                        <input type="text" id="barangay" name="barangay">
+                                        <label for="course">Course *</label>
+                                        <select id="course" name="course" disabled>
+                                            <option value="">Select Course</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="city">City</label>
-                                        <input type="text" id="city" name="city">
+                                        <label for="yearLevel">Year Level *</label>
+                                        <select id="yearLevel" name="year_level">
+                                            <option value="">Select Year Level</option>
+                                            <option value="1st Year">1st Year</option>
+                                            <option value="2nd Year">2nd Year</option>
+                                            <option value="3rd Year">3rd Year</option>
+                                            <option value="4th Year">4th Year</option>
+                                            <option value="5th Year">5th Year</option>
+                                        </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="province">Province</label>
-                                        <input type="text" id="province" name="province">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="zipcode">Zip Code</label>
-                                        <input type="text" id="zipcode" name="zipcode">
-                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Father's Information -->
+                        <div class="form-section">
+                            <h3>Father's Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fatherFirstName">First Name *</label>
+                                    <input type="text" id="fatherFirstName" name="father_first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fatherMiddleName">Middle Name *</label>
+                                    <input type="text" id="fatherMiddleName" name="father_middle_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fatherLastName">Last Name *</label>
+                                    <input type="text" id="fatherLastName" name="father_last_name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mother's Information -->
+                        <div class="form-section">
+                            <h3>Mother's Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="motherFirstName">First Name *</label>
+                                    <input type="text" id="motherFirstName" name="mother_first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="motherMiddleName">Middle Name *</label>
+                                    <input type="text" id="motherMiddleName" name="mother_middle_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="motherLastName">Last Name *</label>
+                                    <input type="text" id="motherLastName" name="mother_last_name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="form-section">
+                            <h3>Additional Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="disability">Disability</label>
+                                    <select id="disability" name="disability">
+                                        <option value="">Select Disability</option>
+                                        <option value="None">None</option>
+                                        <option value="Communication Disability">Communication Disability</option>
+                                        <option value="Disability due to Chronic Illness">Disability due to Chronic Illness</option>
+                                        <option value="Learning Disability">Learning Disability</option>
+                                        <option value="Intellectual Disability">Intellectual Disability</option>
+                                        <option value="Orthopedic Disability">Orthopedic Disability</option>
+                                        <option value="Mental/Psychological Disability">Mental/Psychological Disability</option>
+                                        <option value="Visual Disability">Visual Disability</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1253,43 +1475,52 @@
 
                 case 'academic':
                     fieldsHTML = `
+                        <!-- Academic Information -->
                         <div class="form-section">
-                            <h3>Academic Scholarship Information</h3>
+                            <h3>Academic Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="educationStage">Education Stage *</label>
-                                    <select id="educationStage" name="education_stage" required onchange="updateEducationFields()">
-                                        <option value="">Select Education Stage</option>
-                                        <option value="College">College</option>
-                                        <option value="BEU">BEU (Basic Education Unit)</option>
+                                    <label for="academicDepartment">Department *</label>
+                                    <select id="academicDepartment" name="department" required onchange="populateAcademicCoursesDirectly(this.value)">
+                                        <option value="">Select Department</option>
+                                        <option value="SITE">School of Information Technology and Engineering (SITE)</option>
+                                        <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
+                                        <option value="SBAHM">School of Business Administration and Hospitality Management (SBAHM)</option>
+                                        <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label for="academicCourse">Course *</label>
+                                    <select id="academicCourse" name="course" required disabled>
+                                        <option value="">Select Course</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="academicYearLevel">Year Level *</label>
+                                    <select id="academicYearLevel" name="year_level" required>
+                                        <option value="">Select Year Level</option>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
+                                        <option value="5th Year">5th Year</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gwa">GWA *</label>
+                                    <input type="number" id="gwa" name="gwa" step="0.01" min="1.0" max="1.75" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label for="semester">Semester</label>
-                                    <input type="text" id="semester" name="semester"
-                                        value="{{ $currentSemester }}" readonly
-                                        style="background-color: #f5f5f5; cursor: not-allowed;">
+                                    <input type="text" id="semester" name="semester" value="{{ $currentSemester ?? '1st Semester' }}" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="academicYear">Academic Year</label>
-                                    <input type="text" id="academicYear" name="academic_year"
-                                        value="{{ $currentAcademicYear }}" readonly
-                                        style="background-color: #f5f5f5; cursor: not-allowed;">
-                                </div>
-                            </div>
-                            <div id="educationSpecificFields"></div>
-
-                            <!-- Subjects Section -->
-                            <div id="subjectsSection" style="display: none;">
-                                <div class="form-section">
-                                    <h3>Subjects and Grades</h3>
-                                    <div id="subjectsContainer"></div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="calculatedGwa">Calculated GWA</label>
-                                            <input type="number" id="calculatedGwa" name="gwa" step="0.01" min="1.0" max="1.75" readonly>
-                                        </div>
-                                    </div>
+                                    <input type="text" id="academicYear" name="academic_year" value="{{ $currentAcademicYear ?? '2024-2025' }}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1298,15 +1529,16 @@
 
                 case 'employees':
                     fieldsHTML = `
+                        <!-- Employee Information -->
                         <div class="form-section">
-                            <h3>Employee Scholarship Information</h3>
+                            <h3>Employee Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="employeeName">Employee Name *</label>
                                     <input type="text" id="employeeName" name="employee_name" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="employeeRelationship">Relationship *</label>
+                                    <label for="employeeRelationship">Relationship to Employee *</label>
                                     <select id="employeeRelationship" name="employee_relationship" required>
                                         <option value="">Select Relationship</option>
                                         <option value="Son">Son</option>
@@ -1331,16 +1563,21 @@
 
                 case 'alumni':
                     fieldsHTML = `
+                        <!-- Alumni Scholarship Information -->
                         <div class="form-section">
                             <h3>Alumni Scholarship Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="scholarshipName">Scholarship Name *</label>
-                                    <input type="text" id="scholarshipName" name="scholarship_name" required>
+                                    <input type="text" id="scholarshipName" name="scholarship_name" required
+                                           placeholder="Name of the alumni scholarship program">
                                 </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label for="otherScholarship">Other Scholarship Details</label>
-                                    <textarea id="otherScholarship" name="other_scholarship" rows="3"></textarea>
+                                    <textarea id="otherScholarship" name="other_scholarship" rows="3"
+                                              placeholder="Additional details about the scholarship program, requirements, or conditions"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1349,6 +1586,59 @@
             }
 
             dynamicFields.innerHTML = fieldsHTML;
+
+            // Show/hide education stage specific fields for government scholarship
+            if (scholarshipType === 'government') {
+                updateEducationStageFields();
+            }
+        }
+        */
+
+        function updateEducationStageFields() {
+            const educationStage = document.getElementById('educationStage')?.value;
+            const beuFields = document.getElementById('beuFields');
+            const collegeFields = document.getElementById('collegeFields');
+
+            if (!beuFields || !collegeFields) return;
+
+            if (educationStage === 'BEU') {
+                beuFields.style.display = 'block';
+                collegeFields.style.display = 'none';
+
+                // Make BEU fields required
+                const gradeLevel = document.getElementById('gradeLevel');
+                if (gradeLevel) gradeLevel.required = true;
+
+                // Make college fields not required
+                const department = document.getElementById('department');
+                const course = document.getElementById('course');
+                const yearLevel = document.getElementById('yearLevel');
+                if (department) department.required = false;
+                if (course) course.required = false;
+                if (yearLevel) yearLevel.required = false;
+
+            } else if (educationStage === 'College') {
+                beuFields.style.display = 'none';
+                collegeFields.style.display = 'block';
+
+                // Make college fields required
+                const department = document.getElementById('department');
+                const course = document.getElementById('course');
+                const yearLevel = document.getElementById('yearLevel');
+                if (department) department.required = true;
+                if (course) course.required = true;
+                if (yearLevel) yearLevel.required = true;
+
+                // Make BEU fields not required
+                const gradeLevel = document.getElementById('gradeLevel');
+                const strand = document.getElementById('strand');
+                if (gradeLevel) gradeLevel.required = false;
+                if (strand) strand.required = false;
+
+            } else {
+                beuFields.style.display = 'none';
+                collegeFields.style.display = 'none';
+            }
         }
 
         function updateEducationFields() {
@@ -1998,38 +2288,184 @@
             }
         }
 
-        function saveNewStudent(event) {
+        function validateDynamicFormData(studentData) {
+            // Common required fields for all scholarship types
+            const commonFields = [
+                { key: 'student_id', name: 'Student ID' },
+                { key: 'first_name', name: 'First Name' },
+                { key: 'last_name', name: 'Last Name' },
+                { key: 'scholarship_type', name: 'Scholarship Type' },
+                { key: 'sex', name: 'Sex' },
+                { key: 'birthdate', name: 'Birthdate' },
+                { key: 'contact_number', name: 'Contact Number' },
+                { key: 'street', name: 'Street' },
+                { key: 'barangay', name: 'Barangay' },
+                { key: 'city', name: 'City' },
+                { key: 'province', name: 'Province' },
+                { key: 'zipcode', name: 'Zipcode' }
+            ];
+
+            // Check common required fields
+            for (const field of commonFields) {
+                if (!studentData[field.key] || !studentData[field.key].trim()) {
+                    alert(`Please fill in the ${field.name} field.`);
+                    return false;
+                }
+            }
+
+            // Scholarship-specific validation
+            const scholarshipType = studentData.scholarship_type;
+
+            if (scholarshipType === 'government') {
+                const governmentFields = [
+                    { key: 'government_benefactor_type', name: 'Benefactor Type' },
+                    { key: 'education_stage', name: 'Education Stage' },
+                    { key: 'father_first_name', name: 'Father\'s First Name' },
+                    { key: 'father_middle_name', name: 'Father\'s Middle Name' },
+                    { key: 'father_last_name', name: 'Father\'s Last Name' },
+                    { key: 'mother_first_name', name: 'Mother\'s First Name' },
+                    { key: 'mother_middle_name', name: 'Mother\'s Middle Name' },
+                    { key: 'mother_last_name', name: 'Mother\'s Last Name' }
+                ];
+
+                for (const field of governmentFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+                // Education stage specific validation
+                if (studentData.education_stage === 'BEU') {
+                    if (!studentData.grade_level || !studentData.grade_level.trim()) {
+                        alert('Please select a Grade Level for BEU students.');
+                        return false;
+                    }
+                } else if (studentData.education_stage === 'College') {
+                    const collegeFields = [
+                        { key: 'department', name: 'Department' },
+                        { key: 'course', name: 'Course' },
+                        { key: 'year_level', name: 'Year Level' }
+                    ];
+
+                    for (const field of collegeFields) {
+                        if (!studentData[field.key] || !studentData[field.key].trim()) {
+                            alert(`Please fill in the ${field.name} field.`);
+                            return false;
+                        }
+                    }
+                }
+
+            } else if (scholarshipType === 'academic') {
+                const academicFields = [
+                    { key: 'department', name: 'Department' },
+                    { key: 'course', name: 'Course' },
+                    { key: 'year_level', name: 'Year Level' },
+                    { key: 'gwa', name: 'GWA' }
+                ];
+
+                for (const field of academicFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+            } else if (scholarshipType === 'employees') {
+                const employeeFields = [
+                    { key: 'employee_name', name: 'Employee Name' },
+                    { key: 'employee_relationship', name: 'Employee Relationship' },
+                    { key: 'employee_department', name: 'Employee Department' },
+                    { key: 'employee_position', name: 'Employee Position' }
+                ];
+
+                for (const field of employeeFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+            } else if (scholarshipType === 'alumni') {
+                if (!studentData.scholarship_name || !studentData.scholarship_name.trim()) {
+                    alert('Please fill in the Scholarship Name field.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /* Temporarily commented out saveNewStudent function
+        async function saveNewStudent(event) {
             event.preventDefault();
 
             const form = document.getElementById('addStudentForm');
             const formData = new FormData(form);
             const studentData = Object.fromEntries(formData);
 
-            // Check for disqualifying grades in academic scholarship
-            const scholarshipType = studentData.scholarship_type;
-            if (scholarshipType === 'academic') {
-                if (form.getAttribute('data-grade-disqualified') === 'true') {
-                    // Scroll to the grade disqualification notification
-                    const gradeNotification = document.querySelector('.main-screen-grade-disqualification-notification');
-                    if (gradeNotification) {
-                        gradeNotification.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                    return; // Prevent form submission
-                }
+            // Validate required fields dynamically based on scholarship type
+            if (!validateDynamicFormData(studentData)) {
+                return;
             }
 
-            // Here you would typically send the data to your backend
-            console.log('Saving new student:', studentData);
+            // Debug: Log the data being sent
+            console.log('Sending grantee data:', studentData);
 
-            // Close the modal
-            closeAddStudentModal();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
 
-            // TODO: Implement actual save functionality with backend API
-            // TODO: Refresh the table with new student data
+            // Show loading state
+            submitBtn.textContent = 'Adding...';
+            submitBtn.disabled = true;
+
+            try {
+                const url = '{{ route("admin.add-grantee") }}';
+                console.log('Submitting to URL:', url);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message || 'Grantee added successfully!');
+                    closeAddStudentModal();
+                    // Reload the page to show new grantee
+                    window.location.reload();
+                } else {
+                    if (response.status === 422) {
+                        // Validation error
+                        if (result.errors) {
+                            // Laravel validation errors
+                            let errorMessages = [];
+                            for (const [field, messages] of Object.entries(result.errors)) {
+                                errorMessages.push(`${field}: ${messages.join(', ')}`);
+                            }
+                            alert(`Validation Errors:\n${errorMessages.join('\n')}`);
+                        } else {
+                            alert(`Validation Error: ${result.message}`);
+                        }
+                    } else {
+                        alert(`Failed to add grantee: ${result.message}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding grantee:', error);
+                alert(`Network error occurred: ${error.message}. Please check your connection and try again.`);
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         }
+        */
 
         function editStudent(applicationId, studentId) {
             // Find the grantee data from the table row
@@ -2167,13 +2603,16 @@
         // Close modal when clicking outside of it
         window.onclick = function(event) {
             const editModal = document.getElementById('editStudentModal');
-            const addModal = document.getElementById('addStudentModal');
+            // Temporarily commented out Add Grantee modal handling
+            // const addModal = document.getElementById('addStudentModal');
 
             if (event.target === editModal) {
                 closeEditModal();
-            } else if (event.target === addModal) {
-                closeAddStudentModal();
             }
+            // Temporarily commented out Add Grantee modal handling
+            // else if (event.target === addModal) {
+            //     closeAddStudentModal();
+            // }
         }
 
         function toggleDropdown(event) {
@@ -2193,4 +2632,89 @@
             }
         }
     </script>
+@endpush
+
+@push('styles')
+    <style>
+        .import-options {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .import-option {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .import-option:hover {
+            border-color: #1e5631;
+            background: #f0f8f0;
+        }
+
+        .import-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .import-option input[type="radio"]:checked + label {
+            color: #1e5631;
+            font-weight: bold;
+        }
+
+        .import-option label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .import-option label strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .import-option label p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .import-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-left: 4px solid #1e5631;
+            border-radius: 4px;
+        }
+
+        .import-info p {
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            color: #1e5631;
+        }
+
+        .import-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .import-info li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .import-info a {
+            color: #1e5631;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .import-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
 @endpush

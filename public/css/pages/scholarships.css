@@ -148,7 +148,7 @@
     padding: 15px;
     text-align: left;
     font-weight: 600;
-    color: #333;
+    color: wth;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
 }
@@ -480,7 +480,7 @@
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    background: #052f11;
     color: white;
     padding: 20px 25px;
     border-radius: 12px 12px 0 0;
@@ -493,6 +493,7 @@
     margin: 0;
     font-size: 20px;
     font-weight: 600;
+    color:
 }
 
 .close {
@@ -588,14 +589,14 @@
 }
 
 .modal-footer .btn-primary {
-    background: linear-gradient(135deg, #1e5631, #2e7d32);
+    background: #052f11;
     color: white;
 }
 
 .modal-footer .btn-primary:hover {
-    background: linear-gradient(135deg, #164023, #1b5e20);
+    background: #041f0c;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+    box-shadow: 0 4px 12px rgba(5, 47, 17, 0.3);
 }
 
 .modal-footer .btn-primary:disabled {
@@ -650,7 +651,7 @@
 }
 
 .update-option-card {
-    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    background: #f8f9fa;
     border: 2px solid #e9ecef;
     border-radius: 12px;
     padding: 20px;
@@ -662,25 +663,25 @@
 }
 
 .update-option-card:hover {
-    border-color: #1e5631;
+    border-color: #052f11;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(30, 86, 49, 0.15);
-    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    box-shadow: 0 8px 25px rgba(5, 47, 17, 0.15);
+    background: #ffffff;
 }
 
 .update-option-card:hover .option-icon {
     transform: scale(1.1);
-    color: #1e5631;
+    color: #052f11;
 }
 
 .update-option-card.selected {
-    border-color: #1e5631;
-    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
-    box-shadow: 0 4px 15px rgba(30, 86, 49, 0.2);
+    border-color: #052f11;
+    background: #e8f5e8;
+    box-shadow: 0 4px 15px rgba(5, 47, 17, 0.2);
 }
 
 .update-option-card.selected .option-icon {
-    color: #1e5631;
+    color: #052f11;
     transform: scale(1.05);
 }
 
@@ -818,7 +819,7 @@
 
 .modal .modal-header h2 {
     margin: 0;
-    color: #333;
+    color: white;
     font-size: 20px;
 }
 

@@ -232,9 +232,14 @@
 /* Charts Section */
 .charts-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
     margin-bottom: 30px;
+}
+
+.charts-section.line-chart-section {
+    grid-template-columns: 1fr;
+    margin-top: 20px;
 }
 
 .chart-container {
@@ -264,7 +269,7 @@
     content: '';
     width: 4px;
     height: 20px;
-    background: linear-gradient(45deg, #3498db, #e74c3c, #f39c12, #9b59b6);
+    background: #052f11;
     border-radius: 2px;
 }
 
@@ -274,6 +279,12 @@
 }
 
 /* Responsive chart layout */
+@media (max-width: 1200px) {
+    .charts-section {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 @media (max-width: 1024px) {
     .charts-section {
         grid-template-columns: 1fr;
@@ -682,14 +693,14 @@
 }
 
 .form-help-text.info {
-    background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
-    border-left: 4px solid #1e5631;
-    color: #1e5631;
-    border: 1px solid rgba(30, 86, 49, 0.2);
+    background: #e8f4fd;
+    border-left: 4px solid #052f11;
+    color: #052f11;
+    border: 1px solid rgba(5, 47, 17, 0.2);
 }
 
 .form-help-text.warning {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    background: #fff3cd;
     border-left: 4px solid #ffc107;
     color: #856404;
     border: 1px solid rgba(255, 193, 7, 0.3);

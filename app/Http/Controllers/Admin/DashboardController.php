@@ -7,6 +7,7 @@ use App\Models\ScholarshipApplication;
 use App\Models\Grantee;
 use App\Models\ArchivedStudent;
 use App\Models\SystemSetting;
+use App\Models\Scholarship;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -59,12 +60,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get chart data for dashboard (simplified to 2 charts)
+     * Get chart data for dashboard (3 pie charts + 1 line chart)
      */
     private function getChartData()
     {
-        // 1. Pie Chart: Grantees by Scholarship Type
-        $scholarshipDistribution = [];
+        // 1. Pie Chart: Number of Students per Scholarship Type
+        $studentsPerScholarshipType = [];
 
         // Get grantees by scholarship type
         $scholarshipTypes = Grantee::select('scholarship_type', DB::raw('count(*) as count'))
@@ -83,28 +84,104 @@ class DashboardController extends Controller
 
         foreach ($scholarshipTypes as $type => $count) {
             $displayName = $typeMapping[$type] ?? ucfirst($type);
-            $scholarshipDistribution[$displayName] = $count;
+            $studentsPerScholarshipType[$displayName] = $count;
         }
 
-        // 2. Line Chart: Scholarships through the years (last 5 years)
+        // 2. Pie Chart: Number of Scholarship Types in System
+        $scholarshipTypesCount = [];
+
+        // Count all scholarship programs from scholarships table (regardless of grantees)
+        $scholarshipPrograms = Scholarship::select('type', DB::raw('count(*) as count'))
+            ->groupBy('type')
+            ->get();
+
+        foreach ($scholarshipPrograms as $program) {
+            $displayName = $typeMapping[$program->type] ?? ucfirst($program->type);
+            $scholarshipTypesCount[$displayName] = $program->count;
+        }
+
+        // If no scholarship programs exist in the scholarships table,
+        // fall back to showing available scholarship types from the system
+        if (empty($scholarshipTypesCount)) {
+            // Check what types exist in grantees table as a fallback
+            $granteeTypes = Grantee::select('scholarship_type')
+                ->whereNotNull('scholarship_type')
+                ->distinct()
+                ->get();
+
+            foreach ($granteeTypes as $typeRecord) {
+                $displayName = $typeMapping[$typeRecord->scholarship_type] ?? ucfirst($typeRecord->scholarship_type);
+                $scholarshipTypesCount[$displayName] = 1; // Show as 1 type available
+            }
+
+            // If still no data, show the predefined types
+            if (empty($scholarshipTypesCount)) {
+                $predefinedTypes = ['government', 'academic', 'employees', 'alumni'];
+                foreach ($predefinedTypes as $type) {
+                    $displayName = $typeMapping[$type] ?? ucfirst($type);
+                    $scholarshipTypesCount[$displayName] = 1; // Show as 1 type available
+                }
+            }
+        }
+
+        // 3. Graduates Pie Chart: Graduates per academic year
+        $graduatesData = [];
+
+        // Get graduates from archived_students where remarks contains "graduated"
+        $archivedGraduates = ArchivedStudent::where('remarks', 'like', '%graduated%')
+            ->selectRaw('archived_academic_year, COUNT(*) as count')
+            ->groupBy('archived_academic_year')
+            ->orderBy('archived_academic_year', 'desc')
+            ->limit(5)
+            ->get();
+
+        foreach ($archivedGraduates as $graduate) {
+            $graduatesData[$graduate->archived_academic_year] = $graduate->count;
+        }
+
+        // Also get graduates from grantees table where status = 'Graduated'
+        $granteeGraduates = Grantee::where('status', 'Graduated')
+            ->selectRaw('academic_year, COUNT(*) as count')
+            ->groupBy('academic_year')
+            ->orderBy('academic_year', 'desc')
+            ->limit(5)
+            ->get();
+
+        foreach ($granteeGraduates as $graduate) {
+            $year = $graduate->academic_year;
+            if (isset($graduatesData[$year])) {
+                $graduatesData[$year] += $graduate->count;
+            } else {
+                $graduatesData[$year] = $graduate->count;
+            }
+        }
+
+        // Sort by academic year descending and limit to 5
+        arsort($graduatesData);
+        $graduatesData = array_slice($graduatesData, 0, 5, true);
+
+        // 4. Line Chart: Cumulative scholarship growth through the years (last 7 years)
         $years = [];
         $scholarshipCounts = [];
 
-        for ($i = 4; $i >= 0; $i--) {
+        for ($i = 6; $i >= 0; $i--) {
             $year = now()->subYears($i)->year;
             $years[] = $year;
 
-            // Count grantees created in this year
-            $count = Grantee::whereYear('created_at', $year)->count();
+            // Count total active grantees up to this year (cumulative)
+            $granteesUpToYear = Grantee::whereYear('created_at', '<=', $year)->count();
 
-            // Also count archived students from this year
-            $archivedCount = ArchivedStudent::whereYear('archived_at', $year)->count();
+            // Count total archived students up to this year (cumulative)
+            $archivedUpToYear = ArchivedStudent::whereYear('archived_at', '<=', $year)->count();
 
-            $scholarshipCounts[] = $count + $archivedCount;
+            // Total cumulative scholarships (active + graduated)
+            $scholarshipCounts[] = $granteesUpToYear + $archivedUpToYear;
         }
 
         return [
-            'scholarshipDistribution' => $scholarshipDistribution,
+            'studentsPerScholarshipType' => $studentsPerScholarshipType,
+            'scholarshipTypesCount' => $scholarshipTypesCount,
+            'graduatesData' => $graduatesData,
             'years' => $years,
             'scholarshipCounts' => $scholarshipCounts,
         ];

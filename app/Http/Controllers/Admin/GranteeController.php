@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Grantee;
 use App\Models\SystemSetting;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class GranteeController extends Controller
@@ -222,13 +224,205 @@ class GranteeController extends Controller
             'gwa' => 'nullable|numeric|min:1|max:5'
         ]);
 
-        $grantee = Grantee::create($request->all());
+        $granteeData = $request->all();
+        $granteeData['approved_date'] = now();
+        $granteeData['approved_by'] = 'Admin Manual Entry';
+        $granteeData['scholarship_start_date'] = now();
+        $granteeData['status'] = 'Active';
+
+        $grantee = Grantee::create($granteeData);
 
         return response()->json([
             'success' => true,
             'message' => 'Student added successfully',
             'data' => $grantee
         ]);
+    }
+
+    /**
+     * Add new grantee
+     */
+    public function addGrantee(Request $request)
+    {
+        // Force JSON response for this endpoint
+        $request->headers->set('Accept', 'application/json');
+
+        try {
+            Log::info('Add grantee request received', $request->all());
+            Log::info('Request headers', $request->headers->all());
+            Log::info('Request content type', ['content_type' => $request->header('Content-Type')]);
+
+            $request->validate([
+                'student_id' => 'required|string',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'scholarship_type' => 'required|string|in:government,academic,employees,alumni',
+                'middle_name' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'contact_number' => 'required|string|regex:/^[0-9]{11}$/|size:11',
+                'sex' => 'required|string|in:Male,Female',
+                'birthdate' => 'required|date|before:today',
+                'street' => 'required|string|max:255',
+                'barangay' => 'required|string|max:100',
+                'city' => 'required|string|max:100',
+                'province' => 'required|string|max:100',
+                'zipcode' => 'required|string|max:10',
+                'indigenous' => 'nullable|string|max:255',
+
+                // Government scholarship specific fields
+                'government_benefactor_type' => 'required_if:scholarship_type,government|string|max:255',
+                'education_stage' => 'required_if:scholarship_type,government|string|in:BEU,College',
+                'grade_level' => 'required_if:education_stage,BEU|string|max:50',
+                'strand' => 'nullable|string|max:100',
+                'department' => 'required_if:education_stage,College|required_if:scholarship_type,academic|string|max:255',
+                'course' => 'required_if:education_stage,College|required_if:scholarship_type,academic|string|max:255',
+                'year_level' => 'required_if:education_stage,College|required_if:scholarship_type,academic|string|max:50',
+                'father_first_name' => 'required_if:scholarship_type,government|string|max:255',
+                'father_middle_name' => 'required_if:scholarship_type,government|string|max:255',
+                'father_last_name' => 'required_if:scholarship_type,government|string|max:255',
+                'mother_first_name' => 'required_if:scholarship_type,government|string|max:255',
+                'mother_middle_name' => 'required_if:scholarship_type,government|string|max:255',
+                'mother_last_name' => 'required_if:scholarship_type,government|string|max:255',
+                'disability' => 'nullable|string|max:255',
+
+                // Academic scholarship specific fields
+                'gwa' => 'required_if:scholarship_type,academic|numeric|min:1.0|max:1.75',
+                'semester' => 'nullable|string|max:50',
+                'academic_year' => 'nullable|string|max:20',
+
+                // Employee scholarship specific fields
+                'employee_name' => 'required_if:scholarship_type,employees|string|max:255',
+                'employee_relationship' => 'required_if:scholarship_type,employees|string|in:Son,Daughter,Spouse',
+                'employee_department' => 'required_if:scholarship_type,employees|string|max:255',
+                'employee_position' => 'required_if:scholarship_type,employees|string|max:255',
+
+                // Alumni scholarship specific fields
+                'scholarship_name' => 'required_if:scholarship_type,alumni|string|max:255',
+                'other_scholarship' => 'nullable|string|max:1000'
+            ]);
+
+            // Check for duplicate student ID in users table
+            if (User::where('student_id', $request->student_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Student ID '{$request->student_id}' already exists in the user management system"
+                ], 422);
+            }
+
+            // Check for duplicate student ID in grantees table
+            if (Grantee::where('student_id', $request->student_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Student ID '{$request->student_id}' already exists as a grantee"
+                ], 422);
+            }
+
+            // Create or update user record
+            $userData = [
+                'student_id' => $request->student_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'middle_name' => $request->middle_name,
+                'email' => $request->email,
+                'password' => Hash::make('password123'),
+                'role' => 'student'
+            ];
+
+            $user = User::updateOrCreate(
+                ['student_id' => $request->student_id],
+                $userData
+            );
+
+            // Create grantee record with all comprehensive fields
+            $granteeData = [
+                'student_id' => $request->student_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'middle_name' => $request->middle_name,
+                'email' => $request->email,
+                'contact_number' => $request->contact_number,
+                'sex' => $request->sex,
+                'birthdate' => $request->birthdate,
+                'street' => $request->street,
+                'barangay' => $request->barangay,
+                'city' => $request->city,
+                'province' => $request->province,
+                'zipcode' => $request->zipcode,
+                'indigenous' => $request->indigenous,
+                'scholarship_type' => $request->scholarship_type,
+                'status' => 'Active',
+                'approved_date' => now(),
+                'approved_by' => 'Admin Manual Entry',
+                'scholarship_start_date' => now()
+            ];
+
+            // Add scholarship-specific fields
+            if ($request->scholarship_type === 'government') {
+                $granteeData = array_merge($granteeData, [
+                    'government_benefactor_type' => $request->government_benefactor_type,
+                    'education_stage' => $request->education_stage,
+                    'grade_level' => $request->grade_level,
+                    'strand' => $request->strand,
+                    'department' => $request->department,
+                    'course' => $request->course,
+                    'year_level' => $request->year_level,
+                    'father_first_name' => $request->father_first_name,
+                    'father_middle_name' => $request->father_middle_name,
+                    'father_last_name' => $request->father_last_name,
+                    'mother_first_name' => $request->mother_first_name,
+                    'mother_middle_name' => $request->mother_middle_name,
+                    'mother_last_name' => $request->mother_last_name,
+                    'disability' => $request->disability
+                ]);
+            } elseif ($request->scholarship_type === 'academic') {
+                $granteeData = array_merge($granteeData, [
+                    'department' => $request->department,
+                    'course' => $request->course,
+                    'year_level' => $request->year_level,
+                    'gwa' => $request->gwa,
+                    'semester' => $request->semester,
+                    'academic_year' => $request->academic_year
+                ]);
+            } elseif ($request->scholarship_type === 'employees') {
+                $granteeData = array_merge($granteeData, [
+                    'employee_name' => $request->employee_name,
+                    'employee_relationship' => $request->employee_relationship,
+                    'employee_department' => $request->employee_department,
+                    'employee_position' => $request->employee_position
+                ]);
+            } elseif ($request->scholarship_type === 'alumni') {
+                $granteeData = array_merge($granteeData, [
+                    'scholarship_name' => $request->scholarship_name,
+                    'other_scholarship' => $request->other_scholarship
+                ]);
+            }
+
+            $grantee = Grantee::create($granteeData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Grantee added successfully',
+                'data' => $grantee
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation error adding grantee', [
+                'errors' => $e->errors(),
+                'message' => $e->getMessage()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error adding grantee: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adding grantee: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

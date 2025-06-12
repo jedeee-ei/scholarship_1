@@ -1,0 +1,6 @@
+student_id,first_name,last_name,scholarship_type,middle_name,email,course,department,year_level,gwa,government_benefactor_type,employee_name,employee_relationship,scholarship_name
+2024-001,John,Doe,government,Smith,john.doe@gmail.com,Bachelor of Science in Information Technology,SITE,1st Year,1.25,CHED,,,
+2024-002,Jane,Smith,academic,Marie,jane.smith@gmail.com,Bachelor of Science in Computer Science,SITE,2nd Year,1.50,,,,
+2024-003,Mike,Johnson,employees,Robert,mike.johnson@gmail.com,Bachelor of Science in Business Administration,SBAHM,3rd Year,1.75,,Robert Johnson,Son,
+2024-004,Sarah,Williams,alumni,Anne,sarah.williams@gmail.com,Bachelor of Science in Nursing,SNAHS,4th Year,1.30,,,,"Williams Family Scholarship"
+2024-001,Duplicate,Test,government,Middle,duplicate@gmail.com,Bachelor of Science in Information Technology,SITE,1st Year,1.25,CHED,,,
