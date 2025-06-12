@@ -54,4 +54,17 @@ class Course extends Model
     {
         return $query->where('is_active', true);
     }
+
+     /**
+     * Get subjects for a specific semester and year level.
+     */
+    public function getSubjectsForSemester($yearLevel, $semester)
+    {
+        return $this->subjects()
+            ->where('year_level', $yearLevel)
+            ->where('semester', $semester)
+            ->where('is_active', true)
+            ->orderBy('code')
+            ->get();
+    }
 }
