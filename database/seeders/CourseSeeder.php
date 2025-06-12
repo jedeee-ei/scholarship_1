@@ -13,11 +13,17 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get departments
+        // Get departments - ensure they exist
         $site = Department::where('code', 'SITE')->first();
         $saste = Department::where('code', 'SASTE')->first();
         $sbahm = Department::where('code', 'SBAHM')->first();
         $snahs = Department::where('code', 'SNAHS')->first();
+
+        // Check if all required departments exist
+        if (!$site || !$saste || !$sbahm || !$snahs) {
+            $this->command->error('One or more required departments not found. Please run DepartmentSeeder first.');
+            return;
+        }
 
         $courses = [
             // SITE Courses

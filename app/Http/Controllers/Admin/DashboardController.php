@@ -31,13 +31,30 @@ class DashboardController extends Controller
         // Get application status setting
         $applicationStatus = SystemSetting::get('application_status', 'closed');
 
+        // Get current semester and academic year
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $currentAcademicYear = SystemSetting::get('current_academic_year', '2024-2025');
+
+        // Get pending applications count for current semester
+        $pendingApplicationsCount = ScholarshipApplication::where('semester', $currentSemester)
+            ->where('academic_year', $currentAcademicYear)
+            ->whereIn('status', ['Pending Review', 'Under Review', 'Pending'])
+            ->count();
+
+        // Get approved applications count (active grantees)
+        $approvedApplicationsCount = Grantee::count();
+
         return view('admin.dashboard', [
             'recentApplications' => $recentApplications,
             'allApplications' => $allApplications,
             'chartData' => $chartData,
             'currentStatus' => '',
             'currentType' => '',
-            'applicationStatus' => $applicationStatus
+            'applicationStatus' => $applicationStatus,
+            'currentSemester' => $currentSemester,
+            'currentAcademicYear' => $currentAcademicYear,
+            'pendingApplicationsCount' => $pendingApplicationsCount,
+            'approvedApplicationsCount' => $approvedApplicationsCount
         ]);
     }
 
@@ -46,32 +63,27 @@ class DashboardController extends Controller
      */
     private function getChartData()
     {
-        // 1. Pie Chart: Grantees by Benefactor Type
-        $benefactorDistribution = [];
+        // 1. Pie Chart: Grantees by Scholarship Type
+        $scholarshipDistribution = [];
 
-        // Get government grantees by benefactor type
-        $governmentGrantees = Grantee::where('scholarship_type', 'government')
-            ->select('government_benefactor_type', DB::raw('count(*) as count'))
-            ->whereNotNull('government_benefactor_type')
-            ->groupBy('government_benefactor_type')
-            ->pluck('count', 'government_benefactor_type')
+        // Get grantees by scholarship type
+        $scholarshipTypes = Grantee::select('scholarship_type', DB::raw('count(*) as count'))
+            ->whereNotNull('scholarship_type')
+            ->groupBy('scholarship_type')
+            ->pluck('count', 'scholarship_type')
             ->toArray();
 
-        // Get employee grantees
-        $employeeCount = Grantee::where('scholarship_type', 'employee')->count();
-        if ($employeeCount > 0) {
-            $benefactorDistribution['Employee'] = $employeeCount;
-        }
+        // Map scholarship types to display names
+        $typeMapping = [
+            'government' => 'Government',
+            'academic' => 'Academic',
+            'employees' => 'Employee',
+            'alumni' => 'Alumni'
+        ];
 
-        // Get private grantees
-        $privateCount = Grantee::where('scholarship_type', 'private')->count();
-        if ($privateCount > 0) {
-            $benefactorDistribution['Private'] = $privateCount;
-        }
-
-        // Add government benefactor types
-        foreach ($governmentGrantees as $type => $count) {
-            $benefactorDistribution[$type] = $count;
+        foreach ($scholarshipTypes as $type => $count) {
+            $displayName = $typeMapping[$type] ?? ucfirst($type);
+            $scholarshipDistribution[$displayName] = $count;
         }
 
         // 2. Line Chart: Scholarships through the years (last 5 years)
@@ -92,7 +104,7 @@ class DashboardController extends Controller
         }
 
         return [
-            'benefactorDistribution' => $benefactorDistribution,
+            'scholarshipDistribution' => $scholarshipDistribution,
             'years' => $years,
             'scholarshipCounts' => $scholarshipCounts,
         ];
@@ -149,6 +161,32 @@ class DashboardController extends Controller
             'top_course_count' => $topCourse ? $topCourse->count : 0,
             'average_gwa' => $averageGwa ? round($averageGwa, 2) : 0,
             'approval_rate' => $approvalRate
+        ]);
+    }
+
+    /**
+     * Get real-time dashboard stats for AJAX updates
+     */
+    public function getDashboardStats()
+    {
+        // Get current semester and academic year
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $currentAcademicYear = SystemSetting::get('current_academic_year', '2024-2025');
+
+        // Get pending applications count for current semester
+        $pendingApplicationsCount = ScholarshipApplication::where('semester', $currentSemester)
+            ->where('academic_year', $currentAcademicYear)
+            ->whereIn('status', ['Pending Review', 'Under Review', 'Pending'])
+            ->count();
+
+        // Get approved applications count (active grantees)
+        $approvedApplicationsCount = Grantee::count();
+
+        return response()->json([
+            'pending_applications' => $pendingApplicationsCount,
+            'approved_applications' => $approvedApplicationsCount,
+            'current_semester' => $currentSemester,
+            'current_academic_year' => $currentAcademicYear
         ]);
     }
 

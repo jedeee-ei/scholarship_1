@@ -112,9 +112,12 @@
     <!-- Notification Component -->
     @include('components.notification')
 
-    <!-- Load jsPDF with multiple fallback options -->
+    <!-- Load Chart.js for dashboard charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Load jsPDF only when needed (removed automatic loading to prevent errors) -->
     <script>
-        // Global jsPDF loading function with multiple CDN sources
+        // Global jsPDF loading function - only load when actually needed
         window.loadJsPDF = function() {
             return new Promise((resolve, reject) => {
                 if (typeof window.jsPDF !== 'undefined') {
@@ -123,60 +126,35 @@
                     return;
                 }
 
-                const cdnSources = [
-                    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-                    'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
-                    'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
-                    'https://cdn.skypack.dev/jspdf@2.5.1'
-                ];
+                // Try a single reliable CDN source
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
 
-                let currentIndex = 0;
+                script.onload = function() {
+                    console.log('jsPDF loaded successfully');
+                    // Verify jsPDF is actually available
+                    setTimeout(() => {
+                        if (typeof window.jsPDF !== 'undefined') {
+                            window.jsPDFLoaded = true;
+                            resolve();
+                        } else {
+                            console.warn('jsPDF script loaded but object not available');
+                            reject(new Error('jsPDF not available after loading'));
+                        }
+                    }, 100);
+                };
 
-                function tryLoadFromCDN() {
-                    if (currentIndex >= cdnSources.length) {
-                        console.error('All jsPDF CDN sources failed');
-                        reject(new Error('Failed to load jsPDF from all CDN sources'));
-                        return;
-                    }
+                script.onerror = function() {
+                    console.warn('Failed to load jsPDF');
+                    reject(new Error('Failed to load jsPDF'));
+                };
 
-                    const script = document.createElement('script');
-                    script.src = cdnSources[currentIndex];
-
-                    script.onload = function() {
-                        console.log(`jsPDF loaded successfully from: ${cdnSources[currentIndex]}`);
-                        // Verify jsPDF is actually available
-                        setTimeout(() => {
-                            if (typeof window.jsPDF !== 'undefined') {
-                                window.jsPDFLoaded = true;
-                                resolve();
-                            } else {
-                                console.warn(
-                                    'jsPDF script loaded but object not available, trying next CDN...'
-                                    );
-                                currentIndex++;
-                                tryLoadFromCDN();
-                            }
-                        }, 100);
-                    };
-
-                    script.onerror = function() {
-                        console.warn(`Failed to load jsPDF from: ${cdnSources[currentIndex]}`);
-                        currentIndex++;
-                        tryLoadFromCDN();
-                    };
-
-                    document.head.appendChild(script);
-                }
-
-                tryLoadFromCDN();
+                document.head.appendChild(script);
             });
         };
 
-        // Try to load jsPDF immediately
-        window.loadJsPDF().catch(error => {
-            console.error('Initial jsPDF load failed:', error);
-            window.jsPDFLoadError = true;
-        });
+        // Don't load jsPDF automatically - only when needed
+        window.jsPDFLoadError = false;
     </script>
 
     <!-- Custom Confirm Dialog -->

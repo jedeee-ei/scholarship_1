@@ -37,7 +37,9 @@ class AnnouncementController extends Controller
                 'title' => $request->title,
                 'content' => $request->content,
                 'created_by' => Auth::user() ? Auth::user()->name : 'Admin',
-                'published_at' => now() // Auto-publish when created
+                'is_published' => true, // Auto-publish when created
+                'type' => 'general',
+                'priority' => 'medium'
             ]);
 
             Log::info('Announcement created', [
@@ -69,23 +71,14 @@ class AnnouncementController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'type' => 'required|string|in:general,scholarship,deadline,maintenance',
-            'priority' => 'required|string|in:low,medium,high,urgent',
-            'is_published' => 'boolean',
-            'publish_date' => 'nullable|date',
-            'expiry_date' => 'nullable|date|after:publish_date'
+            'content' => 'required|string'
         ]);
 
         try {
             $announcement->update([
                 'title' => $request->title,
                 'content' => $request->content,
-                'type' => $request->type,
-                'priority' => $request->priority,
-                'is_published' => $request->has('is_published'),
-                'publish_date' => $request->publish_date,
-                'expiry_date' => $request->expiry_date,
+                'is_published' => true, // Auto-publish when updated
                 'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
             ]);
 

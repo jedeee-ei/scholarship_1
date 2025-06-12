@@ -7,9 +7,6 @@
 @endpush
 
 @section('content')
-
-    </style>
-
     <div class="page-container">
 
         <div class="container">
@@ -32,6 +29,12 @@
                             <i class="fas fa-search"></i> Track Application
                         </a>
                     @endif
+                    <a href="#" class="action-link notification-link" onclick="showAnnouncementsModal(); return false;">
+                        <i class="fas fa-bell"></i> Notifications
+                        @if (isset($announcements) && $announcements->count() > 0)
+                            <span class="notification-badge" id="notificationBadge">{{ $announcements->count() }}</span>
+                        @endif
+                    </a>
                     <a href="#" class="action-link" onclick="showSettingsModal(); return false;">
                         <i class="fas fa-cog"></i> Settings
                     </a>
@@ -268,7 +271,7 @@
                             <div class="form-body">
                                 @if ($errors->any())
                                     <div class="alert alert-danger">
-                                        <ul style="margin: 0; padding-left: 20px;">
+                                        <ul>
                                             @foreach ($errors->all() as $error)
                                                 <li>{{ $error }}</li>
                                             @endforeach
@@ -391,7 +394,7 @@
                                     </div>
 
                                     <!-- BEU Fields (Hidden by default) -->
-                                    <div class="government-bsu-fields" style="display: none;">
+                                    <div class="government-bsu-fields">
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label for="government_grade_level">Grade Level *</label>
@@ -405,7 +408,7 @@
                                                     <option value="Grade 12">Grade 12</option>
                                                 </select>
                                             </div>
-                                            <div class="form-group government-strand-field" style="display: none;">
+                                            <div class="form-group government-strand-field">
                                                 <label for="government_strand">Strand *</label>
                                                 <select id="government_strand" name="strand">
                                                     <option value="">Select Strand</option>
@@ -420,7 +423,7 @@
                                     </div>
 
                                     <!-- College Fields (Hidden by default) -->
-                                    <div class="government-college-fields" style="display: none;">
+                                    <div class="government-college-fields">
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label for="government_department">Department *</label>
@@ -579,6 +582,24 @@
                                         </div>
                                     </div>
 
+                                    <!-- Document Upload Section -->
+                                    <div class="form-section-title">Document Upload</div>
+                                    <div class="form-row">
+                                        <div class="form-group full-width">
+                                            <label for="government_document_upload">Upload Required Documents</label>
+                                            <div class="file-upload-container">
+                                                <input type="file" id="government_document_upload" name="documents[]"
+                                                    multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                <div class="file-upload-area">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p>Click to upload or drag and drop files here</p>
+                                                    <small>Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB per file)</small>
+                                                </div>
+                                                <div class="uploaded-files-list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Submit Button -->
                                     <div class="form-row">
                                         <div class="form-group">
@@ -604,7 +625,7 @@
                             <div class="form-body">
                                 @if ($errors->any())
                                     <div class="alert alert-danger">
-                                        <ul style="margin: 0; padding-left: 20px;">
+                                        <ul>
                                             @foreach ($errors->all() as $error)
                                                 <li>{{ $error }}</li>
                                             @endforeach
@@ -706,13 +727,10 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="academic_semester">Semester *</label>
-                                            <select id="academic_semester" name="semester" required>
-                                                <option value="">Select Semester</option>
-                                                <option value="1st Semester">1st Semester</option>
-                                                <option value="2nd Semester">2nd Semester</option>
-                                                <option value="Summer">Summer</option>
-                                            </select>
+                                            <label for="academic_semester">Semester</label>
+                                            <input type="text" id="academic_semester" name="semester"
+                                                value="{{ $currentSemester }}" readonly
+                                                class="readonly-field">
                                         </div>
                                     </div>
 
@@ -761,9 +779,10 @@
                                     <!-- Academic Year -->
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="inst_academic_year">Academic Year *</label>
-                                            <input type="text" id="inst_academic_year" name="academic_year" required
-                                                placeholder="e.g., 2023-2024">
+                                            <label for="inst_academic_year">Academic Year</label>
+                                            <input type="text" id="inst_academic_year" name="academic_year"
+                                                value="{{ $currentAcademicYear }}" readonly
+                                                class="readonly-field">
                                         </div>
                                     </div>
 
@@ -983,6 +1002,24 @@
                                         </div>
                                     </div>
 
+                                    <!-- Document Upload Section -->
+                                    <div class="form-section-title">Document Upload</div>
+                                    <div class="form-row">
+                                        <div class="form-group full-width">
+                                            <label for="employees_document_upload">Upload Required Documents</label>
+                                            <div class="file-upload-container">
+                                                <input type="file" id="employees_document_upload" name="documents[]"
+                                                    multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                <div class="file-upload-area">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p>Click to upload or drag and drop files here</p>
+                                                    <small>Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB per file)</small>
+                                                </div>
+                                                <div class="uploaded-files-list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-row">
                                         <div class="form-group">
                                             <button type="submit" class="submit-btn">
@@ -1007,7 +1044,7 @@
                             <div class="form-body">
                                 @if ($errors->any())
                                     <div class="alert alert-danger">
-                                        <ul style="margin: 0; padding-left: 20px;">
+                                        <ul>
                                             @foreach ($errors->all() as $error)
                                                 <li>{{ $error }}</li>
                                             @endforeach
@@ -1133,6 +1170,24 @@
                                         </div>
                                     </div>
 
+                                    <!-- Document Upload Section -->
+                                    <div class="form-section-title">Document Upload</div>
+                                    <div class="form-row">
+                                        <div class="form-group full-width">
+                                            <label for="alumni_document_upload">Upload Required Documents</label>
+                                            <div class="file-upload-container">
+                                                <input type="file" id="alumni_document_upload" name="documents[]"
+                                                    multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                <div class="file-upload-area">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p>Click to upload or drag and drop files here</p>
+                                                    <small>Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB per file)</small>
+                                                </div>
+                                                <div class="uploaded-files-list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-row">
                                         <div class="form-group">
                                             <button type="submit" class="submit-btn">
@@ -1148,41 +1203,7 @@
                     <div class="col-lg-4">
 
 
-                        <!-- Announcements -->
-                        <div class="dashboard-card">
-                            <div class="card-header">
-                                <i class="fas fa-bullhorn"></i> Announcements
-                            </div>
-                            <div class="card-body">
-                                <div class="announcements-container">
-                                    @if (isset($announcements) && $announcements->count() > 0)
-                                        @foreach ($announcements as $announcement)
-                                            <div class="announcement-item">
-                                                <div class="announcement-header">
-                                                    <h5 class="announcement-title">{{ $announcement->title }}</h5>
-                                                    <span class="announcement-date">
-                                                        <i class="fas fa-calendar-alt"></i>
-                                                        {{ $announcement->created_at->format('M d, Y') }}
-                                                    </span>
-                                                </div>
-                                                <div class="announcement-content">
-                                                    <p>{{ $announcement->content }}</p>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div class="no-announcements">
-                                            <div class="no-announcements-icon">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div>
-                                            <p class="no-announcements-text">No announcements at this time.</p>
-                                            <small class="no-announcements-subtitle">Check back later for updates from the
-                                                administration.</small>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- FAQ Section -->
                         <div class="dashboard-card">
@@ -2649,14 +2670,194 @@
 
 
 
+            // Announcements Modal Functions
+            function showAnnouncementsModal() {
+                document.getElementById('announcementsModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                // Mark announcements as viewed
+                markAnnouncementsAsViewed();
+            }
+
+            function markAnnouncementsAsViewed() {
+                // Get current announcements count
+                const currentCount = {{ isset($announcements) ? $announcements->count() : 0 }};
+
+                // Store the viewed count in localStorage
+                localStorage.setItem('viewedAnnouncementsCount', currentCount);
+
+                // Hide notification badge
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.style.display = 'none';
+                }
+            }
+
+            function closeAnnouncementsModal() {
+                document.getElementById('announcementsModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Check for new announcements periodically
+            function checkForNewAnnouncements() {
+                fetch('/api/announcements')
+                    .then(response => response.json())
+                    .then(data => {
+                        const newCount = data.data.length;
+                        const viewedCount = parseInt(localStorage.getItem('viewedAnnouncementsCount') || '0');
+                        const badge = document.getElementById('notificationBadge');
+
+                        if (newCount > viewedCount) {
+                            // Show badge with unviewed announcements count
+                            const unviewedCount = newCount - viewedCount;
+                            if (badge) {
+                                badge.textContent = unviewedCount;
+                                badge.style.display = 'flex';
+                            } else {
+                                // Create new badge if it doesn't exist
+                                const notificationLink = document.querySelector('.notification-link');
+                                if (notificationLink && unviewedCount > 0) {
+                                    const newBadge = document.createElement('span');
+                                    newBadge.className = 'notification-badge';
+                                    newBadge.id = 'notificationBadge';
+                                    newBadge.textContent = unviewedCount;
+                                    notificationLink.appendChild(newBadge);
+                                }
+                            }
+
+                            // Update modal content
+                            updateAnnouncementsModal(data.data);
+                        } else if (badge) {
+                            // Hide badge if no new announcements
+                            badge.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.log('Error checking announcements:', error));
+            }
+
+            function updateAnnouncementsModal(announcements) {
+                const modalBody = document.querySelector('.announcements-modal-body');
+                if (!modalBody) return;
+
+                if (announcements.length > 0) {
+                    const announcementsList = announcements.map(announcement => `
+                        <div class="announcement-modal-item">
+                            <div class="announcement-modal-header">
+                                <h4 class="announcement-modal-title">${announcement.title}</h4>
+                                <span class="announcement-modal-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    ${new Date(announcement.publish_date).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })}
+                                </span>
+                            </div>
+                            <div class="announcement-modal-content">
+                                <p>${announcement.content}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    modalBody.innerHTML = `
+                        <div class="announcements-list">
+                            ${announcementsList}
+                        </div>
+                    `;
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="no-announcements-modal">
+                            <div class="no-announcements-modal-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <h3>No Announcements</h3>
+                            <p>There are no announcements at this time.</p>
+                            <small>Check back later for updates from the administration.</small>
+                        </div>
+                    `;
+                }
+            }
+
+            // Check for new announcements on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                checkNotificationBadgeOnLoad();
+            });
+
+            // Check for new announcements every 30 seconds
+            setInterval(checkForNewAnnouncements, 30000);
+
+            function checkNotificationBadgeOnLoad() {
+                const currentCount = {{ isset($announcements) ? $announcements->count() : 0 }};
+                const viewedCount = parseInt(localStorage.getItem('viewedAnnouncementsCount') || '0');
+                const badge = document.getElementById('notificationBadge');
+
+                if (badge) {
+                    if (currentCount > viewedCount) {
+                        // Show badge with new announcements count
+                        const newCount = currentCount - viewedCount;
+                        badge.textContent = newCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        // Hide badge if no new announcements
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+
             // Close modal when clicking outside
             window.onclick = function(event) {
-                const modal = document.getElementById('settingsModal');
-                if (event.target === modal) {
+                const settingsModal = document.getElementById('settingsModal');
+                const announcementsModal = document.getElementById('announcementsModal');
+
+                if (event.target === settingsModal) {
                     closeSettingsModal();
+                }
+
+                if (event.target === announcementsModal) {
+                    closeAnnouncementsModal();
                 }
             }
         </script>
+
+        <!-- Announcements Modal -->
+        <div id="announcementsModal" class="announcements-modal">
+            <div class="announcements-modal-content">
+                <div class="announcements-modal-header">
+                    <h2><i class="fas fa-bell"></i> Announcements</h2>
+                    <button class="close-announcements-btn" onclick="closeAnnouncementsModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="announcements-modal-body">
+                    @if (isset($announcements) && $announcements->count() > 0)
+                        <div class="announcements-list">
+                            @foreach ($announcements as $announcement)
+                                <div class="announcement-modal-item">
+                                    <div class="announcement-modal-header">
+                                        <h4 class="announcement-modal-title">{{ $announcement->title }}</h4>
+                                        <span class="announcement-modal-date">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            {{ $announcement->created_at->format('M d, Y') }}
+                                        </span>
+                                    </div>
+                                    <div class="announcement-modal-content">
+                                        <p>{{ $announcement->content }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="no-announcements-modal">
+                            <div class="no-announcements-modal-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <h3>No Announcements</h3>
+                            <p>There are no announcements at this time.</p>
+                            <small>Check back later for updates from the administration.</small>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
 
         <!-- Settings Modal -->
         <div id="settingsModal" class="settings-modal">
@@ -2686,14 +2887,6 @@
                                 <div class="detail-row">
                                     <label>Full Name:</label>
                                     <span>{{ $student->full_name ?? ($student->name ?? 'Not Set') }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <label>First Name:</label>
-                                    <span>{{ $student->first_name ?? 'Not Set' }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <label>Last Name:</label>
-                                    <span>{{ $student->last_name ?? 'Not Set' }}</span>
                                 </div>
                                 <div class="detail-row">
                                     <label>Student ID:</label>

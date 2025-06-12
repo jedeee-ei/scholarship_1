@@ -300,7 +300,6 @@
                         @elseif($scholarshipTypeFilter == 'employees')
                             <th>Student ID</th>
                             <th>Full Name</th>
-                            <th>Course</th>
                             <th>Employee Name</th>
                             <th>Relationship</th>
                             <th>Semester</th>
@@ -406,7 +405,6 @@
                             @elseif($scholarshipTypeFilter == 'employees')
                                 <td>{{ $student['id'] }}</td>
                                 <td>{{ $student['name'] }}</td>
-                                <td>{{ $student['course'] }}</td>
                                 <td>{{ $student['employee_name'] ?? 'N/A' }}</td>
                                 <td>{{ $student['employee_relationship'] ?? 'N/A' }}</td>
                                 <td><span
@@ -486,7 +484,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'alumni' ? '8' : '8') }}"
+                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic']) ? '9' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'employees' ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'alumni' ? '8' : '8')) }}"
                             class="empty-state">
                             No grantees found. Grantees will appear here once benefactor applications are approved.
                         </td>
@@ -883,7 +881,7 @@
                     'government': 'government',
                     'academic': 'academic',
                     'employees': 'employees',
-                    'private': 'private'
+                    'alumni': 'alumni'
                 };
 
                 if (categoryMap[category]) {
@@ -1267,16 +1265,16 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="semester">Semester *</label>
-                                    <select id="semester" name="semester" required onchange="checkAndShowSubjects()">
-                                        <option value="">Select Semester</option>
-                                        <option value="1st Semester">1st Semester</option>
-                                        <option value="2nd Semester">2nd Semester</option>
-                                    </select>
+                                    <label for="semester">Semester</label>
+                                    <input type="text" id="semester" name="semester"
+                                        value="{{ $currentSemester }}" readonly
+                                        style="background-color: #f5f5f5; cursor: not-allowed;">
                                 </div>
                                 <div class="form-group">
-                                    <label for="academicYear">Academic Year *</label>
-                                    <input type="text" id="academicYear" name="academic_year" placeholder="e.g., 2024-2025" required>
+                                    <label for="academicYear">Academic Year</label>
+                                    <input type="text" id="academicYear" name="academic_year"
+                                        value="{{ $currentAcademicYear }}" readonly
+                                        style="background-color: #f5f5f5; cursor: not-allowed;">
                                 </div>
                             </div>
                             <div id="educationSpecificFields"></div>
@@ -1331,10 +1329,10 @@
                     `;
                     break;
 
-                case 'private':
+                case 'alumni':
                     fieldsHTML = `
                         <div class="form-section">
-                            <h3>Private Scholarship Information</h3>
+                            <h3>Alumni Scholarship Information</h3>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="scholarshipName">Scholarship Name *</label>

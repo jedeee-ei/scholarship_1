@@ -176,7 +176,7 @@ class ScholarshipTrackerController extends Controller
             'government' => 'Government Scholarship',
             'academic' => 'Academic Scholarship',
             'employees' => 'Employees Scholar',
-            'private' => 'Private Scholarship'
+            'alumni' => 'Alumni Scholarship'
         ];
 
         $scholarshipType = $scholarshipTypes[$application->scholarship_type] ?? ucfirst($application->scholarship_type);

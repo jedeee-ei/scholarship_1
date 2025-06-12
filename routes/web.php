@@ -159,12 +159,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/grantees/{id}/update', [GranteeController::class, 'updateGrantee'])->name('admin.grantee.update');
     Route::get('/admin/scholarships', [ScholarshipManagementController::class, 'index'])->name('admin.scholarships');
     Route::post('/admin/scholarships/add', [ScholarshipManagementController::class, 'addScholarship'])->name('admin.scholarship.add');
-    Route::post('/admin/scholarships/update-semester', [ScholarshipManagementController::class, 'updateSemester'])->name('admin.scholarship.update-semester');
-    Route::post('/admin/scholarships/update-year', [ScholarshipManagementController::class, 'updateAcademicYear'])->name('admin.scholarship.update-year');
+    Route::post('/admin/settings/update-semester', [SettingsController::class, 'updateSemester'])->name('admin.settings.update-semester');
+    Route::post('/admin/settings/update-year', [SettingsController::class, 'updateAcademicYear'])->name('admin.settings.update-year');
     Route::get('/admin/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements');
     Route::post('/admin/announcements/store', [AnnouncementController::class, 'store'])->name('admin.announcements.store');
     Route::put('/admin/announcements/{id}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
     Route::delete('/admin/announcements/{id}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.delete');
+    Route::get('/api/announcements', [AnnouncementController::class, 'getPublishedAnnouncements'])->name('api.announcements');
 
     Route::get('/admin/archived-students', [ArchiveController::class, 'index'])->name('admin.archived-students');
     Route::get('/admin/archived-students/export', [ArchiveController::class, 'exportArchivedStudents'])->name('admin.archived-students.export');
@@ -213,6 +214,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('api/admin')->group(function () {
         Route::get('/chart-data', [DashboardController::class, 'getChartDataApi']);
         Route::get('/analytics-summary', [DashboardController::class, 'getAnalyticsSummary']);
+        Route::get('/dashboard-stats', [DashboardController::class, 'getDashboardStats']);
     });
 
     // API route for checking duplicate student IDs
@@ -238,7 +240,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/bulk-import', [ImportExportController::class, 'bulkImport'])->name('admin.bulk-import');
     Route::get('/admin/download-template', [ImportExportController::class, 'downloadTemplate'])->name('admin.download-template');
     Route::get('/admin/export/{type}', [ImportExportController::class, 'exportData'])->name('admin.export');
-    Route::post('/admin/settings', [SettingsController::class, 'saveSettings'])->name('admin.settings');
+    Route::post('/admin/settings', [SettingsController::class, 'saveSettings'])->name('admin.settings.save');
 
     // Student import routes
     Route::post('/admin/import-students', [ImportExportController::class, 'importStudents'])->name('admin.import-students');

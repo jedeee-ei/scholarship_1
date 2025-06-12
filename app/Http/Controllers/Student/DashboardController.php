@@ -59,6 +59,10 @@ class DashboardController extends Controller
         $applicationStatus = SystemSetting::get('application_status', 'closed');
         $applicationsOpen = $applicationStatus === 'open';
 
+        // Get current system academic year and semester
+        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
+        $currentAcademicYear = SystemSetting::get('current_academic_year', '2024-2025');
+
         return view('student.dashboard', [
             'student' => $student,
             'applications' => $applications,
@@ -66,7 +70,9 @@ class DashboardController extends Controller
             'announcements' => $announcements,
             'recentStatusUpdate' => $recentStatusUpdate,
             'permanentStatus' => $permanentStatus,
-            'applicationsOpen' => $applicationsOpen
+            'applicationsOpen' => $applicationsOpen,
+            'currentSemester' => $currentSemester,
+            'currentAcademicYear' => $currentAcademicYear
         ]);
     }
 

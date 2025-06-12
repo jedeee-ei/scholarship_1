@@ -15,52 +15,54 @@
     <div class="dashboard-header">
         <h1>Dashboard</h1>
         <div class="dashboard-actions">
-            <div class="application-toggle-container">
-                <label class="toggle-label">
-                    <span class="toggle-text">Applications for this semester.</span>
-                    <div class="toggle-switch-wrapper">
-                        <input type="checkbox" id="applicationToggle" class="toggle-input"
-                               {{ $applicationStatus === 'open' ? 'checked' : '' }}>
-                        <div class="toggle-switch">
-                            <div class="toggle-slider"></div>
-                        </div>
-                        <span class="toggle-status">{{ $applicationStatus === 'open' ? 'Open' : 'Closed' }}</span>
-                    </div>
-                </label>
-            </div>
             <div class="date">{{ date('F d, Y') }}</div>
         </div>
     </div>
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <a href="#" class="action-card" onclick="showAddScholarshipForm()">
-            <div class="action-icon">
-                <i class="fas fa-plus-circle"></i>
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Pending Applications</h3>
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
             </div>
-            <div class="action-title">Add Scholarship</div>
-            <div class="action-description">Create new scholarship program</div>
-        </a>
-        <a href="#" class="action-card" onclick="showBulkImportForm()">
-            <div class="action-icon">
-                <i class="fas fa-upload"></i>
+            <div class="stat-value" id="pendingApplicationsCount">{{ $pendingApplicationsCount }}</div>
+            <div class="stat-change neutral">
+                <i class="fas fa-calendar"></i> Current Semester
             </div>
-            <div class="action-title">Import Grantees</div>
-            <div class="action-description">Bulk import grantee data</div>
-        </a>
-        <a href="#" class="action-card" onclick="exportApplications()">
-            <div class="action-icon">
-                <i class="fas fa-download"></i>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Approved Applications</h3>
+                <div class="stat-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
             </div>
-            <div class="action-title">Export Data</div>
-            <div class="action-description">Download application reports</div>
-        </a>
-        <a href="#" class="action-card" onclick="showSystemSettings()">
-            <div class="action-icon">
-                <i class="fas fa-cogs"></i>
+            <div class="stat-value" id="approvedApplicationsCount">{{ $approvedApplicationsCount }}</div>
+            <div class="stat-change positive">
+                <i class="fas fa-users"></i> Active Grantees
             </div>
-            <div class="action-title">System Settings</div>
-            <div class="action-description">Configure system parameters</div>
-        </a>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">System Settings</h3>
+                <div class="stat-icon total">
+                    <i class="fas fa-cogs"></i>
+                </div>
+            </div>
+            <div class="stat-value" style="font-size: 18px; line-height: 1.2;">
+                {{ $currentSemester }}<br>
+                <small style="font-size: 14px; color: #666;">{{ $currentAcademicYear }}</small>
+            </div>
+            <div class="stat-change neutral">
+                <a href="#" onclick="showSettingsModal(); return false;" style="color: #1e5631; text-decoration: none;">
+                    <i class="fas fa-edit"></i> Configure
+                </a>
+            </div>
+        </div>
     </div>
 
 
@@ -68,9 +70,9 @@
     <!-- Charts Section -->
     <div class="charts-section">
         <div class="chart-container">
-            <h3 class="chart-title">Grantees by Benefactor Type</h3>
+            <h3 class="chart-title">Grantees by Scholarship Type</h3>
             <div class="chart-canvas">
-                <canvas id="benefactorChart"></canvas>
+                <canvas id="scholarshipChart"></canvas>
             </div>
         </div>
 
@@ -85,11 +87,159 @@
 
 @push('scripts')
     <script>
+        // Action button functions - Define immediately for onclick handlers
+        window.showBulkImportForm = function() {
+            console.log('showBulkImportForm called');
+            try {
+                // Show modal for bulk import
+                window.showBulkImportModal();
+            } catch (error) {
+                console.error('Error in showBulkImportForm:', error);
+            }
+        };
+
+        window.exportApplications = function() {
+            console.log('exportApplications called');
+            try {
+                // Show export options modal
+                window.showExportModal();
+            } catch (error) {
+                console.error('Error in exportApplications:', error);
+            }
+        };
+
+        window.showSystemSettings = function() {
+            console.log('showSystemSettings called');
+            try {
+                // Show system settings modal
+                window.showSettingsModal();
+            } catch (error) {
+                console.error('Error in showSystemSettings:', error);
+                alert('Error opening system settings. Please try again.');
+            }
+        };
+
+        // Modal utility functions
+        window.closeModal = function() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+
+
+        // System Settings Modal
+        window.showSettingsModal = async function() {
+            try {
+                // Fetch current settings
+                const response = await fetch('/admin/current-semester-year');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>System Settings</h3>
+                            <button onclick="closeModal()" class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="settingsForm">
+                                <!-- Application Control Section -->
+                                <div class="settings-section">
+                                    <h4>Application Control</h4>
+                                    <div class="application-control-section">
+                                        <div class="application-control-info">
+                                            <h5>Allow New Applications</h5>
+                                            <p>Enable or disable student scholarship applications</p>
+                                        </div>
+                                        <div class="toggle-control">
+                                            <div class="toggle-container">
+                                                <label class="toggle-switch">
+                                                    <input type="checkbox" id="modalApplicationToggle" name="application_status" ${data.application_status === 'open' ? 'checked' : ''}>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                                <span id="modalApplicationStatusText" class="status-text" style="color: ${data.application_status === 'open' ? '#28a745' : '#dc3545'};">
+                                                    ${data.application_status === 'open' ? 'Open' : 'Closed'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Year Settings Section -->
+                                <div class="settings-section">
+                                    <h4>Academic Year Settings</h4>
+                                    <div class="form-group">
+                                        <label for="currentAY">Current Academic Year:</label>
+                                        <input type="text" id="currentAY" name="current_academic_year" value="${data.current_academic_year}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="currentSem">Current Semester:</label>
+                                        <select id="currentSem" name="current_semester">
+                                            <option value="1st Semester" ${data.current_semester === '1st Semester' ? 'selected' : ''}>1st Semester</option>
+                                            <option value="2nd Semester" ${data.current_semester === '2nd Semester' ? 'selected' : ''}>2nd Semester</option>
+                                            <option value="Summer" ${data.current_semester === 'Summer' ? 'selected' : ''}>Summer</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Advanced Operations Section -->
+                                <div class="settings-section">
+                                    <h4>Advanced Operations</h4>
+                                    <div class="advanced-operations">
+                                        <button type="button" onclick="updateSemester()" class="btn-warning">
+                                            <i class="fas fa-calendar-alt"></i> Update Semester
+                                        </button>
+                                        <button type="button" onclick="updateAcademicYear()" class="btn-danger">
+                                            <i class="fas fa-calendar-check"></i> Update Academic Year
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                            <button onclick="saveSettings()" class="btn-primary">Save Settings</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Add toggle functionality
+                const toggle = document.getElementById('modalApplicationToggle');
+                const statusText = document.getElementById('modalApplicationStatusText');
+
+                if (toggle && statusText) {
+                    toggle.addEventListener('change', function() {
+                        const isOpen = this.checked;
+                        statusText.textContent = isOpen ? 'Open' : 'Closed';
+                        statusText.style.color = isOpen ? '#28a745' : '#dc3545';
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                alert('Error loading current settings. Please try again.');
+            }
+        };
+
         // Initialize charts when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
-            initializeNavigation();
-            initializeApplicationToggle();
+            console.log('Dashboard DOM loaded, initializing...');
+            try {
+                initializeCharts();
+                initializeNavigation();
+                console.log('Dashboard initialization complete');
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+            }
         });
 
         // Initialize navigation to ensure proper link behavior
@@ -101,47 +251,6 @@
                     return true;
                 });
             });
-        }
-
-        // Initialize application toggle functionality
-        function initializeApplicationToggle() {
-            const toggle = document.getElementById('applicationToggle');
-            const statusText = document.querySelector('.toggle-status');
-
-            if (toggle && statusText) {
-                toggle.addEventListener('change', async function() {
-                    const isChecked = this.checked;
-
-                    try {
-                        const response = await fetch('/admin/toggle-application-status', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            }
-                        });
-
-                        const result = await response.json();
-
-                        if (result.success) {
-                            // Update status text
-                            statusText.textContent = result.status === 'open' ? 'Open' : 'Closed';
-
-                            // Show success message
-                            showNotification(`Applications are now ${result.status}`, 'success');
-                        } else {
-                            // Revert toggle if failed
-                            this.checked = !isChecked;
-                            showNotification('Failed to update application status', 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error toggling application status:', error);
-                        // Revert toggle if failed
-                        this.checked = !isChecked;
-                        showNotification('Failed to update application status', 'error');
-                    }
-                });
-            }
         }
 
         // Simple notification function
@@ -176,315 +285,192 @@
 
         // Chart initialization with simplified 2 charts
         function initializeCharts() {
-            const chartData = {!! json_encode($chartData) !!};
-            console.log('Dashboard Chart Data:', chartData); // Debug log to see what data we have
+            try {
+                const chartData = {!! json_encode($chartData) !!};
+                console.log('Dashboard Chart Data:', chartData); // Debug log to see what data we have
 
-            // 1. Benefactor Distribution Chart (Pie Chart)
-            const benefactorCtx = document.getElementById('benefactorChart').getContext('2d');
-            const benefactorData = chartData.benefactorDistribution || {};
-            new Chart(benefactorCtx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(benefactorData),
-                    datasets: [{
-                        data: Object.values(benefactorData),
-                        backgroundColor: [
-                            '#1e5631', // CHED
-                            '#2d7a3d', // DOST
-                            '#3e8e4a', // DSWD
-                            '#4fa256', // DOLE
-                            '#60b662', // Employee
-                            '#71c66e', // Private
-                            '#82d67a' // Others
-                        ],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} grantees (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded');
+                    return;
                 }
-            });
 
-            // 2. Yearly Scholarships Chart (Line Chart)
-            const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
-            new Chart(yearlyCtx, {
-                type: 'line',
-                data: {
-                    labels: chartData.years,
-                    datasets: [{
-                        label: 'Scholarships',
-                        data: chartData.scholarshipCounts,
-                        borderColor: '#1e5631',
-                        backgroundColor: 'rgba(30, 86, 49, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#1e5631',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 3,
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+                // 1. Scholarship Distribution Chart (Pie Chart)
+                const scholarshipCtx = document.getElementById('scholarshipChart').getContext('2d');
+                const scholarshipData = chartData.scholarshipDistribution || {};
+
+                // Check if we have data
+                if (Object.keys(scholarshipData).length === 0) {
+                    // Show "No data" message
+                    scholarshipCtx.font = "16px Arial";
+                    scholarshipCtx.fillStyle = "#666";
+                    scholarshipCtx.textAlign = "center";
+                    scholarshipCtx.fillText("No grantee data available", scholarshipCtx.canvas.width / 2, scholarshipCtx.canvas.height / 2);
+                } else {
+                    new Chart(scholarshipCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(scholarshipData),
+                            datasets: [{
+                                data: Object.values(scholarshipData),
+                                backgroundColor: [
+                                    '#3498db', // Government - Blue
+                                    '#e74c3c', // Academic - Red
+                                    '#f39c12', // Employee - Orange
+                                    '#9b59b6', // Alumni - Purple
+                                    '#1abc9c', // Others - Teal
+                                    '#34495e', // Additional - Dark Gray
+                                    '#e67e22', // Extra - Dark Orange
+                                    '#2ecc71'  // Extra - Green
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Year: ' + context[0].label;
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
                                 },
-                                label: function(context) {
-                                    const count = context.parsed.y;
-                                    return count + ' scholarship' + (count !== 1 ? 's' : '') + ' awarded';
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} grantee${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }
+                    });
+                }
+
+                // 2. Yearly Scholarships Chart (Line Chart)
+                const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+                new Chart(yearlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.years,
+                        datasets: [{
+                            label: 'Scholarships',
+                            data: chartData.scholarshipCounts,
+                            borderColor: '#1e5631',
+                            backgroundColor: 'rgba(30, 86, 49, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#1e5631',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 3,
+                            pointRadius: 5
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            title: {
-                                display: true,
-                                text: 'Number of Scholarships'
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        return 'Year: ' + context[0].label;
+                                    },
+                                    label: function(context) {
+                                        const count = context.parsed.y;
+                                        return count + ' scholarship' + (count !== 1 ? 's' : '') + ' awarded';
+                                    }
+                                }
                             }
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Year'
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Number of Scholarships'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Year'
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
         }
 
         // Refresh charts and data
         function refreshDashboard() {
             // Refresh charts by reinitializing them
             initializeCharts();
+            // Refresh dashboard stats
+            refreshDashboardStats();
         }
 
-        // Action button functions
-        function showAddScholarshipForm() {
-            // Redirect to benefactor programs page where they can add new benefactors
-            window.location.href = '/admin/scholarship-programs';
-        }
-
-        function showBulkImportForm() {
-            // Show modal for bulk import
-            showBulkImportModal();
-        }
-
-        function exportApplications() {
-            // Show export options modal
-            showExportModal();
-        }
-
-        function showSystemSettings() {
-            // Show system settings modal
-            showSettingsModal();
-        }
-
-        // Bulk Import Modal
-        function showBulkImportModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Bulk Import Grantees</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="bulkImportForm" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="importFile">Select CSV File:</label>
-                                <input type="file" id="importFile" name="file" accept=".csv" required>
-                                <small>Upload a CSV file with student data. <a href="/admin/download-template" target="_blank">Download Template</a></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="scholarshipType">Scholarship Type:</label>
-                                <select id="scholarshipType" name="scholarship_type" required>
-                                    <option value="">Select Type</option>
-                                    <option value="government">Government Scholarship</option>
-                                    <option value="academic">Academic Scholarship</option>
-                                    <option value="employees">Employee Scholarship</option>
-                                    <option value="private">Private Scholarship</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Cancel</button>
-                        <button onclick="submitBulkImport()" class="btn-primary">Import</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Export Modal
-        function showExportModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Export Data</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="export-options">
-                            <div class="export-option" onclick="exportData('applications')">
-                                <i class="fas fa-file-alt"></i>
-                                <h4>Applications Report</h4>
-                                <p>Export all scholarship applications</p>
-                            </div>
-                            <div class="export-option" onclick="exportData('students')">
-                                <i class="fas fa-users"></i>
-                                <h4>Grantees Report</h4>
-                                <p>Export active benefactor grantees</p>
-                            </div>
-                            <div class="export-option" onclick="exportData('analytics')">
-                                <i class="fas fa-chart-bar"></i>
-                                <h4>Analytics Report</h4>
-                                <p>Export dashboard analytics data</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Close</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // System Settings Modal
-        function showSettingsModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>System Settings</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="settingsForm">
-                            <div class="settings-section">
-                                <h4>Academic Year Settings</h4>
-                                <div class="form-group">
-                                    <label for="currentAY">Current Academic Year:</label>
-                                    <input type="text" id="currentAY" name="academic_year" value="2024-2025">
-                                </div>
-                                <div class="form-group">
-                                    <label for="currentSem">Current Semester:</label>
-                                    <select id="currentSem" name="semester">
-                                        <option value="1st Semester">1st Semester</option>
-                                        <option value="2nd Semester">2nd Semester</option>
-                                        <option value="Summer">Summer</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="settings-section">
-                                <h4>Application Settings</h4>
-                                <div class="form-group">
-                                    <label for="maxApplications">Max Applications per Student:</label>
-                                    <input type="number" id="maxApplications" name="max_applications" value="3" min="1">
-                                </div>
-                                <div class="form-group">
-                                    <label for="minGWA">Minimum GWA Requirement:</label>
-                                    <input type="number" id="minGWA" name="min_gwa" value="1.75" step="0.01" min="1.00" max="5.00">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Cancel</button>
-                        <button onclick="saveSettings()" class="btn-primary">Save Settings</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Modal utility functions
-        function closeModal() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) {
-                modal.remove();
-            }
-        }
-
-        // Submit functions
-        async function submitBulkImport() {
-            const form = document.getElementById('bulkImportForm');
-            const formData = new FormData(form);
-
+        // Refresh dashboard stats
+        async function refreshDashboardStats() {
             try {
-                const response = await fetch('/admin/bulk-import', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    }
-                });
-
-                const result = await response.json();
-
+                const response = await fetch('/api/admin/dashboard-stats');
                 if (response.ok) {
-                    alert('Import successful! ' + result.message);
-                    closeModal();
-                    location.reload();
+                    const data = await response.json();
+
+                    // Update pending applications count
+                    const pendingElement = document.getElementById('pendingApplicationsCount');
+                    if (pendingElement) {
+                        pendingElement.textContent = data.pending_applications;
+                    }
+
+                    // Update approved applications count
+                    const approvedElement = document.getElementById('approvedApplicationsCount');
+                    if (approvedElement) {
+                        approvedElement.textContent = data.approved_applications;
+                    }
+
+                    console.log('Dashboard stats refreshed:', data);
                 } else {
-                    alert('Import failed: ' + result.message);
+                    console.error('Failed to refresh dashboard stats');
                 }
             } catch (error) {
-                alert('Import failed. Please try again.');
+                console.error('Error refreshing dashboard stats:', error);
             }
         }
 
-        function exportData(type) {
-            const url = `/admin/export/${type}`;
-            window.open(url, '_blank');
-            closeModal();
-        }
 
-        async function saveSettings() {
+
+
+
+
+
+
+
+        window.saveSettings = async function() {
             const form = document.getElementById('settingsForm');
             const formData = new FormData(form);
+
+            // Handle checkbox for application status
+            const toggle = document.getElementById('modalApplicationToggle');
+            if (toggle) {
+                formData.set('application_status', toggle.checked ? 'open' : 'closed');
+            }
 
             try {
                 const response = await fetch('/admin/settings', {
@@ -499,14 +485,156 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Settings saved successfully!');
+                    showNotification('Settings saved successfully!', 'success');
                     closeModal();
+                    // Refresh the page to update any displayed settings
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('Failed to save settings: ' + result.message);
+                    showNotification('Failed to save settings: ' + result.message, 'error');
                 }
             } catch (error) {
-                alert('Settings save failed. Please try again.');
+                showNotification('Settings save failed. Please try again.', 'error');
             }
+        };
+
+        // Semester update function
+        window.updateSemester = async function() {
+            try {
+                // Fetch current semester data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
+                }
+
+                const data = await response.json();
+                const currentSemester = data.current_semester;
+                const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
+
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`,
+                    'Update Semester',
+                    'warning'
+                );
+
+                if (confirmed) {
+                    const updateResponse = await fetch('/admin/settings/update-semester', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            current_semester: currentSemester,
+                            new_semester: nextSemester
+                        })
+                    });
+
+                    const result = await updateResponse.json();
+
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        closeModal();
+                        // Refresh dashboard stats immediately
+                        refreshDashboardStats();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to update semester: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating semester:', error);
+                showNotification('Error updating semester. Please try again.', 'error');
+            }
+        };
+
+        // Academic year update function
+        window.updateAcademicYear = async function() {
+            try {
+                // Fetch current academic year data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
+                }
+
+                const data = await response.json();
+                const currentYear = data.current_academic_year;
+                const yearParts = currentYear.split('-');
+                const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
+
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`,
+                    'Update Academic Year',
+                    'warning'
+                );
+
+                if (confirmed) {
+                    const updateResponse = await fetch('/admin/settings/update-year', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            current_year: currentYear,
+                            new_year: nextYear
+                        })
+                    });
+
+                    const result = await updateResponse.json();
+
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        closeModal();
+                        // Refresh dashboard stats immediately
+                        refreshDashboardStats();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to update academic year: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating academic year:', error);
+                showNotification('Error updating academic year. Please try again.', 'error');
+            }
+        };
+
+        // Custom confirm dialog with modal
+        function customConfirm(message, title = 'Confirm', type = 'warning') {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content confirm-dialog">
+                        <div class="modal-header">
+                            <h3>${title}</h3>
+                            <button onclick="closeConfirmModal(false)" class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="confirm-icon">⚠️</div>
+                            <div class="confirm-message">${message.replace(/\n/g, '<br>')}</div>
+                            <div class="confirm-buttons">
+                                <button onclick="closeConfirmModal(true)" class="btn-primary">Yes</button>
+                                <button onclick="closeConfirmModal(false)" class="btn-secondary">No</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Store the resolve function globally so the buttons can access it
+                window.currentConfirmResolve = resolve;
+
+                // Function to close modal and resolve promise
+                window.closeConfirmModal = function(result) {
+                    if (window.currentConfirmResolve) {
+                        window.currentConfirmResolve(result);
+                        window.currentConfirmResolve = null;
+                    }
+                    if (modal.parentElement) {
+                        modal.remove();
+                    }
+                };
+            });
         }
 
         // Dropdown toggle function

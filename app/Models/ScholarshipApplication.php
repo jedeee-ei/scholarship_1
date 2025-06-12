@@ -66,6 +66,10 @@ class ScholarshipApplication extends Model
         'other_scholarship',
         'documents',
         'status',
+
+        // Renewal tracking
+        'is_renewal',
+        'previous_archive_id',
     ];
 
     protected $casts = [

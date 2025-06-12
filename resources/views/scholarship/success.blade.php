@@ -318,8 +318,8 @@
                                 Academic Scholarship
                             @elseif(session('scholarship_type') == 'employees')
                                 Employees Scholar
-                            @elseif(session('scholarship_type') == 'private')
-                                Private Scholarship
+                            @elseif(session('scholarship_type') == 'alumni')
+                                Alumni Scholarship
                             @else
                                 {{ ucfirst(session('scholarship_type', 'Scholarship')) }}
                             @endif

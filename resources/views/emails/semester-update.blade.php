@@ -217,7 +217,7 @@
             <p>• <strong>Government Scholarships:</strong> CHED, DOST, DSWD, DOLE funded programs</p>
             <p>• <strong>Academic Scholarships:</strong> Merit-based scholarships for high achievers</p>
             <p>• <strong>Employee Scholarships:</strong> For children of university employees</p>
-            <p>• <strong>Private Scholarships:</strong> Sponsored by private organizations</p>
+            <p>• <strong>Alumni Scholarships:</strong> Sponsored by alumni organizations</p>
         </div>
 
         <!-- Important Deadlines -->

@@ -5,193 +5,6 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/students.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages/archived-students.css') }}">
-    <style>
-        /* Remarks Badge Styling */
-        .remarks-badge.inactive-remarks {
-            background-color: #dc3545;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .remarks-badge.masterlist-remarks {
-            background-color: #28a745;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* Modal Styling */
-        .modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f8f9fa;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            color: #1e5631;
-            font-size: 24px;
-        }
-
-        .close {
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-            transition: color 0.3s;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .loading, .error {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .loading i, .error i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .error {
-            color: #dc3545;
-        }
-
-        .student-details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .detail-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-        }
-
-        .detail-section h3 {
-            margin: 0 0 16px 0;
-            color: #1e5631;
-            font-size: 18px;
-            border-bottom: 2px solid #1e5631;
-            padding-bottom: 8px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-row .label {
-            font-weight: 600;
-            color: #495057;
-            flex: 0 0 40%;
-        }
-
-        .detail-row .value {
-            flex: 1;
-            text-align: right;
-            color: #212529;
-        }
-
-        .detail-row .value.badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .detail-row .value.badge.masterlist {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .detail-row .value.badge.inactive {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .detail-row .value.remarks.inactive {
-            color: #dc3545;
-            font-weight: 500;
-        }
-
-        .detail-row .value.remarks.masterlist {
-            color: #28a745;
-            font-weight: 500;
-        }
-
-        @media (max-width: 768px) {
-            .student-details-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 10px;
-            }
-
-            .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            .detail-row .value {
-                text-align: left;
-            }
-        }
-    </style>
 @endpush
 
 @section('breadcrumbs')
@@ -222,7 +35,7 @@
 
     <!-- Archived Grantees Table -->
     <div class="student-table-container">
-        <div class="table-header" style="display: none;">
+        <div class="table-header hidden">
             <h3 id="archiveTableTitle"></h3>
         </div>
         <table class="students-table">
@@ -281,7 +94,7 @@
     </div>
 
     <!-- Archived Student Details Modal -->
-    <div id="archivedStudentModal" class="modal" style="display: none;">
+    <div id="archivedStudentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Archived Student Details</h2>

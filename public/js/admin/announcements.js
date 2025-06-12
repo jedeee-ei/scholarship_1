@@ -97,28 +97,47 @@ function openAddAnnouncementModal() {
 }
 
 // Edit Announcement
-function editAnnouncement(id, title, content) {
-    const modal = document.getElementById('announcementModal');
-    const form = document.getElementById('announcementForm');
-    const modalTitle = document.getElementById('modalTitle');
-    const submitText = document.getElementById('submitText');
+function editAnnouncement(id) {
+    // Fetch announcement data from server
+    fetch(`/admin/announcements/${id}/edit`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const announcement = data.data;
+                const modal = document.getElementById('announcementModal');
+                const form = document.getElementById('announcementForm');
+                const modalTitle = document.getElementById('modalTitle');
+                const submitText = document.getElementById('submitText');
 
-    // Set form data
-    form.setAttribute('data-announcement-id', id);
-    document.getElementById('title').value = title;
-    document.getElementById('content').value = content;
+                // Set form data
+                form.setAttribute('data-announcement-id', id);
+                document.getElementById('title').value = announcement.title;
+                document.getElementById('content').value = announcement.content;
 
-    // Set modal title and button text
-    modalTitle.textContent = 'Edit Announcement';
-    submitText.textContent = 'Update Announcement';
+                // Set modal title and button text
+                modalTitle.textContent = 'Edit Announcement';
+                submitText.textContent = 'Update Announcement';
 
-    // Show modal
-    modal.style.display = 'block';
+                // Show modal
+                modal.style.display = 'block';
 
-    // Focus on title field
-    setTimeout(() => {
-        document.getElementById('title').focus();
-    }, 100);
+                // Focus on title field
+                setTimeout(() => {
+                    document.getElementById('title').focus();
+                }, 100);
+            } else {
+                console.error('Error fetching announcement:', data.message);
+                if (window.showNotification) {
+                    window.showNotification('error', 'Error loading announcement data');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (window.showNotification) {
+                window.showNotification('error', 'Error loading announcement data');
+            }
+        });
 }
 
 
