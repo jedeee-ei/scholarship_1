@@ -229,8 +229,8 @@
                 class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'employees' ? 'active' : '' }}"
                 onclick="showStudentCategory('employees', this)">Employee Grantees</button>
             <button
-                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'private' ? 'active' : '' }}"
-                onclick="showStudentCategory('private', this)">Private Grantees</button>
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'alumni' ? 'active' : '' }}"
+                onclick="showStudentCategory('alumni', this)">Alumni Grantees</button>
         </div>
     </div>
 
@@ -252,8 +252,8 @@
                             Employee Grantees
                         @break
 
-                        @case('private')
-                            Private Grantees
+                        @case('alumni')
+                            Alumni Grantees
                         @break
 
                         @default
@@ -279,7 +279,7 @@
                 <tr id="tableHeader">
                     @if (isset($scholarshipTypeFilter))
                         @if ($scholarshipTypeFilter == 'government')
-                            <th>Grantee ID</th>
+                            <th>Student ID</th>
                             <th>Full Name</th>
                             <th>Course/Strand</th>
                             <th>Benefactor Type</th>
@@ -288,7 +288,7 @@
                             <th>Status</th>
                             <th>Actions</th>
                         @elseif($scholarshipTypeFilter == 'academic')
-                            <th>Grantee ID</th>
+                            <th>Student ID</th>
                             <th>Full Name</th>
                             <th>Course</th>
                             <th>GWA</th>
@@ -298,7 +298,7 @@
                             <th>Status</th>
                             <th>Actions</th>
                         @elseif($scholarshipTypeFilter == 'employees')
-                            <th>Grantee ID</th>
+                            <th>Student ID</th>
                             <th>Full Name</th>
                             <th>Course</th>
                             <th>Employee Name</th>
@@ -307,8 +307,8 @@
                             <th>Academic Year</th>
                             <th>Status</th>
                             <th>Actions</th>
-                        @elseif($scholarshipTypeFilter == 'private')
-                            <th>Grantee ID</th>
+                        @elseif($scholarshipTypeFilter == 'alumni')
+                            <th>Student ID</th>
                             <th>Full Name</th>
                             <th>Course</th>
                             <th>Scholarship Name</th>
@@ -319,7 +319,7 @@
                         @endif
                     @else
                         <!-- Default view for all grantees -->
-                        <th>Grantee ID</th>
+                        <th>Student ID</th>
                         <th>Name</th>
                         <th>Course/Strand</th>
                         <th>Benefactor Type</th>
@@ -427,7 +427,7 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
-                            @elseif($scholarshipTypeFilter == 'private')
+                            @elseif($scholarshipTypeFilter == 'alumni')
                                 <td>{{ $student['id'] }}</td>
                                 <td>{{ $student['name'] }}</td>
                                 <td>{{ $student['course'] }}</td>
@@ -486,7 +486,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'private' ? '8' : '8') }}"
+                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic', 'employees']) ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'alumni' ? '8' : '8') }}"
                             class="empty-state">
                             No grantees found. Grantees will appear here once benefactor applications are approved.
                         </td>
@@ -566,7 +566,7 @@
                             <option value="government">Government Benefactor</option>
                             <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
-                            <option value="private">Private Benefactor</option>
+                            <option value="alumni">Alumni Benefactor</option>
                         </select>
                     </div>
                 </div>
@@ -611,10 +611,7 @@
                             <label for="birthdate">Birthdate *</label>
                             <input type="date" id="birthdate" name="birthdate" required>
                         </div>
-                        <div class="form-group">
-                            <label for="contactNumber">Contact Number</label>
-                            <input type="text" id="contactNumber" name="contact_number">
-                        </div>
+
                     </div>
                 </div>
 
@@ -651,7 +648,7 @@
                             <option value="government">Government Benefactor</option>
                             <option value="academic">Academic Benefactor</option>
                             <option value="employees">Employee Benefactor</option>
-                            <option value="private">Private Benefactor</option>
+                            <option value="alumni">Alumni Benefactor</option>
                         </select>
                     </div>
                 </div>
@@ -667,7 +664,7 @@
                     <p><strong>Import Instructions:</strong></p>
                     <ul>
                         <li>Excel file should contain columns: Grantee ID, First Name, Last Name, Middle Name,
-                            Email, Course, Department, Year Level, GWA, Contact Number</li>
+                            Email, Course, Department, Year Level, GWA</li>
                         <li>Grantee ID, First Name, and Last Name are required</li>
                         <li>The first row should contain column headers</li>
                         <li><a href="/admin/download-student-template" target="_blank">Download Excel Template</a>
@@ -827,7 +824,7 @@
                     (scholarshipType === 'government' && btnText.includes('government')) ||
                     (scholarshipType === 'academic' && btnText.includes('academic')) ||
                     (scholarshipType === 'employees' && btnText.includes('employee')) ||
-                    (scholarshipType === 'private' && btnText.includes('private'))
+                    (scholarshipType === 'alumni' && btnText.includes('alumni'))
                 ) {
                     btn.classList.add('active');
 
@@ -836,7 +833,7 @@
                         'government': 'Government Grantees',
                         'academic': 'Academic Grantees',
                         'employees': 'Employee Grantees',
-                        'private': 'Private Grantees'
+                        'alumni': 'Alumni Grantees'
                     };
                     document.getElementById('categoryTitle').textContent = titles[scholarshipType] ||
                         'All Grantees';

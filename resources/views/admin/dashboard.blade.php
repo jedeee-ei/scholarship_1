@@ -17,7 +17,7 @@
         <div class="dashboard-actions">
             <div class="application-toggle-container">
                 <label class="toggle-label">
-                    <span class="toggle-text">Student Applications</span>
+                    <span class="toggle-text">Applications for this semester.</span>
                     <div class="toggle-switch-wrapper">
                         <input type="checkbox" id="applicationToggle" class="toggle-input"
                                {{ $applicationStatus === 'open' ? 'checked' : '' }}>
@@ -63,59 +63,7 @@
         </a>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Total Applications</h3>
-                <div class="stat-icon total">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $stats['total'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{ $changes['total'] }}% from last month
-            </div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Pending Applications</h3>
-                <div class="stat-icon pending">
-                    <i class="fas fa-clock"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $stats['pending'] }}</div>
-            <div class="stat-change {{ $changes['pending'] > 0 ? 'negative' : 'positive' }}">
-                <i class="fas fa-arrow-{{ $changes['pending'] > 0 ? 'up' : 'down' }}"></i>
-                {{ abs($changes['pending']) }}% from last month
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Approved Applications</h3>
-                <div class="stat-icon approved">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $stats['approved'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{ $changes['approved'] }}% from last month
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Rejected Applications</h3>
-                <div class="stat-icon rejected">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $stats['rejected'] }}</div>
-            <div class="stat-change neutral">
-                <i class="fas fa-minus"></i> {{ $changes['rejected'] }}% from last month
-            </div>
-        </div>
-    </div>
 
     <!-- Charts Section -->
     <div class="charts-section">

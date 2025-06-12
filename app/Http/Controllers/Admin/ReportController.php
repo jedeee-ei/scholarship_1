@@ -404,7 +404,7 @@ class ReportController extends Controller
 
         return $query->take(10)->get()->map(function ($grantee) {
             return [
-                'id' => $grantee->grantee_id,
+                'id' => $grantee->student_id,
                 'student_id' => $grantee->student_id,
                 'name' => $grantee->first_name . ' ' . $grantee->last_name,
                 'scholarship_type' => ucfirst($grantee->scholarship_type),

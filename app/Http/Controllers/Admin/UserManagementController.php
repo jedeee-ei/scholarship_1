@@ -396,14 +396,13 @@ class UserManagementController extends Controller
             'email',
             'contact_number',
             'created_at',
-            'grantee_id',
             'application_id'
         )
         ->orderBy('created_at', 'desc')
         ->get()
         ->map(function ($student) {
             return [
-                'id' => $student->grantee_id,
+                'id' => $student->student_id,
                 'student_id' => $student->student_id,
                 'first_name' => $student->first_name,
                 'last_name' => $student->last_name,

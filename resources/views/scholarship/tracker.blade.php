@@ -1187,7 +1187,7 @@
 
                                 <div class="timeline-item">
                                     <div
-                                        class="timeline-dot {{ in_array($application->status, ['Under Committee Review', 'Approved', 'Rejected']) ? 'active' : '' }}">
+                                        class="timeline-dot {{ in_array($application->status, ['Under Committee Review', 'Approved', 'Rejected', 'Active']) ? 'active' : '' }}">
                                     </div>
                                     <div class="timeline-content">
                                         <div class="timeline-status">Under Committee Review</div>
@@ -1203,7 +1203,7 @@
 
                                 <div class="timeline-item">
                                     <div
-                                        class="timeline-dot {{ in_array($application->status, ['Approved', 'Rejected']) ? 'active' : '' }}">
+                                        class="timeline-dot {{ in_array($application->status, ['Approved', 'Rejected', 'Active']) ? 'active' : '' }}">
                                     </div>
                                     <div class="timeline-content">
                                         <div class="timeline-status">Final Status: {{ $application->status }}</div>
@@ -1211,7 +1211,7 @@
                                             {{ in_array($application->status, ['Pending Review', 'Under Committee Review']) ? 'Pending' : $application->updated_at->format('F d, Y') }}
                                         </div>
                                         <div class="timeline-description">
-                                            @if ($application->status == 'Approved')
+                                            @if ($application->status == 'Approved' || $application->status == 'Active')
                                                 Congratulations! Your scholarship application has been approved. Please
                                                 check your email for further instructions.
                                             @elseif($application->status == 'Rejected')
@@ -1227,11 +1227,7 @@
                             </div>
                         </div>
 
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="{{ route('student.dashboard') }}" class="back-button">
-                                <i class="fas fa-arrow-left"></i> Back to Dashboard
-                            </a>
-                        </div>
+
                     </div>
                 @elseif(request('id'))
                     <div class="result-container">
@@ -1252,7 +1248,7 @@
                 <!-- Bottom Navigation -->
                 <div class="bottom-navigation" style="display: flex; justify-content: center; margin-top: 30px;">
                     <a href="{{ route('student.dashboard') }}" class="back-to-dashboard-btn">
-                        <i class="fas fa-arrow-left"></i> Back to Dashboards
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
                     </a>
                 </div>
             </div>

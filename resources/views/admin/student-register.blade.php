@@ -494,7 +494,7 @@
                     <i class="fas fa-user-plus"></i> Register Student
                 </button>
                 <button class="tab-btn" onclick="switchTab('scholarship-students')">
-                    <i class="fas fa-graduation-cap"></i> Scholarship Students
+                    <i class="fas fa-graduation-cap"></i> Students
                 </button>
             </div>
         </div>
@@ -612,7 +612,7 @@
         <div id="scholarship-students-tab" class="tab-content">
             <div class="students-table-container">
                 <div class="table-header">
-                    <h2 class="table-title"><i class="fas fa-graduation-cap"></i> Scholarship Students</h2>
+                    <h2 class="table-title"><i class="fas fa-graduation-cap"></i>Students Registered</h2>
                     @if(isset($scholarshipStudents))
                         <div class="student-count">
                             <span class="count-badge">{{ $scholarshipStudents->count() }} Students</span>
@@ -634,7 +634,6 @@
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Email</th>
-                                <th>Contact Number</th>
                                 <th>Registration Date</th>
                                 <th>Action</th>
                             </tr>
@@ -646,7 +645,6 @@
                                     <td>{{ $student['first_name'] }}</td>
                                     <td>{{ $student['last_name'] }}</td>
                                     <td>{{ $student['email'] ?? 'Not provided' }}</td>
-                                    <td>{{ $student['contact_number'] ?? 'Not provided' }}</td>
                                     <td>{{ $student['registration_date'] }}</td>
                                     <td>
                                         <div class="action-buttons">
@@ -656,7 +654,6 @@
                                                 data-first-name="{{ $student['first_name'] }}"
                                                 data-last-name="{{ $student['last_name'] }}"
                                                 data-email="{{ $student['email'] }}"
-                                                data-contact="{{ $student['contact_number'] ?? '' }}"
                                                 title="Edit Student">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -966,7 +963,6 @@
                 const firstName = btn.dataset.firstName;
                 const lastName = btn.dataset.lastName;
                 const email = btn.dataset.email;
-                const contact = btn.dataset.contact;
 
                 // Create edit modal
                 const modal = document.createElement('div');
@@ -989,10 +985,6 @@
                             <div class="form-group">
                                 <label>Email</label>
                                 <input type="email" name="email" value="${email}" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Contact Number</label>
-                                <input type="text" name="contact_number" value="${contact}">
                             </div>
                             <div class="form-actions">
                                 <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>

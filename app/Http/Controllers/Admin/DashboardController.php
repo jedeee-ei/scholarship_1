@@ -16,47 +16,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Get statistics for dashboard using real data
-        $totalGrantees = Grantee::count();
-        $totalApplications = ScholarshipApplication::count();
-
-        $stats = [
-            'total' => $totalGrantees + $totalApplications, // Total includes both grantees and pending applications
-            'pending' => ScholarshipApplication::where('status', 'Pending Review')->count(),
-            'approved' => Grantee::where('status', 'Active')->count(), // Use grantees for approved
-            'rejected' => ScholarshipApplication::where('status', 'Rejected')->count(),
-        ];
-
-        // Calculate percentage changes (comparing with previous month)
-        $currentMonth = now()->month;
-        $previousMonth = now()->subMonth()->month;
-
-        $currentMonthStats = [
-            'total' => Grantee::whereMonth('approved_date', $currentMonth)->count() +
-                ScholarshipApplication::whereMonth('created_at', $currentMonth)->count(),
-            'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $currentMonth)->count(),
-            'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $currentMonth)->count(),
-            'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $currentMonth)->count(),
-        ];
-
-        $previousMonthStats = [
-            'total' => Grantee::whereMonth('approved_date', $previousMonth)->count() +
-                ScholarshipApplication::whereMonth('created_at', $previousMonth)->count(),
-            'pending' => ScholarshipApplication::where('status', 'Pending Review')->whereMonth('created_at', $previousMonth)->count(),
-            'approved' => Grantee::where('status', 'Active')->whereMonth('approved_date', $previousMonth)->count(),
-            'rejected' => ScholarshipApplication::where('status', 'Rejected')->whereMonth('created_at', $previousMonth)->count(),
-        ];
-
-        $changes = [];
-        foreach ($currentMonthStats as $key => $current) {
-            $previous = $previousMonthStats[$key];
-            if ($previous > 0) {
-                $changes[$key] = round((($current - $previous) / $previous) * 100, 1);
-            } else {
-                $changes[$key] = $current > 0 ? 100 : 0;
-            }
-        }
-
         // Get recent applications (pending ones)
         $recentApplications = ScholarshipApplication::orderBy('created_at', 'desc')
             ->take(5)
@@ -73,8 +32,6 @@ class DashboardController extends Controller
         $applicationStatus = SystemSetting::get('application_status', 'closed');
 
         return view('admin.dashboard', [
-            'stats' => $stats,
-            'changes' => $changes,
             'recentApplications' => $recentApplications,
             'allApplications' => $allApplications,
             'chartData' => $chartData,

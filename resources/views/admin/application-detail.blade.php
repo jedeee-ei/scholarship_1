@@ -26,8 +26,8 @@
                 Academic Scholarship
             @elseif($application->scholarship_type == 'employees')
                 Employee's Scholarship
-            @elseif($application->scholarship_type == 'private')
-                Private Scholarship
+            @elseif($application->scholarship_type == 'alumni')
+                Alumni Scholarship
             @else
                 {{ ucfirst($application->scholarship_type) }}
             @endif

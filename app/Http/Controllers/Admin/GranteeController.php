@@ -36,7 +36,7 @@ class GranteeController extends Controller
         // Format grantees data for display
         $students = $allGrantees->map(function ($grantee) use ($currentSemester, $currentAcademicYear) {
             return [
-                'id' => $grantee->grantee_id,
+                'id' => $grantee->student_id,
                 'application_id' => $grantee->application_id,
                 'student_id' => $grantee->student_id,
                 'name' => trim($grantee->first_name . ' ' . ($grantee->middle_name ? $grantee->middle_name . ' ' : '') . $grantee->last_name),
@@ -72,7 +72,7 @@ class GranteeController extends Controller
     public function updateStudent(Request $request, $id)
     {
         try {
-            $grantee = Grantee::where('grantee_id', $id)->firstOrFail();
+            $grantee = Grantee::where('student_id', $id)->firstOrFail();
 
             $request->validate([
                 'first_name' => 'required|string|max:255',
@@ -120,10 +120,10 @@ class GranteeController extends Controller
     /**
      * Update grantee information
      */
-    public function updateGrantee(Request $request, $granteeId)
+    public function updateGrantee(Request $request, $studentId)
     {
         try {
-            $grantee = Grantee::where('grantee_id', $granteeId)->firstOrFail();
+            $grantee = Grantee::where('student_id', $studentId)->firstOrFail();
 
             $request->validate([
                 'status' => 'required|string|in:Active,Inactive',
@@ -173,7 +173,7 @@ class GranteeController extends Controller
         return response()->json([
             'data' => $students->map(function ($grantee) {
                 return [
-                    'id' => $grantee->grantee_id,
+                    'id' => $grantee->student_id,
                     'student_id' => $grantee->student_id,
                     'name' => trim($grantee->first_name . ' ' . ($grantee->middle_name ? $grantee->middle_name . ' ' : '') . $grantee->last_name),
                     'email' => $grantee->email,

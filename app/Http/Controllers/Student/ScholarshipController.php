@@ -56,7 +56,7 @@ class ScholarshipController extends Controller
                 'academic' => 'Academic Scholarship',
                 'presidents' => 'President\'s Lister Scholarship',
                 'employees' => 'Employee\'s Scholarship',
-                'private' => 'Private Scholarship'
+                'alumni' => 'Alumni Scholarship'
             ];
 
             $existingScholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);
@@ -243,7 +243,7 @@ class ScholarshipController extends Controller
                 'government' => 'Government Scholarship',
                 'academic' => 'Academic Scholarship',
                 'employees' => 'Employees Scholar',
-                'private' => 'Private Scholarship'
+                'alumni' => 'Alumni Scholarship'
             ];
 
             session(['scholarship_type' => $scholarshipTypes[$request->scholarship_type] ?? $request->scholarship_type]);
@@ -301,7 +301,7 @@ class ScholarshipController extends Controller
                 'academic' => 'Academic Scholarship',
                 'presidents' => 'President\'s Lister Scholarship',
                 'employees' => 'Employee\'s Scholarship',
-                'private' => 'Private Scholarship'
+                'alumni' => 'Alumni Scholarship'
             ];
 
             $scholarshipName = $scholarshipTypeNames[$existingRecord->scholarship_type] ?? ucfirst($existingRecord->scholarship_type);

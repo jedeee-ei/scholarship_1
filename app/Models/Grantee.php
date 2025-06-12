@@ -16,7 +16,6 @@ class Grantee extends Model
      */
     protected $fillable = [
         // Basic information
-        'grantee_id',
         'application_id',
         'scholarship_type',
         'student_id',
@@ -62,7 +61,7 @@ class Grantee extends Model
         'employee_department',
         'employee_position',
 
-        // Private scholarship fields
+        // Alumni scholarship fields
         'scholarship_name',
         'other_scholarship',
 
@@ -108,20 +107,7 @@ class Grantee extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
 
-        static::creating(function ($grantee) {
-            // Generate a unique grantee ID if not provided
-            if (!$grantee->grantee_id) {
-                $grantee->grantee_id = 'GRT-' . strtoupper(substr(uniqid(), -6));
-            }
-        });
-    }
 
     /**
      * Get the full name of the grantee.
@@ -140,7 +126,7 @@ class Grantee extends Model
             'government' => 'Government Scholarship',
             'academic' => 'Academic Scholarship',
             'employees' => 'Employee\'s Scholarship',
-            'private' => 'Private Scholarship',
+            'alumni' => 'Alumni Scholarship',
             default => ucfirst($this->scholarship_type) . ' Scholarship'
         };
     }

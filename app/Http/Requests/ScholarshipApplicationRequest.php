@@ -26,7 +26,7 @@ class ScholarshipApplicationRequest extends FormRequest
 
         $rules = [
             // Basic required fields for all scholarship types
-            'scholarship_type' => 'required|in:government,academic,employees,private',
+            'scholarship_type' => 'required|in:government,academic,employees,alumni',
             'student_id' => [
                 'required',
                 'string',
@@ -54,8 +54,8 @@ class ScholarshipApplicationRequest extends FormRequest
             case 'employees':
                 $rules = array_merge($rules, $this->getEmployeesRules());
                 break;
-            case 'private':
-                $rules = array_merge($rules, $this->getPrivateRules());
+            case 'alumni':
+                $rules = array_merge($rules, $this->getAlumniRules());
                 break;
         }
 
@@ -135,9 +135,9 @@ class ScholarshipApplicationRequest extends FormRequest
     }
 
     /**
-     * Get validation rules for Private scholarship
+     * Get validation rules for Alumni scholarship
      */
-    private function getPrivateRules(): array
+    private function getAlumniRules(): array
     {
         return [
             'scholarship_name' => 'required|string|max:255',

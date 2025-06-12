@@ -439,6 +439,242 @@ body {
     font-size: 1.1rem;
 }
 
+/* Main Screen Duplicate Notification */
+.main-screen-duplicate-notification {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 900px;
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+    animation: slideInDown 0.5s ease-out;
+    position: relative;
+    z-index: 1000;
+}
+
+/* Main Screen Grade Disqualification Notification */
+.main-screen-grade-disqualification-notification {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border: 2px solid #dc3545;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 900px;
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+    animation: slideInDown 0.5s ease-out;
+    position: relative;
+    z-index: 1000;
+}
+
+/* Permanent Status Notification */
+.permanent-status-notification {
+    background: #ffffff;
+    border: 1px solid #e8f5e8;
+    border-left: 4px solid #28a745;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    position: relative;
+    z-index: 999;
+    overflow: hidden;
+}
+
+.permanent-status-notification.rejected {
+    border-left-color: #dc3545;
+    border-color: #fdf2f2;
+}
+
+.permanent-status-notification .notification-content {
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    gap: 16px;
+}
+
+.permanent-status-notification .notification-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #28a745;
+}
+
+.permanent-status-notification.rejected .notification-icon {
+    border-color: #dc3545;
+}
+
+.permanent-status-notification .notification-icon i {
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+.permanent-status-notification.rejected .notification-icon i {
+    color: #dc3545;
+}
+
+.permanent-status-notification .notification-text {
+    flex: 1;
+    color: #2c3e50;
+}
+
+.permanent-status-notification .notification-text .status-title {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.permanent-status-notification.rejected .notification-text .status-title {
+    color: #dc3545;
+}
+
+.permanent-status-notification .notification-text .status-details {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    color: #6c757d;
+}
+
+.permanent-status-notification .notification-text .status-info {
+    font-size: 0.8rem;
+    color: #adb5bd;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.permanent-status-notification .notification-text .status-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.permanent-status-notification .notification-text .status-info .info-item i {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.permanent-status-notification .notification-badge {
+    flex-shrink: 0;
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.permanent-status-notification.rejected .notification-badge {
+    background: #dc3545;
+}
+
+/* Shared notification styles */
+.main-screen-duplicate-notification .notification-content,
+.main-screen-grade-disqualification-notification .notification-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 15px;
+}
+
+.main-screen-duplicate-notification .notification-icon,
+.main-screen-grade-disqualification-notification .notification-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+.main-screen-duplicate-notification .notification-icon {
+    background: #ffc107;
+}
+
+.main-screen-grade-disqualification-notification .notification-icon {
+    background: #dc3545;
+}
+
+.main-screen-duplicate-notification .notification-icon i,
+.main-screen-grade-disqualification-notification .notification-icon i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.main-screen-duplicate-notification .notification-text,
+.main-screen-grade-disqualification-notification .notification-text {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.main-screen-duplicate-notification .notification-text {
+    color: #856404;
+}
+
+.main-screen-grade-disqualification-notification .notification-text {
+    color: #721c24;
+}
+
+.main-screen-duplicate-notification .notification-text strong,
+.main-screen-grade-disqualification-notification .notification-text strong {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.main-screen-duplicate-notification .notification-text strong {
+    color: #ffc107;
+}
+
+.main-screen-grade-disqualification-notification .notification-text strong {
+    color: #dc3545;
+}
+
+.main-screen-duplicate-notification .notification-close,
+.main-screen-grade-disqualification-notification .notification-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.main-screen-duplicate-notification .notification-close {
+    color: #ffc107;
+}
+
+.main-screen-grade-disqualification-notification .notification-close {
+    color: #dc3545;
+}
+
+.main-screen-duplicate-notification .notification-close:hover {
+    background: rgba(255, 193, 7, 0.1);
+    transform: scale(1.1);
+}
+
+.main-screen-grade-disqualification-notification .notification-close:hover {
+    background: rgba(220, 53, 69, 0.1);
+    transform: scale(1.1);
+}
+
 @keyframes slideInDown {
     from {
         opacity: 0;
@@ -447,6 +683,18 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
@@ -645,44 +893,7 @@ body {
     max-width: 300px;
 }
 
-/* Responsive Design for Forms */
-@media (max-width: 768px) {
-    .form-body {
-        padding: 25px 20px;
-    }
 
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    .form-group.student-id-group {
-        max-width: 100%;
-    }
-
-    .radio-group {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .radio-group-inline {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 18px 20px;
-        font-size: 16px;
-    }
-
-    .form-section-title {
-        font-size: 16px;
-        margin: 30px 0 20px 0;
-    }
-}
 
 .submit-btn {
     background-color: var(--primary-color);

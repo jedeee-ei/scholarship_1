@@ -147,15 +147,15 @@ class GranteeFactory extends Factory
     }
 
     /**
-     * Create a private scholarship grantee.
+     * Create an alumni scholarship grantee.
      */
-    public function private(): static
+    public function alumni(): static
     {
         return $this->state(fn(array $attributes) => [
-            'scholarship_type' => 'private',
-            'scholarship_name' => fake()->company() . ' Scholarship',
+            'scholarship_type' => 'alumni',
+            'scholarship_name' => fake()->company() . ' Alumni Scholarship',
             'other_scholarship' => fake()->paragraph(),
-            'is_renewable' => fake()->boolean(30), // 30% chance for private scholarships
+            'is_renewable' => fake()->boolean(30), // 30% chance for alumni scholarships
         ]);
     }
 }
