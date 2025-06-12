@@ -1632,6 +1632,21 @@
                 </div>
             @endif
 
+            <!-- Applications Closed Notification -->
+            @if(!$applicationsOpen)
+                <div class="applications-closed-notification">
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="notification-text">
+                            <strong>Applications for this semester are currently closed</strong><br>
+                            Please check back later or contact the scholarship office for more information.
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Main Content -->
             <div class="main-content">
                 <!-- Scholarship Opportunities -->
@@ -1648,9 +1663,20 @@
                                         <h3 class="scholarship-title">Government Scholarship</h3>
                                         <p class="scholarship-description">Government scholarship for qualified students.
                                         </p>
-                                        <button class="apply-btn" data-form="government-form">
-                                            <i class="fas fa-paper-plane"></i> Apply Now
-                                        </button>
+                                        @if($applicationsOpen && $canApplyForScholarship)
+                                            <button class="apply-btn" data-form="government-form">
+                                                <i class="fas fa-paper-plane"></i> Apply Now
+                                            </button>
+                                        @else
+                                            <button class="apply-btn disabled" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                @if(!$applicationsOpen)
+                                                    Applications Closed
+                                                @else
+                                                    Cannot Apply
+                                                @endif
+                                            </button>
+                                        @endif
                                     </div>
 
                                     <!-- Academic Scholarship -->
@@ -1659,18 +1685,40 @@
                                         <p class="scholarship-description">For students with exceptional academic
                                             performance.
                                         </p>
-                                        <button class="apply-btn" data-form="academic-form">
-                                            <i class="fas fa-paper-plane"></i> Apply Now
-                                        </button>
+                                        @if($applicationsOpen && $canApplyForScholarship)
+                                            <button class="apply-btn" data-form="academic-form">
+                                                <i class="fas fa-paper-plane"></i> Apply Now
+                                            </button>
+                                        @else
+                                            <button class="apply-btn disabled" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                @if(!$applicationsOpen)
+                                                    Applications Closed
+                                                @else
+                                                    Cannot Apply
+                                                @endif
+                                            </button>
+                                        @endif
                                     </div>
 
                                     <!-- Employee's Scholarship -->
                                     <div class="scholarship-card" data-scholarship="employees">
                                         <h3 class="scholarship-title">Employee's Scholarship</h3>
                                         <p class="scholarship-description">For children of university employees.</p>
-                                        <button class="apply-btn" data-form="employees-form">
-                                            <i class="fas fa-paper-plane"></i> Apply Now
-                                        </button>
+                                        @if($applicationsOpen && $canApplyForScholarship)
+                                            <button class="apply-btn" data-form="employees-form">
+                                                <i class="fas fa-paper-plane"></i> Apply Now
+                                            </button>
+                                        @else
+                                            <button class="apply-btn disabled" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                @if(!$applicationsOpen)
+                                                    Applications Closed
+                                                @else
+                                                    Cannot Apply
+                                                @endif
+                                            </button>
+                                        @endif
                                     </div>
 
                                     <!-- Private Scholarship -->
@@ -1678,9 +1726,20 @@
                                         <h3 class="scholarship-title">Private Scholarship</h3>
                                         <p class="scholarship-description">For students with private scholarship
                                             opportunities.</p>
-                                        <button class="apply-btn" data-form="private-form">
-                                            <i class="fas fa-paper-plane"></i> Apply Now
-                                        </button>
+                                        @if($applicationsOpen && $canApplyForScholarship)
+                                            <button class="apply-btn" data-form="private-form">
+                                                <i class="fas fa-paper-plane"></i> Apply Now
+                                            </button>
+                                        @else
+                                            <button class="apply-btn disabled" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                @if(!$applicationsOpen)
+                                                    Applications Closed
+                                                @else
+                                                    Cannot Apply
+                                                @endif
+                                            </button>
+                                        @endif
                                     </div>
 
                                 </div>
@@ -2713,6 +2772,11 @@
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
+
+                        // Check if button is disabled
+                        if (this.disabled || this.classList.contains('disabled')) {
+                            return false;
+                        }
 
                         const formId = this.getAttribute('data-form');
                         const scholarshipCard = this.closest('.scholarship-card');

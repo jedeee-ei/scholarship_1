@@ -15,6 +15,19 @@
     <div class="dashboard-header">
         <h1>Dashboard</h1>
         <div class="dashboard-actions">
+            <div class="application-toggle-container">
+                <label class="toggle-label">
+                    <span class="toggle-text">Student Applications</span>
+                    <div class="toggle-switch-wrapper">
+                        <input type="checkbox" id="applicationToggle" class="toggle-input"
+                               {{ $applicationStatus === 'open' ? 'checked' : '' }}>
+                        <div class="toggle-switch">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span class="toggle-status">{{ $applicationStatus === 'open' ? 'Open' : 'Closed' }}</span>
+                    </div>
+                </label>
+            </div>
             <div class="date">{{ date('F d, Y') }}</div>
         </div>
     </div>
@@ -128,6 +141,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeCharts();
             initializeNavigation();
+            initializeApplicationToggle();
         });
 
         // Initialize navigation to ensure proper link behavior
@@ -139,6 +153,77 @@
                     return true;
                 });
             });
+        }
+
+        // Initialize application toggle functionality
+        function initializeApplicationToggle() {
+            const toggle = document.getElementById('applicationToggle');
+            const statusText = document.querySelector('.toggle-status');
+
+            if (toggle && statusText) {
+                toggle.addEventListener('change', async function() {
+                    const isChecked = this.checked;
+
+                    try {
+                        const response = await fetch('/admin/toggle-application-status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            // Update status text
+                            statusText.textContent = result.status === 'open' ? 'Open' : 'Closed';
+
+                            // Show success message
+                            showNotification(`Applications are now ${result.status}`, 'success');
+                        } else {
+                            // Revert toggle if failed
+                            this.checked = !isChecked;
+                            showNotification('Failed to update application status', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error toggling application status:', error);
+                        // Revert toggle if failed
+                        this.checked = !isChecked;
+                        showNotification('Failed to update application status', 'error');
+                    }
+                });
+            }
+        }
+
+        // Simple notification function
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 500;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
         }
 
         // Chart initialization with simplified 2 charts
@@ -439,7 +524,7 @@
                     alert('Import failed: ' + result.message);
                 }
             } catch (error) {
-                alert('Error during import: ' + error.message);
+                alert('Import failed. Please try again.');
             }
         }
 
@@ -472,7 +557,7 @@
                     alert('Failed to save settings: ' + result.message);
                 }
             } catch (error) {
-                alert('Error saving settings: ' + error.message);
+                alert('Settings save failed. Please try again.');
             }
         }
 

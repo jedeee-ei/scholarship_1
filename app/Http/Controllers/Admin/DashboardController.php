@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ScholarshipApplication;
 use App\Models\Grantee;
 use App\Models\ArchivedStudent;
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -68,6 +69,9 @@ class DashboardController extends Controller
         // Get chart data using real grantee data
         $chartData = $this->getChartData();
 
+        // Get application status setting
+        $applicationStatus = SystemSetting::get('application_status', 'closed');
+
         return view('admin.dashboard', [
             'stats' => $stats,
             'changes' => $changes,
@@ -75,7 +79,8 @@ class DashboardController extends Controller
             'allApplications' => $allApplications,
             'chartData' => $chartData,
             'currentStatus' => '',
-            'currentType' => ''
+            'currentType' => '',
+            'applicationStatus' => $applicationStatus
         ]);
     }
 
@@ -187,6 +192,23 @@ class DashboardController extends Controller
             'top_course_count' => $topCourse ? $topCourse->count : 0,
             'average_gwa' => $averageGwa ? round($averageGwa, 2) : 0,
             'approval_rate' => $approvalRate
+        ]);
+    }
+
+    /**
+     * Toggle application status
+     */
+    public function toggleApplicationStatus()
+    {
+        $currentStatus = SystemSetting::get('application_status', 'closed');
+        $newStatus = $currentStatus === 'open' ? 'closed' : 'open';
+
+        SystemSetting::set('application_status', $newStatus);
+
+        return response()->json([
+            'success' => true,
+            'status' => $newStatus,
+            'message' => 'Application status updated to ' . $newStatus
         ]);
     }
 }

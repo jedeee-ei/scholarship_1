@@ -836,7 +836,7 @@
                                             @if ($app->scholarship_type == 'government')
                                                 Government Scholarship
                                             @elseif($app->scholarship_type == 'academic')
-                                                President's Scholarship
+                                                Academic Scholarship
                                             @elseif($app->scholarship_type == 'employees')
                                                 Employees Scholar
                                             @elseif($app->scholarship_type == 'private')
@@ -1034,7 +1034,7 @@
                                     @if ($application->scholarship_type == 'government')
                                         Government Scholarship
                                     @elseif($application->scholarship_type == 'academic')
-                                        President's Scholarship
+                                        Academic Scholarship
                                     @elseif($application->scholarship_type == 'employees')
                                         Employees Scholar
                                     @elseif($application->scholarship_type == 'private')

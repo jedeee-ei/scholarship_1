@@ -141,7 +141,7 @@ function deleteAnnouncement(id) {
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('Request failed');
                 }
                 return response.json();
             })
@@ -162,7 +162,7 @@ function deleteAnnouncement(id) {
             .catch(error => {
                 console.error('Error:', error);
                 if (window.showNotification) {
-                    window.showNotification('error', 'Network error occurred. Please try again.');
+                    window.showNotification('error', 'Delete failed. Please try again.');
                 }
             });
         }
@@ -197,7 +197,7 @@ function submitAnnouncementForm() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Request failed');
         }
         return response.json();
     })
@@ -219,7 +219,7 @@ function submitAnnouncementForm() {
     .catch(error => {
         console.error('Error:', error);
         if (window.showNotification) {
-            window.showNotification('error', 'Network error occurred. Please try again.');
+            window.showNotification('error', 'Save failed. Please try again.');
         }
     });
 }

@@ -258,7 +258,7 @@
                                         No specific reason provided
                                     @endif
                                 @else
-                                    Semester/Year End Archive
+                                    Open for Renewal
                                 @endif
                             </span>
                         </td>
@@ -375,7 +375,7 @@
                     document.getElementById('archivedStudentDetails').innerHTML = `
                         <div class="error">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <p>Error loading student details. Please try again.</p>
+                            <p>Unable to load student details. Please try again.</p>
                         </div>
                     `;
                 });
@@ -463,7 +463,7 @@
                             <span class="value remarks ${student.archive_type}">
                                 ${student.archive_type === 'inactive'
                                     ? (student.remarks ? student.remarks : 'No specific reason provided')
-                                    : 'Semester/Year End Archive'
+                                    : 'Open for Renewal'
                                 }
                             </span>
                         </div>

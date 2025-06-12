@@ -11,6 +11,9 @@
 @endsection
 
 @section('content')
+    <!-- Include notification component -->
+    <x-notification />
+
     <div class="dashboard-header">
         <h1>Benefactor Management</h1>
     </div>
@@ -312,16 +315,18 @@
                         throw new Error('Session expired. Please refresh the page and try again.');
                     }
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error('Request failed');
                     }
                     return response.json();
                 })
                 .then(data => {
                     console.log('Response data:', data); // Debug log
                     if (data.success) {
-                        alert('Benefactor added successfully!');
+                        // Use session flash message instead of alert
                         closeAddScholarshipModal();
-                        window.location.reload();
+                        // Redirect to show success message, then clean URL
+                        const currentUrl = window.location.href.split('?')[0];
+                        window.location.href = currentUrl + '?success=benefactor_added';
                     } else {
                         alert('Failed to add benefactor: ' + (data.message || 'Unknown error'));
                         console.error(data.message || 'Failed to add scholarship program.');
@@ -329,7 +334,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error adding benefactor: ' + error.message);
+                    alert('Failed to add benefactor. Please try again.');
                 })
                 .finally(() => {
                     // Reset button state
@@ -431,7 +436,6 @@
                         })
                         .then(async data => {
                             if (data.success) {
-                                await customConfirm('Semester updated successfully!', 'Success', 'default');
                                 closeUpdateSemesterYearModal();
                                 window.location.reload();
                             } else {
@@ -496,8 +500,6 @@
                         })
                         .then(async data => {
                             if (data.success) {
-                                await customConfirm('Academic year updated successfully!', 'Success',
-                                    'default');
                                 closeUpdateSemesterYearModal();
                                 window.location.reload();
                             } else {

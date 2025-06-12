@@ -6,17 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\ScholarshipApplication;
 use App\Models\Grantee;
+use App\Models\ArchivedStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class UserManagementController extends Controller
 {
     /**
      * Show student registration page
      */
-    public function studentRegister()
+    public function studentRegister(Request $request)
     {
+        // Handle success messages from URL parameters
+        if ($request->has('success')) {
+            $successType = $request->get('success');
+            switch ($successType) {
+                case 'student_registered':
+                    session()->flash('success', 'Student registered successfully!');
+                    break;
+                case 'student_updated':
+                    session()->flash('success', 'Student updated successfully!');
+                    break;
+                case 'student_deleted':
+                    session()->flash('success', 'Student deleted successfully!');
+                    break;
+            }
+        }
+
         // Get scholarship students data
         $scholarshipStudents = $this->getScholarshipStudents();
 
@@ -54,6 +72,21 @@ class UserManagementController extends Controller
                 'name' => $user->first_name . ' ' . $user->last_name
             ]);
 
+            // Check if this is an AJAX request
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Student registered successfully!',
+                    'student_data' => [
+                        'id' => $user->id,
+                        'student_id' => $user->student_id,
+                        'name' => $user->first_name . ' ' . $user->last_name,
+                        'email' => $user->email,
+                        'password' => 'student123'
+                    ]
+                ]);
+            }
+
             return redirect()->back()->with([
                 'success' => 'Student registered successfully!',
                 'student_data' => [
@@ -65,6 +98,14 @@ class UserManagementController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Student registration error: ' . $e->getMessage());
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Registration failed: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Registration failed: ' . $e->getMessage());
@@ -72,7 +113,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Check student ID availability
+     * Check student ID availability across all sources
      */
     public function checkStudentIdAvailability(Request $request)
     {
@@ -80,7 +121,21 @@ class UserManagementController extends Controller
             'student_id' => 'required|string'
         ]);
 
-        $exists = User::where('student_id', $request->student_id)->exists();
+        $studentId = $request->student_id;
+
+        // Check in users table
+        $existsInUsers = User::where('student_id', $studentId)->exists();
+
+        // Check in scholarship applications
+        $existsInApplications = ScholarshipApplication::where('student_id', $studentId)->exists();
+
+        // Check in grantees
+        $existsInGrantees = Grantee::where('student_id', $studentId)->exists();
+
+        // Check in archived students
+        $existsInArchived = ArchivedStudent::where('student_id', $studentId)->exists();
+
+        $exists = $existsInUsers || $existsInApplications || $existsInGrantees || $existsInArchived;
 
         return response()->json([
             'available' => !$exists,
@@ -166,7 +221,7 @@ class UserManagementController extends Controller
 
             Log::info('Student updated by admin', [
                 'student_id' => $user->student_id,
-                'updated_by' => auth()->user() ? auth()->user()->name : 'Admin'
+                'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
             ]);
 
             return response()->json([
@@ -183,36 +238,7 @@ class UserManagementController extends Controller
         }
     }
 
-    /**
-     * Delete student
-     */
-    public function deleteStudent($id)
-    {
-        try {
-            $user = User::findOrFail($id);
-            $studentName = $user->first_name . ' ' . $user->last_name;
-            $studentId = $user->student_id;
 
-            $user->delete();
-
-            Log::info('Student deleted by admin', [
-                'student_id' => $studentId,
-                'student_name' => $studentName,
-                'deleted_by' => auth()->user() ? auth()->user()->name : 'Admin'
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Student deleted successfully'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Student delete error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Delete failed: ' . $e->getMessage()
-            ], 500);
-        }
-    }
 
     /**
      * Reset student password
@@ -232,7 +258,7 @@ class UserManagementController extends Controller
 
             Log::info('Student password reset by admin', [
                 'student_id' => $user->student_id,
-                'reset_by' => auth()->user() ? auth()->user()->name : 'Admin'
+                'reset_by' => Auth::user() ? Auth::user()->name : 'Admin'
             ]);
 
             return response()->json([
@@ -265,7 +291,7 @@ class UserManagementController extends Controller
             Log::info("Student {$status} by admin", [
                 'student_id' => $user->student_id,
                 'new_status' => $user->is_active,
-                'updated_by' => auth()->user() ? auth()->user()->name : 'Admin'
+                'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
             ]);
 
             return response()->json([
@@ -317,6 +343,25 @@ class UserManagementController extends Controller
      */
     private function getScholarshipStudents()
     {
+        // Get students from users table (registered students)
+        $userStudents = User::where('role', 'student')
+            ->select('id', 'student_id', 'first_name', 'last_name', 'email', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'student_id' => $student->student_id,
+                    'first_name' => $student->first_name,
+                    'last_name' => $student->last_name,
+                    'name' => trim($student->first_name . ' ' . $student->last_name),
+                    'email' => $student->email,
+                    'contact_number' => null, // Users table doesn't have contact_number
+                    'registration_date' => $student->created_at->format('M d, Y'),
+                    'source' => 'user'
+                ];
+            });
+
         // Get students from scholarship applications
         $applicationStudents = ScholarshipApplication::select(
             'student_id',
@@ -324,11 +369,6 @@ class UserManagementController extends Controller
             'last_name',
             'email',
             'contact_number',
-            'course',
-            'department',
-            'year_level',
-            'scholarship_type',
-            'status',
             'created_at',
             'application_id'
         )
@@ -336,17 +376,14 @@ class UserManagementController extends Controller
         ->get()
         ->map(function ($student) {
             return [
+                'id' => $student->application_id,
                 'student_id' => $student->student_id,
+                'first_name' => $student->first_name,
+                'last_name' => $student->last_name,
                 'name' => trim($student->first_name . ' ' . $student->last_name),
                 'email' => $student->email,
                 'contact_number' => $student->contact_number,
-                'course' => $student->course ?? 'Not specified',
-                'department' => $student->department ?? 'Not specified',
-                'year_level' => $student->year_level ?? 'Not specified',
-                'scholarship_type' => ucfirst($student->scholarship_type),
-                'status' => $student->status,
-                'application_date' => $student->created_at->format('M d, Y'),
-                'application_id' => $student->application_id,
+                'registration_date' => $student->created_at->format('M d, Y'),
                 'source' => 'application'
             ];
         });
@@ -358,11 +395,6 @@ class UserManagementController extends Controller
             'last_name',
             'email',
             'contact_number',
-            'course',
-            'department',
-            'year_level',
-            'scholarship_type',
-            'status',
             'created_at',
             'grantee_id',
             'application_id'
@@ -371,26 +403,50 @@ class UserManagementController extends Controller
         ->get()
         ->map(function ($student) {
             return [
+                'id' => $student->grantee_id,
                 'student_id' => $student->student_id,
+                'first_name' => $student->first_name,
+                'last_name' => $student->last_name,
                 'name' => trim($student->first_name . ' ' . $student->last_name),
                 'email' => $student->email,
                 'contact_number' => $student->contact_number,
-                'course' => $student->course ?? 'Not specified',
-                'department' => $student->department ?? 'Not specified',
-                'year_level' => $student->year_level ?? 'Not specified',
-                'scholarship_type' => ucfirst($student->scholarship_type),
-                'status' => 'Active Scholar',
-                'application_date' => $student->created_at->format('M d, Y'),
-                'application_id' => $student->application_id ?? $student->grantee_id,
+                'registration_date' => $student->created_at->format('M d, Y'),
                 'source' => 'grantee'
             ];
         });
 
-        // Combine and remove duplicates (prefer grantee data over application data)
+        // Get archived students
+        $archivedStudents = ArchivedStudent::select(
+            'id',
+            'student_id',
+            'first_name',
+            'last_name',
+            'email',
+            'contact_number',
+            'created_at'
+        )
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'student_id' => $student->student_id,
+                'first_name' => $student->first_name,
+                'last_name' => $student->last_name,
+                'name' => trim($student->first_name . ' ' . $student->last_name),
+                'email' => $student->email,
+                'contact_number' => $student->contact_number,
+                'registration_date' => $student->created_at->format('M d, Y'),
+                'source' => 'archived'
+            ];
+        });
+
+        // Combine all students (including archived) and remove duplicates
+        // Priority: grantees > applications > users > archived
         $allStudents = collect();
         $processedStudentIds = [];
 
-        // Add grantees first (they have priority)
+        // Add grantees first (they have highest priority)
         foreach ($granteeStudents as $student) {
             if (!in_array($student['student_id'], $processedStudentIds)) {
                 $allStudents->push($student);
@@ -406,6 +462,139 @@ class UserManagementController extends Controller
             }
         }
 
-        return $allStudents->sortByDesc('application_date')->values();
+        // Add user students if they're not already in grantees or applications
+        foreach ($userStudents as $student) {
+            if (!in_array($student['student_id'], $processedStudentIds)) {
+                $allStudents->push($student);
+                $processedStudentIds[] = $student['student_id'];
+            }
+        }
+
+        // Add archived students if they're not already in the list
+        foreach ($archivedStudents as $student) {
+            if (!in_array($student['student_id'], $processedStudentIds)) {
+                $allStudents->push($student);
+                $processedStudentIds[] = $student['student_id'];
+            }
+        }
+
+        return $allStudents->sortByDesc('registration_date')->values();
+    }
+
+    /**
+     * Edit student information
+     */
+    public function editStudent(Request $request, $id)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'contact_number' => 'nullable|string|max:20',
+            'source' => 'required|string|in:application,grantee,archived,user'
+        ]);
+
+        try {
+            $source = $request->source;
+
+            Log::info('Edit student request', [
+                'id' => $id,
+                'source' => $source,
+                'request_data' => $request->only(['first_name', 'last_name', 'email', 'contact_number'])
+            ]);
+
+            if ($source === 'application') {
+                $student = ScholarshipApplication::findOrFail($id);
+            } elseif ($source === 'grantee') {
+                $student = Grantee::findOrFail($id);
+            } elseif ($source === 'user') {
+                $student = User::findOrFail($id);
+            } else {
+                $student = ArchivedStudent::findOrFail($id);
+            }
+
+            // Prepare update data based on source
+            $updateData = [
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+            ];
+
+            // Only add contact_number if the model supports it (not for User model)
+            if ($source !== 'user' && $request->has('contact_number')) {
+                $updateData['contact_number'] = $request->contact_number;
+            }
+
+            $student->update($updateData);
+
+            Log::info('Student updated by admin', [
+                'student_id' => $student->student_id,
+                'source' => $source,
+                'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Student updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Student update error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete student
+     */
+    public function deleteStudent(Request $request, $id)
+    {
+        $request->validate([
+            'source' => 'required|string|in:application,grantee,archived,user'
+        ]);
+
+        try {
+            $source = $request->source;
+
+            Log::info('Delete student request', [
+                'id' => $id,
+                'source' => $source
+            ]);
+
+            if ($source === 'application') {
+                $student = ScholarshipApplication::findOrFail($id);
+            } elseif ($source === 'grantee') {
+                $student = Grantee::findOrFail($id);
+            } elseif ($source === 'user') {
+                $student = User::findOrFail($id);
+            } else {
+                $student = ArchivedStudent::findOrFail($id);
+            }
+
+            $studentId = $student->student_id;
+            $studentName = $student->first_name . ' ' . $student->last_name;
+
+            $student->delete();
+
+            Log::info('Student deleted by admin', [
+                'student_id' => $studentId,
+                'student_name' => $studentName,
+                'source' => $source,
+                'deleted_by' => Auth::user() ? Auth::user()->name : 'Admin'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Student deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Student deletion error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Deletion failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

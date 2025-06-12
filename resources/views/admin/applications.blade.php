@@ -62,7 +62,7 @@
                                     <br><small class="text-muted">({{ $application->government_benefactor_type }})</small>
                                 @endif
                             @elseif($application->scholarship_type == 'academic')
-                                President's Scholarship
+                                Academic Scholarship
                             @elseif($application->scholarship_type == 'employees')
                                 Employees Scholar
                             @elseif($application->scholarship_type == 'private')

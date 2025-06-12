@@ -153,6 +153,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/student-register', [UserManagementController::class, 'studentRegister'])->name('admin.student-register');
     Route::post('/admin/student-register', [UserManagementController::class, 'storeStudentRegister'])->name('admin.student-register.store');
     Route::post('/admin/check-student-id', [UserManagementController::class, 'checkStudentIdAvailability'])->name('admin.check-student-id');
+    Route::post('/admin/students/{id}/edit', [UserManagementController::class, 'editStudent'])->name('admin.student.edit');
+    Route::post('/admin/students/{id}/delete', [UserManagementController::class, 'deleteStudent'])->name('admin.student.delete');
     Route::post('/students/{id}/update', [GranteeController::class, 'updateStudent'])->name('admin.student.update');
     Route::post('/admin/grantees/{id}/update', [GranteeController::class, 'updateGrantee'])->name('admin.grantee.update');
     Route::get('/admin/scholarships', [ScholarshipManagementController::class, 'index'])->name('admin.scholarships');
@@ -228,6 +230,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Get current semester/year route
     Route::get('/admin/current-semester-year', [SettingsController::class, 'getCurrentSemesterYear']);
+
+    // Toggle application status route
+    Route::post('/admin/toggle-application-status', [DashboardController::class, 'toggleApplicationStatus'])->name('admin.toggle-application-status');
 
     // Dashboard action routes
     Route::post('/admin/bulk-import', [ImportExportController::class, 'bulkImport'])->name('admin.bulk-import');

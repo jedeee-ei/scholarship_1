@@ -55,7 +55,6 @@ class ScholarshipController extends Controller
                 'ched' => 'CHED Scholarship',
                 'academic' => 'Academic Scholarship',
                 'presidents' => 'President\'s Lister Scholarship',
-                'institutional' => 'Institutional Scholarship',
                 'employees' => 'Employee\'s Scholarship',
                 'private' => 'Private Scholarship'
             ];
@@ -301,7 +300,6 @@ class ScholarshipController extends Controller
                 'government' => 'Government Scholarship',
                 'academic' => 'Academic Scholarship',
                 'presidents' => 'President\'s Lister Scholarship',
-                'institutional' => 'Institutional Scholarship',
                 'employees' => 'Employee\'s Scholarship',
                 'private' => 'Private Scholarship'
             ];

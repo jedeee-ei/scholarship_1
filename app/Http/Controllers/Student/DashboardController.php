@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\ScholarshipApplication;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -54,13 +55,18 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        // Check if applications are open
+        $applicationStatus = SystemSetting::get('application_status', 'closed');
+        $applicationsOpen = $applicationStatus === 'open';
+
         return view('student.dashboard', [
             'student' => $student,
             'applications' => $applications,
-            'canApplyForScholarship' => $canApplyForScholarship,
+            'canApplyForScholarship' => $canApplyForScholarship && $applicationsOpen,
             'announcements' => $announcements,
             'recentStatusUpdate' => $recentStatusUpdate,
-            'permanentStatus' => $permanentStatus
+            'permanentStatus' => $permanentStatus,
+            'applicationsOpen' => $applicationsOpen
         ]);
     }
 

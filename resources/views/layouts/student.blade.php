@@ -140,7 +140,7 @@
                     <p class="office-name">OFFICE OF THE REGISTRAR</p>
                 </div>
             </div>
-            <a href="{{ route('logout') }}" class="logout-btn">
+            <a href="{{ route('login') }}" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </div>
@@ -159,6 +159,39 @@
 
     <!-- Custom Confirm Dialog -->
     <script src="{{ asset('js/custom-confirm.js') }}"></script>
+    <script src="{{ asset('js/error-handler.js') }}"></script>
+
+    <!-- Override default browser dialogs to prevent "127.0.0.1:8000 says" -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Override alert() to use custom dialog
+            window.originalAlert = window.alert;
+            window.alert = function(message) {
+                if (window.customConfirm) {
+                    return window.customConfirm(message, 'Notice', 'info');
+                } else {
+                    // Fallback to original alert if custom confirm not available
+                    return window.originalAlert(message);
+                }
+            };
+
+            // Override confirm() to use custom dialog
+            window.originalConfirm = window.confirm;
+            window.confirm = function(message) {
+                if (window.customConfirm) {
+                    return window.customConfirm(message, 'Confirm', 'warning');
+                } else {
+                    // Fallback to original confirm if custom confirm not available
+                    return window.originalConfirm(message);
+                }
+            };
+
+            // Replace any existing confirm dialogs
+            if (window.replaceConfirmDialogs) {
+                window.replaceConfirmDialogs();
+            }
+        });
+    </script>
 
     <!-- Additional scripts -->
     @stack('scripts')

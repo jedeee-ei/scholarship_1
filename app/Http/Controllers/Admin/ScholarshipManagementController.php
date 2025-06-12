@@ -20,8 +20,13 @@ class ScholarshipManagementController extends Controller
     /**
      * Show scholarships page
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Handle success message from URL parameter
+        if ($request->has('success') && $request->get('success') === 'benefactor_added') {
+            session()->flash('success', 'Benefactor added successfully!');
+        }
+
         // Get current semester and academic year from system settings
         $currentSemester = SystemSetting::where('key', 'current_semester')->value('value') ?? '1st Semester';
         $currentAcademicYear = SystemSetting::where('key', 'current_academic_year')->value('value') ?? '2024-2025';

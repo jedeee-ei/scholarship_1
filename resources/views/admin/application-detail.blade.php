@@ -633,13 +633,19 @@
                                         </div>
                                     </div>
                                     <div class="document-actions">
-                                        @if (isset($document['path']) && Storage::exists($document['path']))
+                                        @php
+                                            $documentPath = is_string($document) ? $document : ($document['path'] ?? '');
+                                            $fileExists = Storage::disk('local')->exists($documentPath);
+                                            $documentName = is_array($document) ? ($document['original_name'] ?? 'Document ' . ($index + 1)) : 'Document ' . ($index + 1);
+                                            $mimeType = is_array($document) ? ($document['mime_type'] ?? 'application/octet-stream') : 'application/octet-stream';
+                                        @endphp
+                                        @if ($fileExists)
                                             <a href="{{ route('admin.application.document.download', ['application' => $application->application_id, 'document' => $index]) }}"
                                                 class="btn-download" title="Download">
                                                 <i class="fas fa-download"></i>
                                             </a>
                                             <button type="button" class="btn-view" title="View"
-                                                onclick="openDocumentModal('{{ route('admin.application.document.view', ['application' => $application->application_id, 'document' => $index]) }}', '{{ $document['original_name'] ?? 'Document ' . ($index + 1) }}', '{{ $document['mime_type'] ?? 'application/octet-stream' }}')">
+                                                onclick="openDocumentModal('{{ route('admin.application.document.view', ['application' => $application->application_id, 'document' => $index]) }}', '{{ addslashes($documentName) }}', '{{ $mimeType }}')">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         @else

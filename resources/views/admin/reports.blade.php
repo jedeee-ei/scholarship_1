@@ -788,7 +788,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showNotification('An error occurred while searching', 'error');
+                    showNotification('Search failed. Please try again.', 'error');
                 })
                 .finally(() => {
                     // Restore button state

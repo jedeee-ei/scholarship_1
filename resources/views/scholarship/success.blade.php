@@ -315,7 +315,7 @@
                             @if (session('scholarship_type') == 'government')
                                 Government Scholarship
                             @elseif(session('scholarship_type') == 'academic')
-                                Institutional Scholarship
+                                Academic Scholarship
                             @elseif(session('scholarship_type') == 'employees')
                                 Employees Scholar
                             @elseif(session('scholarship_type') == 'private')

@@ -483,6 +483,9 @@
 @endsection
 
 @section('content')
+    <!-- Include notification component -->
+    <x-notification />
+
     <div class="register-container">
         <!-- Tab Navigation -->
         <div class="tab-container">
@@ -492,9 +495,6 @@
                 </button>
                 <button class="tab-btn" onclick="switchTab('scholarship-students')">
                     <i class="fas fa-graduation-cap"></i> Scholarship Students
-                    @if(isset($scholarshipStudents))
-                        <span class="count-badge" style="margin-left: 8px; font-size: 12px;">{{ $scholarshipStudents->count() }}</span>
-                    @endif
                 </button>
             </div>
         </div>
@@ -620,24 +620,9 @@
                     @endif
                 </div>
 
-                <!-- Search and Filter -->
+                <!-- Search -->
                 <div class="search-filter-container">
-                    <input type="text" id="studentSearch" class="search-input" placeholder="Search by name, student ID, or email...">
-                    <select id="statusFilter" class="filter-select">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="active">Active Scholar</option>
-                    </select>
-                    <select id="scholarshipFilter" class="filter-select">
-                        <option value="">All Scholarships</option>
-                        <option value="academic">Academic</option>
-                        <option value="government">Government</option>
-                        <option value="institutional">Institutional</option>
-                        <option value="employee">Employee</option>
-                        <option value="private">Private</option>
-                    </select>
+                    <input type="text" id="studentSearch" class="search-input" placeholder="Search by student ID or last name...">
                 </div>
 
                 <!-- Students Table -->
@@ -646,36 +631,46 @@
                         <thead>
                             <tr>
                                 <th>Student ID</th>
-                                <th>Name</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
                                 <th>Email</th>
-                                <th>Contact</th>
-                                <th>Course</th>
-                                <th>Department</th>
-                                <th>Year Level</th>
-                                <th>Scholarship Type</th>
-                                <th>Status</th>
-                                <th>Application Date</th>
+                                <th>Contact Number</th>
+                                <th>Registration Date</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="studentsTableBody">
                             @foreach($scholarshipStudents as $student)
-                                <tr>
+                                <tr data-student-id="{{ $student['student_id'] }}" data-source="{{ $student['source'] }}" data-id="{{ $student['id'] }}">
                                     <td><strong>{{ $student['student_id'] }}</strong></td>
-                                    <td>{{ $student['name'] }}</td>
+                                    <td>{{ $student['first_name'] }}</td>
+                                    <td>{{ $student['last_name'] }}</td>
                                     <td>{{ $student['email'] ?? 'Not provided' }}</td>
                                     <td>{{ $student['contact_number'] ?? 'Not provided' }}</td>
-                                    <td>{{ $student['course'] }}</td>
-                                    <td>{{ $student['department'] }}</td>
-                                    <td>{{ $student['year_level'] }}</td>
+                                    <td>{{ $student['registration_date'] }}</td>
                                     <td>
-                                        <span class="scholarship-type-badge">{{ $student['scholarship_type'] }}</span>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit"
+                                                data-id="{{ $student['id'] }}"
+                                                data-source="{{ $student['source'] }}"
+                                                data-first-name="{{ $student['first_name'] }}"
+                                                data-last-name="{{ $student['last_name'] }}"
+                                                data-email="{{ $student['email'] }}"
+                                                data-contact="{{ $student['contact_number'] ?? '' }}"
+                                                title="Edit Student">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn delete"
+                                                data-id="{{ $student['id'] }}"
+                                                data-source="{{ $student['source'] }}"
+                                                data-student-id="{{ $student['student_id'] }}"
+                                                data-first-name="{{ $student['first_name'] }}"
+                                                data-last-name="{{ $student['last_name'] }}"
+                                                title="Delete Student">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
-                                    <td>
-                                        <span class="status-badge {{ strtolower(str_replace(' ', '-', $student['status'])) }}">
-                                            {{ $student['status'] }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $student['application_date'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -693,6 +688,37 @@
 
 @push('scripts')
     <script>
+        // Simple notification system
+        window.NotificationManager = {
+            show: function(message, type = 'success') {
+                // Try to use the existing notification component first
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <span class="notification-message">${message}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                    </div>
+                `;
+
+                // Add to page
+                document.body.appendChild(notification);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             const studentIdInput = document.getElementById('student_id');
             const feedback = document.getElementById('student-id-feedback');
@@ -753,12 +779,13 @@
                     });
             }
 
-            // Form submission validation
+            // Form submission validation and AJAX submission
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Always prevent default form submission
+
                 const studentId = studentIdInput.value.trim();
                 if (studentId.length < 3) {
-                    e.preventDefault();
                     alert('Please enter a valid Student ID');
                     studentIdInput.focus();
                     return false;
@@ -766,22 +793,107 @@
 
                 // Check if student ID is available before submitting
                 if (feedback.classList.contains('error')) {
-                    e.preventDefault();
                     alert('Student ID already exists. Please use a different Student ID.');
                     studentIdInput.focus();
                     return false;
                 }
+
+                // Submit form via AJAX
+                const formData = new FormData(form);
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Registering...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear form
+                        form.reset();
+                        feedback.style.display = 'none';
+
+                        // Show success message using session flash
+                        window.location.href = window.location.href.split('?')[0] + '?success=student_registered';
+
+                        // Add new student to table with proper ID
+                        data.student_data.id = data.student_data.user_id || data.student_data.id;
+                        addStudentToTable(data.student_data);
+
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (window.ErrorHandler) {
+                        window.ErrorHandler.showError(window.ErrorHandler.handleAjaxError(error, 'register'));
+                    } else {
+                        alert('Registration failed. Please try again.');
+                    }
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Register Student';
+                });
             });
 
-            // Clear form if there's a success message (after successful registration)
-            @if (session('success'))
-                // Clear form fields after successful registration
-                setTimeout(function() {
-                    form.reset();
-                    feedback.style.display = 'none';
-                    submitBtn.disabled = false;
-                }, 100);
-            @endif
+            // Function to add new student to table
+            function addStudentToTable(studentData) {
+                const tableBody = document.getElementById('studentsTableBody');
+                if (tableBody) {
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-student-id', studentData.student_id);
+                    newRow.setAttribute('data-source', 'user');
+                    newRow.setAttribute('data-id', studentData.id);
+
+                    newRow.innerHTML = `
+                        <td><strong>${studentData.student_id}</strong></td>
+                        <td>${studentData.name.split(' ')[0]}</td>
+                        <td>${studentData.name.split(' ').slice(1).join(' ')}</td>
+                        <td>${studentData.email}</td>
+                        <td>Not provided</td>
+                        <td>Just now</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit"
+                                    data-id="${studentData.id}"
+                                    data-source="user"
+                                    data-first-name="${studentData.name.split(' ')[0]}"
+                                    data-last-name="${studentData.name.split(' ').slice(1).join(' ')}"
+                                    data-email="${studentData.email}"
+                                    data-contact=""
+                                    title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete"
+                                    data-id="${studentData.id}"
+                                    data-source="user"
+                                    data-student-id="${studentData.student_id}"
+                                    data-first-name="${studentData.name.split(' ')[0]}"
+                                    data-last-name="${studentData.name.split(' ').slice(1).join(' ')}"
+                                    title="Delete Student">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+
+                    // Insert at the top of the table
+                    tableBody.insertBefore(newRow, tableBody.firstChild);
+
+                    // Show "No students" message if this is the first student
+                    const noStudentsDiv = document.querySelector('.no-students');
+                    if (noStudentsDiv) {
+                        noStudentsDiv.style.display = 'none';
+                    }
+                }
+            }
         });
 
         // Tab switching functionality
@@ -806,15 +918,11 @@
         // Search and filter functionality for scholarship students
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('studentSearch');
-            const statusFilter = document.getElementById('statusFilter');
-            const scholarshipFilter = document.getElementById('scholarshipFilter');
             const table = document.getElementById('studentsTable');
 
-            if (searchInput && statusFilter && scholarshipFilter && table) {
+            if (searchInput && table) {
                 function filterTable() {
                     const searchTerm = searchInput.value.toLowerCase();
-                    const statusValue = statusFilter.value.toLowerCase();
-                    const scholarshipValue = scholarshipFilter.value.toLowerCase();
                     const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
                     for (let i = 0; i < rows.length; i++) {
@@ -823,23 +931,13 @@
 
                         if (cells.length > 0) {
                             const studentId = cells[0].textContent.toLowerCase();
-                            const name = cells[1].textContent.toLowerCase();
-                            const email = cells[2].textContent.toLowerCase();
-                            const scholarshipType = cells[7].textContent.toLowerCase();
-                            const status = cells[8].textContent.toLowerCase();
+                            const lastName = cells[2].textContent.toLowerCase(); // Last name is in column 2
 
                             const matchesSearch = searchTerm === '' ||
                                 studentId.includes(searchTerm) ||
-                                name.includes(searchTerm) ||
-                                email.includes(searchTerm);
+                                lastName.includes(searchTerm);
 
-                            const matchesStatus = statusValue === '' ||
-                                status.includes(statusValue);
-
-                            const matchesScholarship = scholarshipValue === '' ||
-                                scholarshipType.includes(scholarshipValue);
-
-                            if (matchesSearch && matchesStatus && matchesScholarship) {
+                            if (matchesSearch) {
                                 row.style.display = '';
                             } else {
                                 row.style.display = 'none';
@@ -849,9 +947,399 @@
                 }
 
                 searchInput.addEventListener('input', filterTable);
-                statusFilter.addEventListener('change', filterTable);
-                scholarshipFilter.addEventListener('change', filterTable);
             }
+
+            // Edit and Delete functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.action-btn.edit')) {
+                    const btn = e.target.closest('.action-btn.edit');
+                    editStudent(btn);
+                } else if (e.target.closest('.action-btn.delete')) {
+                    const btn = e.target.closest('.action-btn.delete');
+                    deleteStudent(btn);
+                }
+            });
+
+            function editStudent(btn) {
+                const id = btn.dataset.id;
+                const source = btn.dataset.source;
+                const firstName = btn.dataset.firstName;
+                const lastName = btn.dataset.lastName;
+                const email = btn.dataset.email;
+                const contact = btn.dataset.contact;
+
+                // Create edit modal
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Student</h3>
+                            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                        </div>
+                        <form id="editStudentForm">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" value="${firstName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" value="${lastName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="email" value="${email}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="text" name="contact_number" value="${contact}">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                                <button type="submit">Update Student</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Handle form submission
+                document.getElementById('editStudentForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    formData.append('source', source);
+
+                    fetch(`/admin/students/${id}/edit`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            modal.remove();
+                            // Redirect with success message
+                            window.location.href = window.location.href.split('?')[0] + '?success=student_updated';
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Update failed. Please try again.');
+                    });
+                });
+            }
+
+            function deleteStudent(btn) {
+                const id = btn.dataset.id;
+                const source = btn.dataset.source;
+                const studentId = btn.dataset.studentId;
+                const firstName = btn.dataset.firstName || 'Unknown';
+                const lastName = btn.dataset.lastName || 'Student';
+
+                // Create confirmation modal
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content delete-modal">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Confirm Delete</h3>
+                            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Are you sure you want to delete this student?</strong></p>
+                            <div class="student-info">
+                                <p><strong>Student ID:</strong> ${studentId}</p>
+                                <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+                            </div>
+                            <div class="warning-message">
+                                <i class="fas fa-warning"></i>
+                                <span>This action cannot be undone. All student data will be permanently removed.</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="button" class="btn-delete" id="confirmDeleteBtn">
+                                <i class="fas fa-trash"></i> Delete Student
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Handle delete confirmation
+                document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                    const deleteBtn = this;
+                    deleteBtn.disabled = true;
+                    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+                    fetch(`/admin/students/${id}/delete`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ source: source })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            modal.remove();
+
+                            // Remove the student row from the table immediately
+                            const studentRow = btn.closest('tr');
+                            if (studentRow) {
+                                studentRow.style.transition = 'opacity 0.3s ease';
+                                studentRow.style.opacity = '0';
+                                setTimeout(() => {
+                                    studentRow.remove();
+
+                                    // Update student count if exists
+                                    updateStudentCount();
+
+                                    // Check if table is empty and show "no students" message
+                                    checkEmptyTable();
+                                }, 300);
+                            }
+
+                            // Show success notification by reloading with success parameter
+                            setTimeout(() => {
+                                window.location.href = window.location.href.split('?')[0] + '?success=student_deleted';
+                            }, 800);
+
+                        } else {
+                            modal.remove();
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        modal.remove();
+                        alert('Delete failed. Please try again.');
+                    });
+                });
+            }
+
+            // Helper function to update student count
+            function updateStudentCount() {
+                const tableBody = document.getElementById('studentsTableBody');
+                const countBadge = document.querySelector('.count-badge');
+                if (tableBody && countBadge) {
+                    const rowCount = tableBody.getElementsByTagName('tr').length;
+                    countBadge.textContent = `${rowCount} Students`;
+                }
+            }
+
+            // Helper function to check if table is empty and show appropriate message
+            function checkEmptyTable() {
+                const tableBody = document.getElementById('studentsTableBody');
+                const table = document.getElementById('studentsTable');
+                const noStudentsDiv = document.querySelector('.no-students');
+
+                if (tableBody && table) {
+                    const rowCount = tableBody.getElementsByTagName('tr').length;
+
+                    if (rowCount === 0) {
+                        // Hide table and show "no students" message
+                        table.style.display = 'none';
+                        if (!noStudentsDiv) {
+                            const container = table.parentElement;
+                            const noStudentsMessage = document.createElement('div');
+                            noStudentsMessage.className = 'no-students';
+                            noStudentsMessage.innerHTML = `
+                                <i class="fas fa-graduation-cap" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                <p>No scholarship students found.</p>
+                            `;
+                            container.appendChild(noStudentsMessage);
+                        } else {
+                            noStudentsDiv.style.display = 'block';
+                        }
+                    }
+                }
+            }
+
         });
     </script>
+
+    <!-- Modal Styles -->
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .form-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-actions button[type="submit"] {
+            background: #007bff;
+            color: white;
+        }
+
+        .form-actions button[type="button"] {
+            background: #6c757d;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 5px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .action-btn.edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Delete Modal Styles */
+        .delete-modal {
+            max-width: 450px;
+        }
+
+        .modal-body {
+            padding: 20px 0;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+            color: #495057;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-message i {
+            color: #f39c12;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-cancel, .btn-delete {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-delete:disabled {
+            background: #dc3545;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
 @endpush

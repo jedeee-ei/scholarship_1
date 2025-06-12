@@ -17,30 +17,39 @@ class DocumentController extends Controller
     {
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             if (!isset($documents[$documentIndex])) {
                 return response()->json(['error' => 'Document not found'], 404);
             }
-            
-            $documentPath = $documents[$documentIndex];
-            
+
+            $document = $documents[$documentIndex];
+
+            // Handle both old format (string path) and new format (array with metadata)
+            if (is_string($document)) {
+                $documentPath = $document;
+                $fileName = basename($documentPath);
+                $mimeType = 'application/octet-stream'; // Default mime type
+            } else {
+                $documentPath = $document['path'] ?? '';
+                $fileName = $document['original_name'] ?? basename($documentPath);
+                $mimeType = $document['mime_type'] ?? 'application/octet-stream';
+            }
+
             // Check if file exists
-            if (!Storage::disk('public')->exists($documentPath)) {
+            if (!Storage::disk('local')->exists($documentPath)) {
                 return response()->json(['error' => 'File not found on server'], 404);
             }
-            
+
             // Get the file
-            $file = Storage::disk('public')->get($documentPath);
-            $fileName = basename($documentPath);
-            $mimeType = Storage::disk('public')->mimeType($documentPath);
-            
+            $file = Storage::disk('local')->get($documentPath);
+
             return response($file)
                 ->header('Content-Type', $mimeType)
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
-                
+
         } catch (\Exception $e) {
             Log::error('Document download error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to download document'], 500);
@@ -54,29 +63,37 @@ class DocumentController extends Controller
     {
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             if (!isset($documents[$documentIndex])) {
                 return response()->json(['error' => 'Document not found'], 404);
             }
-            
-            $documentPath = $documents[$documentIndex];
-            
+
+            $document = $documents[$documentIndex];
+
+            // Handle both old format (string path) and new format (array with metadata)
+            if (is_string($document)) {
+                $documentPath = $document;
+                $mimeType = 'application/octet-stream'; // Default mime type
+            } else {
+                $documentPath = $document['path'] ?? '';
+                $mimeType = $document['mime_type'] ?? 'application/octet-stream';
+            }
+
             // Check if file exists
-            if (!Storage::disk('public')->exists($documentPath)) {
+            if (!Storage::disk('local')->exists($documentPath)) {
                 return response()->json(['error' => 'File not found on server'], 404);
             }
-            
+
             // Get the file
-            $file = Storage::disk('public')->get($documentPath);
-            $mimeType = Storage::disk('public')->mimeType($documentPath);
-            
+            $file = Storage::disk('local')->get($documentPath);
+
             return response($file)
                 ->header('Content-Type', $mimeType)
                 ->header('Content-Disposition', 'inline');
-                
+
         } catch (\Exception $e) {
             Log::error('Document view error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to view document'], 500);
@@ -90,26 +107,36 @@ class DocumentController extends Controller
     {
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             if (!isset($documents[$documentIndex])) {
                 return response()->json(['error' => 'Document not found'], 404);
             }
-            
-            $documentPath = $documents[$documentIndex];
-            
+
+            $document = $documents[$documentIndex];
+
+            // Handle both old format (string path) and new format (array with metadata)
+            if (is_string($document)) {
+                $documentPath = $document;
+                $fileName = basename($documentPath);
+                $mimeType = 'application/octet-stream';
+                $fileSize = Storage::disk('local')->exists($documentPath) ? Storage::disk('local')->size($documentPath) : 0;
+            } else {
+                $documentPath = $document['path'] ?? '';
+                $fileName = $document['original_name'] ?? basename($documentPath);
+                $mimeType = $document['mime_type'] ?? 'application/octet-stream';
+                $fileSize = $document['size'] ?? (Storage::disk('local')->exists($documentPath) ? Storage::disk('local')->size($documentPath) : 0);
+            }
+
             // Check if file exists
-            if (!Storage::disk('public')->exists($documentPath)) {
+            if (!Storage::disk('local')->exists($documentPath)) {
                 return response()->json(['error' => 'File not found on server'], 404);
             }
-            
-            $fileName = basename($documentPath);
-            $fileSize = Storage::disk('public')->size($documentPath);
-            $mimeType = Storage::disk('public')->mimeType($documentPath);
-            $lastModified = Storage::disk('public')->lastModified($documentPath);
-            
+
+            $lastModified = Storage::disk('local')->lastModified($documentPath);
+
             return response()->json([
                 'success' => true,
                 'document' => [
@@ -120,7 +147,7 @@ class DocumentController extends Controller
                     'path' => $documentPath
                 ]
             ]);
-                
+
         } catch (\Exception $e) {
             Log::error('Document info error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to get document info'], 500);
@@ -134,19 +161,32 @@ class DocumentController extends Controller
     {
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             $documentList = [];
-            foreach ($documents as $index => $documentPath) {
-                if (Storage::disk('public')->exists($documentPath)) {
+            foreach ($documents as $index => $document) {
+                // Handle both old format (string path) and new format (array with metadata)
+                if (is_string($document)) {
+                    $documentPath = $document;
+                    $fileName = basename($documentPath);
+                    $mimeType = 'application/octet-stream';
+                    $fileSize = Storage::disk('local')->exists($documentPath) ? Storage::disk('local')->size($documentPath) : 0;
+                } else {
+                    $documentPath = $document['path'] ?? '';
+                    $fileName = $document['original_name'] ?? basename($documentPath);
+                    $mimeType = $document['mime_type'] ?? 'application/octet-stream';
+                    $fileSize = $document['size'] ?? (Storage::disk('local')->exists($documentPath) ? Storage::disk('local')->size($documentPath) : 0);
+                }
+
+                if (Storage::disk('local')->exists($documentPath)) {
                     $documentList[] = [
                         'index' => $index,
-                        'name' => basename($documentPath),
-                        'size' => Storage::disk('public')->size($documentPath),
-                        'type' => Storage::disk('public')->mimeType($documentPath),
-                        'last_modified' => date('Y-m-d H:i:s', Storage::disk('public')->lastModified($documentPath)),
+                        'name' => $fileName,
+                        'size' => $fileSize,
+                        'type' => $mimeType,
+                        'last_modified' => date('Y-m-d H:i:s', Storage::disk('local')->lastModified($documentPath)),
                         'download_url' => route('admin.application.document.download', ['application' => $applicationId, 'document' => $index]),
                         'view_url' => route('admin.application.document.view', ['application' => $applicationId, 'document' => $index])
                     ];
@@ -172,40 +212,47 @@ class DocumentController extends Controller
     {
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             if (!isset($documents[$documentIndex])) {
                 return response()->json(['error' => 'Document not found'], 404);
             }
-            
-            $documentPath = $documents[$documentIndex];
-            
-            // Delete file from storage
-            if (Storage::disk('public')->exists($documentPath)) {
-                Storage::disk('public')->delete($documentPath);
+
+            $document = $documents[$documentIndex];
+
+            // Handle both old format (string path) and new format (array with metadata)
+            if (is_string($document)) {
+                $documentPath = $document;
+            } else {
+                $documentPath = $document['path'] ?? '';
             }
-            
+
+            // Delete file from storage
+            if (Storage::disk('local')->exists($documentPath)) {
+                Storage::disk('local')->delete($documentPath);
+            }
+
             // Remove from documents array
             unset($documents[$documentIndex]);
             $documents = array_values($documents); // Re-index array
-            
+
             // Update application
-            $application->documents = json_encode($documents);
+            $application->documents = $documents;
             $application->save();
-            
+
             Log::info('Document deleted', [
                 'application_id' => $applicationId,
                 'document_index' => $documentIndex,
                 'document_path' => $documentPath
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Document deleted successfully'
             ]);
-                
+
         } catch (\Exception $e) {
             Log::error('Document delete error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to delete document'], 500);
@@ -223,28 +270,35 @@ class DocumentController extends Controller
 
         try {
             $application = ScholarshipApplication::where('application_id', $applicationId)->firstOrFail();
-            
+
             // Get current documents array
-            $documents = json_decode($application->documents, true) ?? [];
-            
+            $documents = $application->documents ?? [];
+
             // Store the new document
             $file = $request->file('document');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('scholarship_documents', $fileName, 'public');
-            
-            // Add to documents array
-            $documents[] = $filePath;
-            
+            $filePath = $file->storeAs('scholarship_documents/' . $applicationId, $fileName, 'local');
+
+            // Add document info to array (using new format)
+            $documents[] = [
+                'original_name' => $file->getClientOriginalName(),
+                'filename' => $fileName,
+                'path' => $filePath,
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'uploaded_at' => now()->toISOString()
+            ];
+
             // Update application
-            $application->documents = json_encode($documents);
+            $application->documents = $documents;
             $application->save();
-            
+
             Log::info('Document uploaded', [
                 'application_id' => $applicationId,
                 'file_path' => $filePath,
                 'original_name' => $file->getClientOriginalName()
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Document uploaded successfully',
@@ -254,7 +308,7 @@ class DocumentController extends Controller
                     'path' => $filePath
                 ]
             ]);
-                
+
         } catch (\Exception $e) {
             Log::error('Document upload error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to upload document'], 500);

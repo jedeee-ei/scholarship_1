@@ -1599,6 +1599,7 @@
                 }
             } catch (error) {
                 console.error('API error:', error);
+                // Fallback to default courses will be handled below
             }
 
             // Use fallback data
