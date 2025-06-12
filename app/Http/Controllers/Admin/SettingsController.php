@@ -132,19 +132,27 @@ class SettingsController extends Controller
     }
 
     /**
-     * Archive current grantees
+     * Archive current grantees (both active and inactive)
      */
     private function archiveCurrentGrantees($semester, $academicYear)
     {
-        $grantees = Grantee::where('status', 'Active')->get();
+        // Get all grantees (both active and inactive)
+        $allGrantees = Grantee::all();
 
-        foreach ($grantees as $grantee) {
+        foreach ($allGrantees as $grantee) {
+            // Determine archive type and remarks based on current status
+            $archiveType = $grantee->status === 'Active' ? 'masterlist' : 'inactive';
+            $remarks = $grantee->status === 'Active'
+                ? 'Archived due to semester/year update'
+                : ($grantee->notes ?: 'Previously inactive - archived due to semester/year update');
+
             // Create archive record
             Archive::create([
                 'original_application_id' => $grantee->id ?? 'N/A',
                 'student_id' => $grantee->student_id,
                 'first_name' => $grantee->first_name,
                 'last_name' => $grantee->last_name,
+                'middle_name' => $grantee->middle_name,
                 'email' => $grantee->email,
                 'contact_number' => $grantee->contact_number,
                 'course' => $grantee->course ?? 'N/A',
@@ -152,16 +160,20 @@ class SettingsController extends Controller
                 'year_level' => $grantee->year_level,
                 'gwa' => $grantee->gwa,
                 'scholarship_type' => $grantee->scholarship_type,
+                'government_benefactor_type' => $grantee->government_benefactor_type,
+                'employee_name' => $grantee->employee_name,
+                'employee_relationship' => $grantee->employee_relationship,
+                'scholarship_name' => $grantee->scholarship_name,
                 'archived_semester' => $semester,
                 'archived_academic_year' => $academicYear,
-                'archive_type' => 'masterlist',
-                'remarks' => 'Archived due to semester/year update',
+                'archive_type' => $archiveType,
+                'remarks' => $remarks,
                 'archived_at' => now(),
                 'archived_by' => 'System - Semester/Year Update'
             ]);
 
-            // Send notification email if email exists
-            if ($grantee->email) {
+            // Send notification email if email exists (only for active grantees)
+            if ($grantee->email && $grantee->status === 'Active') {
                 try {
                     // You can implement email notification here
                     // Mail::to($grantee->email)->send(new ArchiveNotification($grantee));
@@ -171,8 +183,8 @@ class SettingsController extends Controller
             }
         }
 
-        // Remove grantees from active list
-        Grantee::where('status', 'Active')->delete();
+        // Remove all grantees (both active and inactive) from current list
+        Grantee::truncate();
 
         // Clear pending applications for the current semester/year
         ScholarshipApplication::where('semester', $semester)
