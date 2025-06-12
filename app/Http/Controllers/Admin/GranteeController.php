@@ -127,11 +127,11 @@ class GranteeController extends Controller
 
             $request->validate([
                 'status' => 'required|string|in:Active,Inactive',
-                'remarks' => 'nullable|string|max:500'
+                'notes' => 'nullable|string|max:500'
             ]);
 
             $newStatus = $request->status;
-            $remarks = $request->remarks;
+            $remarks = $request->notes;
 
             // Note: Manual status changes to Inactive do not create archive records
             // Only semester/year updates create archive records

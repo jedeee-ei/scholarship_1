@@ -66,6 +66,76 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Scholarship Application Tracker - remove ownership middleware for now to test
     Route::get('/scholarship/tracker', [ScholarshipTrackerController::class, 'showTracker'])->name('scholarship.tracker');
     Route::post('/scholarship/track', [ScholarshipTrackerController::class, 'trackApplication'])->name('scholarship.track');
+
+    // Test routes
+    Route::get('/test-applications', function() {
+        $student = Auth::user();
+        if (!$student) {
+            return response()->json(['error' => 'Not logged in']);
+        }
+
+        $allApplications = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)->get();
+        $permanentStatus = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)
+            ->whereIn('status', ['Approved', 'Rejected'])
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'student_id' => $student->student_id,
+            'student_name' => $student->name,
+            'all_applications' => $allApplications->map(function($app) {
+                return [
+                    'id' => $app->application_id,
+                    'status' => $app->status,
+                    'type' => $app->scholarship_type,
+                    'created' => $app->created_at,
+                    'updated' => $app->updated_at
+                ];
+            }),
+            'permanent_status' => $permanentStatus ? [
+                'id' => $permanentStatus->application_id,
+                'status' => $permanentStatus->status,
+                'type' => $permanentStatus->scholarship_type,
+                'subtype' => $permanentStatus->scholarship_subtype,
+                'updated_at' => $permanentStatus->updated_at
+            ] : null
+        ]);
+    });
+
+    // Route to create test data for current user
+    Route::get('/create-test-data', function() {
+        $student = Auth::user();
+        if (!$student) {
+            return response()->json(['error' => 'Not logged in']);
+        }
+
+        // Check if user already has applications
+        $existing = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)->first();
+        if ($existing) {
+            return response()->json(['message' => 'Test data already exists', 'application_id' => $existing->application_id]);
+        }
+
+        // Create test application
+        $application = \App\Models\ScholarshipApplication::create([
+            'application_id' => 'SCH-' . strtoupper(substr($student->student_id, -6)),
+            'student_id' => $student->student_id,
+            'first_name' => $student->first_name ?? 'Test',
+            'last_name' => $student->last_name ?? 'Student',
+            'email' => $student->email,
+            'contact_number' => '09123456789',
+            'scholarship_type' => 'academic',
+            'scholarship_subtype' => 'PL',
+            'department' => 'SITE',
+            'course' => 'BSIT',
+            'year_level' => '3rd Year',
+            'gwa' => '1.25',
+            'status' => 'Approved',
+            'created_at' => now()->subDays(30),
+            'updated_at' => now()->subDays(5)
+        ]);
+
+        return response()->json(['message' => 'Test data created', 'application_id' => $application->application_id]);
+    });
 });
 
 // API route for loading subjects (used by student dashboard) - accessible to authenticated users
@@ -96,6 +166,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/admin/archived-students', [ArchiveController::class, 'index'])->name('admin.archived-students');
     Route::get('/admin/archived-students/export', [ArchiveController::class, 'exportArchivedStudents'])->name('admin.archived-students.export');
+    Route::get('/admin/archived-students/{id}/details', [ArchiveController::class, 'getArchivedStudentDetails'])->name('admin.archived-students.details');
     Route::get('/admin/archived-scholarships', [ArchiveController::class, 'index'])->name('admin.archived-scholarships');
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports');
     Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings');

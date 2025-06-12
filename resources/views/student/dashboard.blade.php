@@ -302,6 +302,353 @@
             }
         }
 
+        /* Main Screen Status Notifications - Acceptance/Rejection */
+        .main-screen-status-notification {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 2px solid #28a745;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2);
+            animation: slideDownBounce 0.5s ease-out;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .main-screen-status-notification.rejected {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+        }
+
+        .main-screen-status-notification .notification-content {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .main-screen-status-notification .notification-icon {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .main-screen-status-notification.rejected .notification-icon {
+            background: #dc3545;
+        }
+
+        .main-screen-status-notification .notification-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .main-screen-status-notification .notification-text {
+            flex: 1;
+            color: #155724;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .main-screen-status-notification.rejected .notification-text {
+            color: #721c24;
+        }
+
+        .main-screen-status-notification .notification-text strong {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .main-screen-status-notification.rejected .notification-text strong {
+            color: #dc3545;
+        }
+
+        .main-screen-status-notification .notification-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: #28a745;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .main-screen-status-notification.rejected .notification-close {
+            color: #dc3545;
+        }
+
+        .main-screen-status-notification .notification-close:hover {
+            background: rgba(40, 167, 69, 0.1);
+            transform: scale(1.1);
+        }
+
+        .main-screen-status-notification.rejected .notification-close:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Permanent Status Notifications - Minimalistic Design */
+        .permanent-status-notification {
+            background: #ffffff;
+            border: 1px solid #e8f5e8;
+            border-left: 4px solid #28a745;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .permanent-status-notification.rejected {
+            border-left-color: #dc3545;
+            border-color: #fdf2f2;
+        }
+
+        .permanent-status-notification .notification-content {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            gap: 16px;
+        }
+
+        .permanent-status-notification .notification-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #28a745;
+        }
+
+        .permanent-status-notification.rejected .notification-icon {
+            border-color: #dc3545;
+        }
+
+        .permanent-status-notification .notification-icon i {
+            color: #28a745;
+            font-size: 1.2rem;
+        }
+
+        .permanent-status-notification.rejected .notification-icon i {
+            color: #dc3545;
+        }
+
+        .permanent-status-notification .notification-text {
+            flex: 1;
+            color: #2c3e50;
+        }
+
+        .permanent-status-notification .notification-text .status-title {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .permanent-status-notification.rejected .notification-text .status-title {
+            color: #dc3545;
+        }
+
+        .permanent-status-notification .notification-text .status-details {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            color: #6c757d;
+        }
+
+        .permanent-status-notification .notification-text .status-info {
+            font-size: 0.8rem;
+            color: #adb5bd;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .permanent-status-notification .notification-text .status-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .permanent-status-notification .notification-text .status-info .info-item i {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .permanent-status-notification .notification-badge {
+            flex-shrink: 0;
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .permanent-status-notification.rejected .notification-badge {
+            background: #dc3545;
+        }
+
+        /* Responsive Design for Permanent Status Notifications */
+        @media (max-width: 768px) {
+            .permanent-status-notification .notification-content {
+                padding: 16px 20px;
+                gap: 12px;
+            }
+
+            .permanent-status-notification .notification-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .permanent-status-notification .notification-icon i {
+                font-size: 1rem;
+            }
+
+            .permanent-status-notification .notification-text .status-title {
+                font-size: 1rem;
+            }
+
+            .permanent-status-notification .notification-text .status-details {
+                font-size: 0.85rem;
+            }
+
+            .permanent-status-notification .notification-text .status-info {
+                font-size: 0.75rem;
+                gap: 8px;
+            }
+
+            .permanent-status-notification .notification-badge {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .permanent-status-notification .notification-content {
+                padding: 12px 16px;
+                gap: 10px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .permanent-status-notification .notification-icon {
+                width: 36px;
+                height: 36px;
+                align-self: center;
+            }
+
+            .permanent-status-notification .notification-text .status-info {
+                justify-content: center;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .permanent-status-notification .notification-badge {
+                align-self: center;
+            }
+        }
+
+        /* Responsive Design for Status Notifications */
+        @media (max-width: 768px) {
+            .main-screen-status-notification,
+            .permanent-status-notification {
+                margin: 15px 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .main-screen-status-notification .notification-content,
+            .permanent-status-notification .notification-content {
+                padding: 20px;
+                gap: 15px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .permanent-status-notification .notification-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .permanent-status-notification .notification-icon i {
+                font-size: 1.8rem;
+            }
+
+            .permanent-status-notification .notification-text .status-title {
+                font-size: 1.3rem;
+            }
+
+            .permanent-status-notification .notification-text .status-details {
+                font-size: 1rem;
+            }
+
+            .permanent-status-notification .notification-badge {
+                font-size: 0.9rem;
+                padding: 10px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-screen-status-notification,
+            .permanent-status-notification {
+                margin: 10px 5px;
+            }
+
+            .main-screen-status-notification .notification-content,
+            .permanent-status-notification .notification-content {
+                padding: 15px;
+                gap: 12px;
+            }
+
+            .permanent-status-notification .notification-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .permanent-status-notification .notification-icon i {
+                font-size: 1.5rem;
+            }
+
+            .permanent-status-notification .notification-text .status-title {
+                font-size: 1.2rem;
+            }
+
+            .permanent-status-notification .notification-text .status-details {
+                font-size: 0.9rem;
+            }
+
+            .permanent-status-notification .notification-text .status-info {
+                font-size: 0.85rem;
+            }
+
+            .permanent-status-notification .notification-badge {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+        }
+
         /* Disabled Submit Button */
         .submit-btn:disabled {
             background: #dc3545 !important;
@@ -1227,6 +1574,63 @@
 
             <!-- Grade Disqualification Notification Placeholder -->
             <div id="grade-disqualification-notification-placeholder"></div>
+
+            <!-- Permanent Status Notification -->
+            @if ($permanentStatus)
+                <div class="permanent-status-notification {{ $permanentStatus->status === 'Rejected' ? 'rejected' : '' }}">
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            @if ($permanentStatus->status === 'Approved')
+                                <i class="fas fa-check"></i>
+                            @else
+                                <i class="fas fa-times"></i>
+                            @endif
+                        </div>
+                        <div class="notification-text">
+                            <span class="status-title">
+                                @if ($permanentStatus->status === 'Approved')
+                                    Scholarship Approved
+                                @else
+                                    Application Rejected
+                                @endif
+                            </span>
+                            <div class="status-details">
+                                @if ($permanentStatus->status === 'Approved')
+                                    Your {{ ucfirst($permanentStatus->scholarship_type) }} scholarship application has been approved.
+                                    @if ($permanentStatus->scholarship_subtype)
+                                        Awarded: {{ $permanentStatus->scholarship_subtype }} Scholarship
+                                    @endif
+                                @else
+                                    Your {{ ucfirst($permanentStatus->scholarship_type) }} scholarship application was not approved.
+                                @endif
+                            </div>
+                            <div class="status-info">
+                                <div class="info-item">
+                                    <i class="fas fa-hashtag"></i>
+                                    <span>{{ $permanentStatus->application_id }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>{{ \Carbon\Carbon::parse($permanentStatus->updated_at)->format('M d, Y') }}</span>
+                                </div>
+                                @if ($permanentStatus->status === 'Approved')
+                                    <div class="info-item">
+                                        <i class="fas fa-user-graduate"></i>
+                                        <span>Active Scholar</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="notification-badge">
+                            @if ($permanentStatus->status === 'Approved')
+                                APPROVED
+                            @else
+                                REJECTED
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Main Content -->
             <div class="main-content">

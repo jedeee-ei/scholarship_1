@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use Illuminate\Http\Request;
 use App\Models\ScholarshipApplication;
+use App\Models\Grantee;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,24 +17,89 @@ class ScholarshipTrackerController extends Controller
         $application = null;
         $student = Auth::user();
 
-        // Get all applications for the logged-in user
+        // Get all applications for the logged-in user from both tables
         $userApplications = collect();
+        $granteeRecords = collect();
+
         if ($student && $student->student_id) {
+            // Get from scholarship_applications table
             $userApplications = ScholarshipApplication::where('student_id', $student->student_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Also get from grantees table (approved scholarships)
+            $granteeRecords = Grantee::where('student_id', $student->student_id)
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
 
         if ($applicationId) {
-            // Find application by ID - allow any student to track any application for now
+            // Find application by ID - check both tables
             $application = ScholarshipApplication::where('application_id', $applicationId)->first();
+            if (!$application) {
+                $application = Grantee::where('application_id', $applicationId)->first();
+            }
         }
+
+        // Check for permanent scholarship status for notifications
+        $permanentStatus = null;
+        if ($student && $student->student_id) {
+            // First check applications table
+            $permanentStatus = ScholarshipApplication::where('student_id', $student->student_id)
+                ->whereIn('status', ['Approved', 'Rejected'])
+                ->orderBy('updated_at', 'desc')
+                ->first();
+
+            // If no status found in applications, check grantees table
+            if (!$permanentStatus && $granteeRecords->isNotEmpty()) {
+                $latestGrantee = $granteeRecords->first();
+                // Convert grantee to application-like object for consistency
+                $permanentStatus = (object) [
+                    'application_id' => $latestGrantee->application_id ?? $latestGrantee->grantee_id,
+                    'student_id' => $latestGrantee->student_id,
+                    'scholarship_type' => $latestGrantee->scholarship_type,
+                    'scholarship_subtype' => $latestGrantee->scholarship_subtype ?? null,
+                    'status' => 'Approved', // Grantees are approved by definition
+                    'first_name' => $latestGrantee->first_name,
+                    'last_name' => $latestGrantee->last_name,
+                    'created_at' => $latestGrantee->created_at,
+                    'updated_at' => $latestGrantee->updated_at,
+                ];
+            }
+        }
+
+        // Combine applications and grantee records for display
+        $allRecords = collect();
+
+        // Add scholarship applications
+        foreach ($userApplications as $app) {
+            $allRecords->push($app);
+        }
+
+        // Add grantee records as application-like objects
+        foreach ($granteeRecords as $grantee) {
+            $allRecords->push((object) [
+                'application_id' => $grantee->application_id ?? $grantee->grantee_id,
+                'student_id' => $grantee->student_id,
+                'scholarship_type' => $grantee->scholarship_type,
+                'scholarship_subtype' => $grantee->scholarship_subtype ?? null,
+                'status' => 'Approved', // Grantees are approved
+                'first_name' => $grantee->first_name,
+                'last_name' => $grantee->last_name,
+                'created_at' => $grantee->created_at,
+                'updated_at' => $grantee->updated_at,
+            ]);
+        }
+
+        // Sort by most recent
+        $userApplications = $allRecords->sortByDesc('updated_at');
 
         return view('scholarship.tracker', [
             'application' => $application,
             'applicationId' => $applicationId,
             'student' => $student,
-            'userApplications' => $userApplications
+            'userApplications' => $userApplications,
+            'permanentStatus' => $permanentStatus
         ]);
     }
 

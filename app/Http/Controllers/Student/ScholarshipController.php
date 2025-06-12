@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ApplicationSubmittedNotification;
 
 
 class ScholarshipController extends Controller
@@ -54,8 +52,10 @@ class ScholarshipController extends Controller
             ]);
 
             $scholarshipTypeNames = [
-                'government' => 'Government Scholarship',
+                'ched' => 'CHED Scholarship',
                 'academic' => 'Academic Scholarship',
+                'presidents' => 'President\'s Lister Scholarship',
+                'institutional' => 'Institutional Scholarship',
                 'employees' => 'Employee\'s Scholarship',
                 'private' => 'Private Scholarship'
             ];
@@ -85,7 +85,7 @@ class ScholarshipController extends Controller
             $gwa = floatval($request->gwa);
             if ($gwa >= 1.0 && $gwa <= 1.25) {
                 $application->scholarship_subtype = "PL";
-            } elseif ($gwa >= 1.26 && $gwa <= 1.74) {
+            } elseif ($gwa == 1.50) {
                 $application->scholarship_subtype = "DL";
             }
         }
@@ -256,22 +256,6 @@ class ScholarshipController extends Controller
                 'student_id' => $request->student_id
             ]);
 
-            // Send email notification to student
-            try {
-                Mail::to($application->email)->send(new ApplicationSubmittedNotification($application));
-                Log::info('Application submitted email sent successfully', [
-                    'application_id' => $applicationId,
-                    'email' => $application->email
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Failed to send application submitted email', [
-                    'application_id' => $applicationId,
-                    'email' => $application->email,
-                    'error' => $e->getMessage()
-                ]);
-                // Don't fail the application submission if email fails
-            }
-
             // Redirect to success page
             return redirect()->route('scholarship.success');
         } catch (\Exception $e) {
@@ -316,6 +300,8 @@ class ScholarshipController extends Controller
             $scholarshipTypeNames = [
                 'government' => 'Government Scholarship',
                 'academic' => 'Academic Scholarship',
+                'presidents' => 'President\'s Lister Scholarship',
+                'institutional' => 'Institutional Scholarship',
                 'employees' => 'Employee\'s Scholarship',
                 'private' => 'Private Scholarship'
             ];

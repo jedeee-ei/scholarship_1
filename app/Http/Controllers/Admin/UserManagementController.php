@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ScholarshipApplication;
+use App\Models\Grantee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +17,12 @@ class UserManagementController extends Controller
      */
     public function studentRegister()
     {
-        return view('admin.student-register');
+        // Get scholarship students data
+        $scholarshipStudents = $this->getScholarshipStudents();
+
+        return view('admin.student-register', [
+            'scholarshipStudents' => $scholarshipStudents
+        ]);
     }
 
     /**
@@ -303,5 +310,102 @@ class UserManagementController extends Controller
         ];
 
         return response()->json($stats);
+    }
+
+    /**
+     * Get students registered for scholarships
+     */
+    private function getScholarshipStudents()
+    {
+        // Get students from scholarship applications
+        $applicationStudents = ScholarshipApplication::select(
+            'student_id',
+            'first_name',
+            'last_name',
+            'email',
+            'contact_number',
+            'course',
+            'department',
+            'year_level',
+            'scholarship_type',
+            'status',
+            'created_at',
+            'application_id'
+        )
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($student) {
+            return [
+                'student_id' => $student->student_id,
+                'name' => trim($student->first_name . ' ' . $student->last_name),
+                'email' => $student->email,
+                'contact_number' => $student->contact_number,
+                'course' => $student->course ?? 'Not specified',
+                'department' => $student->department ?? 'Not specified',
+                'year_level' => $student->year_level ?? 'Not specified',
+                'scholarship_type' => ucfirst($student->scholarship_type),
+                'status' => $student->status,
+                'application_date' => $student->created_at->format('M d, Y'),
+                'application_id' => $student->application_id,
+                'source' => 'application'
+            ];
+        });
+
+        // Get students from grantees (approved scholarships)
+        $granteeStudents = Grantee::select(
+            'student_id',
+            'first_name',
+            'last_name',
+            'email',
+            'contact_number',
+            'course',
+            'department',
+            'year_level',
+            'scholarship_type',
+            'status',
+            'created_at',
+            'grantee_id',
+            'application_id'
+        )
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($student) {
+            return [
+                'student_id' => $student->student_id,
+                'name' => trim($student->first_name . ' ' . $student->last_name),
+                'email' => $student->email,
+                'contact_number' => $student->contact_number,
+                'course' => $student->course ?? 'Not specified',
+                'department' => $student->department ?? 'Not specified',
+                'year_level' => $student->year_level ?? 'Not specified',
+                'scholarship_type' => ucfirst($student->scholarship_type),
+                'status' => 'Active Scholar',
+                'application_date' => $student->created_at->format('M d, Y'),
+                'application_id' => $student->application_id ?? $student->grantee_id,
+                'source' => 'grantee'
+            ];
+        });
+
+        // Combine and remove duplicates (prefer grantee data over application data)
+        $allStudents = collect();
+        $processedStudentIds = [];
+
+        // Add grantees first (they have priority)
+        foreach ($granteeStudents as $student) {
+            if (!in_array($student['student_id'], $processedStudentIds)) {
+                $allStudents->push($student);
+                $processedStudentIds[] = $student['student_id'];
+            }
+        }
+
+        // Add application students if they're not already in grantees
+        foreach ($applicationStudents as $student) {
+            if (!in_array($student['student_id'], $processedStudentIds)) {
+                $allStudents->push($student);
+                $processedStudentIds[] = $student['student_id'];
+            }
+        }
+
+        return $allStudents->sortByDesc('application_date')->values();
     }
 }

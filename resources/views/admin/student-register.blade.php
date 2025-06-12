@@ -5,7 +5,7 @@
 @push('styles')
     <style>
         .register-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -252,6 +252,184 @@
             display: block;
         }
 
+        /* Tab Styles */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #3498db;
+            background-color: #f8f9fa;
+        }
+
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background-color: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Scholarship Students Table Styles */
+        .students-table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .students-table th,
+        .students-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .students-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .students-table td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .students-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.active {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .scholarship-type-badge {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .no-students {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .search-filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .count-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -265,6 +443,37 @@
             .register-form {
                 padding: 20px;
             }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                border-bottom: none;
+                border-right: 3px solid transparent;
+            }
+
+            .tab-btn.active {
+                border-right-color: #3498db;
+                border-bottom-color: transparent;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .students-table {
+                font-size: 12px;
+            }
+
+            .students-table th,
+            .students-table td {
+                padding: 8px 4px;
+            }
         }
     </style>
 @endpush
@@ -275,12 +484,29 @@
 
 @section('content')
     <div class="register-container">
-        <div class="register-form">
-            <div class="form-header">
-                <h2><i class="fas fa-users-cog"></i> Users Management</h2>
-                <p>Create and manage student user accounts. Students will complete their academic details during scholarship
-                    application.</p>
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('register')">
+                    <i class="fas fa-user-plus"></i> Register Student
+                </button>
+                <button class="tab-btn" onclick="switchTab('scholarship-students')">
+                    <i class="fas fa-graduation-cap"></i> Scholarship Students
+                    @if(isset($scholarshipStudents))
+                        <span class="count-badge" style="margin-left: 8px; font-size: 12px;">{{ $scholarshipStudents->count() }}</span>
+                    @endif
+                </button>
             </div>
+        </div>
+
+        <!-- Register Student Tab -->
+        <div id="register-tab" class="tab-content active">
+            <div class="register-form">
+                <div class="form-header">
+                    <h2><i class="fas fa-user-plus"></i> Register New Student</h2>
+                    <p>Create student user accounts. Students will complete their academic details during scholarship
+                        application.</p>
+                </div>
 
             @if (session('success'))
                 <div class="alert alert-success">
@@ -379,6 +605,88 @@
                     <i class="fas fa-user-plus"></i> Create User Account
                 </button>
             </form>
+            </div>
+        </div>
+
+        <!-- Scholarship Students Tab -->
+        <div id="scholarship-students-tab" class="tab-content">
+            <div class="students-table-container">
+                <div class="table-header">
+                    <h2 class="table-title"><i class="fas fa-graduation-cap"></i> Scholarship Students</h2>
+                    @if(isset($scholarshipStudents))
+                        <div class="student-count">
+                            <span class="count-badge">{{ $scholarshipStudents->count() }} Students</span>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="search-filter-container">
+                    <input type="text" id="studentSearch" class="search-input" placeholder="Search by name, student ID, or email...">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="active">Active Scholar</option>
+                    </select>
+                    <select id="scholarshipFilter" class="filter-select">
+                        <option value="">All Scholarships</option>
+                        <option value="academic">Academic</option>
+                        <option value="government">Government</option>
+                        <option value="institutional">Institutional</option>
+                        <option value="employee">Employee</option>
+                        <option value="private">Private</option>
+                    </select>
+                </div>
+
+                <!-- Students Table -->
+                @if(isset($scholarshipStudents) && $scholarshipStudents->count() > 0)
+                    <table class="students-table" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                <th>Course</th>
+                                <th>Department</th>
+                                <th>Year Level</th>
+                                <th>Scholarship Type</th>
+                                <th>Status</th>
+                                <th>Application Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($scholarshipStudents as $student)
+                                <tr>
+                                    <td><strong>{{ $student['student_id'] }}</strong></td>
+                                    <td>{{ $student['name'] }}</td>
+                                    <td>{{ $student['email'] ?? 'Not provided' }}</td>
+                                    <td>{{ $student['contact_number'] ?? 'Not provided' }}</td>
+                                    <td>{{ $student['course'] }}</td>
+                                    <td>{{ $student['department'] }}</td>
+                                    <td>{{ $student['year_level'] }}</td>
+                                    <td>
+                                        <span class="scholarship-type-badge">{{ $student['scholarship_type'] }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ strtolower(str_replace(' ', '-', $student['status'])) }}">
+                                            {{ $student['status'] }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $student['application_date'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="no-students">
+                        <i class="fas fa-graduation-cap" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p>No scholarship students found.</p>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endsection
@@ -474,6 +782,76 @@
                     submitBtn.disabled = false;
                 }, 100);
             @endif
+        });
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Add active class to clicked tab button
+            event.target.classList.add('active');
+        }
+
+        // Search and filter functionality for scholarship students
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('studentSearch');
+            const statusFilter = document.getElementById('statusFilter');
+            const scholarshipFilter = document.getElementById('scholarshipFilter');
+            const table = document.getElementById('studentsTable');
+
+            if (searchInput && statusFilter && scholarshipFilter && table) {
+                function filterTable() {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const statusValue = statusFilter.value.toLowerCase();
+                    const scholarshipValue = scholarshipFilter.value.toLowerCase();
+                    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.getElementsByTagName('td');
+
+                        if (cells.length > 0) {
+                            const studentId = cells[0].textContent.toLowerCase();
+                            const name = cells[1].textContent.toLowerCase();
+                            const email = cells[2].textContent.toLowerCase();
+                            const scholarshipType = cells[7].textContent.toLowerCase();
+                            const status = cells[8].textContent.toLowerCase();
+
+                            const matchesSearch = searchTerm === '' ||
+                                studentId.includes(searchTerm) ||
+                                name.includes(searchTerm) ||
+                                email.includes(searchTerm);
+
+                            const matchesStatus = statusValue === '' ||
+                                status.includes(statusValue);
+
+                            const matchesScholarship = scholarshipValue === '' ||
+                                scholarshipType.includes(scholarshipValue);
+
+                            if (matchesSearch && matchesStatus && matchesScholarship) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+
+                searchInput.addEventListener('input', filterTable);
+                statusFilter.addEventListener('change', filterTable);
+                scholarshipFilter.addEventListener('change', filterTable);
+            }
         });
     </script>
 @endpush

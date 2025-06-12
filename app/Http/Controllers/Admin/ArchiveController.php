@@ -368,4 +368,43 @@ class ArchiveController extends Controller
             })
         ]);
     }
+
+    /**
+     * Get archived student details for modal view
+     */
+    public function getArchivedStudentDetails($id)
+    {
+        try {
+            $student = ArchivedStudent::findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'student' => [
+                    'id' => $student->id,
+                    'original_application_id' => $student->original_application_id,
+                    'student_id' => $student->student_id,
+                    'first_name' => $student->first_name,
+                    'last_name' => $student->last_name,
+                    'email' => $student->email,
+                    'contact_number' => $student->contact_number,
+                    'course' => $student->course,
+                    'department' => $student->department,
+                    'year_level' => $student->year_level,
+                    'gwa' => $student->gwa,
+                    'scholarship_type' => ucfirst($student->scholarship_type),
+                    'archived_semester' => $student->archived_semester,
+                    'archived_academic_year' => $student->archived_academic_year,
+                    'archive_type' => $student->archive_type,
+                    'remarks' => $student->remarks,
+                    'archived_at' => $student->archived_at->format('Y-m-d H:i:s'),
+                    'archived_by' => $student->archived_by
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student not found or error occurred: ' . $e->getMessage()
+            ], 404);
+        }
+    }
 }

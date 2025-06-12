@@ -35,6 +35,19 @@ class DashboardController extends Controller
 
         $canApplyForScholarship = (!$hasActiveScholarship && !$hasPendingApplication) || $isRenewalPeriod;
 
+        // Check for recent status updates (within last 7 days) for notifications
+        $recentStatusUpdate = ScholarshipApplication::where('student_id', $student->student_id)
+            ->whereIn('status', ['Approved', 'Rejected'])
+            ->where('updated_at', '>=', now()->subDays(7))
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        // Check for permanent scholarship status (current active or most recent final status)
+        $permanentStatus = ScholarshipApplication::where('student_id', $student->student_id)
+            ->whereIn('status', ['Approved', 'Rejected'])
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
         // Get published announcements
         $announcements = Announcement::published()
             ->orderBy('created_at', 'desc')
@@ -45,7 +58,9 @@ class DashboardController extends Controller
             'student' => $student,
             'applications' => $applications,
             'canApplyForScholarship' => $canApplyForScholarship,
-            'announcements' => $announcements
+            'announcements' => $announcements,
+            'recentStatusUpdate' => $recentStatusUpdate,
+            'permanentStatus' => $permanentStatus
         ]);
     }
 
