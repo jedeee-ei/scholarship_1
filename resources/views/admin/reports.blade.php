@@ -15,60 +15,7 @@
         <h1>Reports & Archive</h1>
     </div>
 
-    <!-- Statistics Overview -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Total Applications</h3>
-                <div class="stat-icon total">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $reportStats['total_applications'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> All time
-            </div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">This Month</h3>
-                <div class="stat-icon pending">
-                    <i class="fas fa-calendar"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $reportStats['applications_this_month'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-calendar-alt"></i> {{ date('F Y') }}
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Approved</h3>
-                <div class="stat-icon approved">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $reportStats['by_status']['approved'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> Active scholars
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Pending</h3>
-                <div class="stat-icon rejected">
-                    <i class="fas fa-clock"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $reportStats['by_status']['pending'] }}</div>
-            <div class="stat-change neutral">
-                <i class="fas fa-minus"></i> Awaiting review
-            </div>
-        </div>
-    </div>
 
     <!-- Report Categories -->
     <div class="report-categories">
@@ -77,16 +24,14 @@
                 <i class="fas fa-graduation-cap"></i>
             </div>
             <div class="category-title">Application Reports</div>
-            <div class="category-description">Generate reports for scholarship applications
-                ({{ $reportStats['total_applications'] }} total)</div>
+            <div class="category-description">Generate reports for scholarship applications</div>
         </div>
         <div class="category-card" onclick="showStudentReports()">
             <div class="category-icon">
                 <i class="fas fa-users"></i>
             </div>
             <div class="category-title">Grantee Reports</div>
-            <div class="category-description">Generate reports for grantee data
-                ({{ $reportStats['by_status']['approved'] }} active)</div>
+            <div class="category-description">Generate reports for grantee data</div>
         </div>
         <div class="category-card" onclick="showScholarshipReports()">
             <div class="category-icon">
