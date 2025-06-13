@@ -5,6 +5,8 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/dashboard.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 @endpush
 
 @section('breadcrumbs')
@@ -70,21 +72,36 @@
     <!-- Pie Charts Section -->
     <div class="charts-section">
         <div class="chart-container">
-            <h3 class="chart-title">Grantees per Scholarship Type</h3>
+            <div class="chart-header">
+                <h3 class="chart-title">Grantees per Scholarship Type</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('studentsChart', 'Grantees_per_Scholarship_Type')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
             <div class="chart-canvas">
                 <canvas id="studentsChart"></canvas>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 class="chart-title">Scholarship Types</h3>
+            <div class="chart-header">
+                <h3 class="chart-title">Scholarship Types</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('scholarshipTypesChart', 'Scholarship_Types')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
             <div class="chart-canvas">
                 <canvas id="scholarshipTypesChart"></canvas>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 class="chart-title">Graduates per Academic Year</h3>
+            <div class="chart-header">
+                <h3 class="chart-title">Graduates per Academic Year</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('graduatesChart', 'Graduates_per_Academic_Year')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
             <div class="chart-canvas">
                 <canvas id="graduatesChart"></canvas>
             </div>
@@ -94,7 +111,12 @@
     <!-- Line Chart Section -->
     <div class="charts-section line-chart-section">
         <div class="chart-container">
-            <h3 class="chart-title">Total Scholarship Recipients Growth</h3>
+            <div class="chart-header">
+                <h3 class="chart-title">Total Scholarship Recipients Growth</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('yearlyChart', 'Total_Scholarship_Recipients_Growth')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
             <div class="chart-canvas">
                 <canvas id="yearlyChart"></canvas>
             </div>
@@ -298,6 +320,105 @@
                     notification.remove();
                 }
             }, 3000);
+        }
+
+        // PDF Download Function
+        async function downloadChartAsPDF(chartId, filename) {
+            try {
+                // Show loading state
+                const button = event.target.closest('.chart-download-btn');
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                button.disabled = true;
+
+                // Get the chart container and ensure it's fully visible
+                const chartContainer = document.getElementById(chartId).closest('.chart-container');
+
+                // Wait a moment for any animations to complete
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Create canvas from the chart container with better options
+                const canvas = await html2canvas(chartContainer, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    width: chartContainer.offsetWidth,
+                    height: chartContainer.offsetHeight,
+                    scrollX: 0,
+                    scrollY: 0
+                });
+
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Calculate dimensions to fit the page better
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const margin = 20;
+                const availableWidth = pageWidth - (margin * 2);
+                const availableHeight = pageHeight - 80; // Leave space for title and date
+
+                // Calculate image dimensions maintaining aspect ratio
+                const imgAspectRatio = canvas.width / canvas.height;
+                let imgWidth = availableWidth;
+                let imgHeight = imgWidth / imgAspectRatio;
+
+                // If height is too large, scale down based on height
+                if (imgHeight > availableHeight) {
+                    imgHeight = availableHeight;
+                    imgWidth = imgHeight * imgAspectRatio;
+                }
+
+                // Center the image horizontally
+                const imgX = (pageWidth - imgWidth) / 2;
+
+                // Add title
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                const title = filename.replace(/_/g, ' ');
+                const titleWidth = pdf.getTextWidth(title);
+                const titleX = (pageWidth - titleWidth) / 2;
+                pdf.text(title, titleX, 20);
+
+                // Add current date
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                const currentDate = new Date().toLocaleDateString();
+                const dateText = `Generated on: ${currentDate}`;
+                const dateWidth = pdf.getTextWidth(dateText);
+                const dateX = (pageWidth - dateWidth) / 2;
+                pdf.text(dateText, dateX, 30);
+
+                // Add chart image
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', imgX, 40, imgWidth, imgHeight);
+
+                // Save the PDF
+                pdf.save(`${filename}_${currentDate.replace(/\//g, '-')}.pdf`);
+
+                // Reset button state
+                button.innerHTML = originalContent;
+                button.disabled = false;
+
+                // Show success message
+                showNotification('Chart downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+
+                // Reset button state
+                const button = event.target.closest('.chart-download-btn');
+                button.innerHTML = '<i class="fas fa-download"></i>';
+                button.disabled = false;
+
+                showNotification('Error generating PDF. Please try again.', 'error');
+            }
         }
 
         // Chart initialization with 4 charts
