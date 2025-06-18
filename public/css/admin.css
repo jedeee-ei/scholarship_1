@@ -220,16 +220,32 @@ body {
 
 
 
-/* Responsive Design */
+/* Enhanced Responsive Design */
+
+/* Large tablets and small desktops */
+@media (max-width: 1200px) {
+    .admin-container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    .header-content {
+        padding: 0 15px;
+    }
+}
+
+/* Tablets */
 @media (max-width: 1024px) {
     .admin-container {
         flex-direction: column;
+        margin: 10px auto;
     }
 
     .admin-sidebar {
         width: 100%;
         margin-right: 0;
         margin-bottom: 20px;
+        position: relative;
     }
 
     .admin-profile {
@@ -238,71 +254,286 @@ body {
     }
 
     .admin-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
     }
 
     .nav-item {
-        margin-right: 10px;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .nav-item .nav-link {
+        padding: 10px 15px;
+        text-align: center;
     }
 }
 
+/* Mobile devices */
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
         align-items: flex-start;
+        padding: 0 10px;
     }
 
     .university-logo-title {
         margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .university-logo {
+        height: 50px;
+    }
+
+    .university-title h1 {
+        font-size: 18px;
+    }
+
+    .university-title h2 {
+        font-size: 12px;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: flex-end;
     }
 
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
     }
 
     .dashboard-header h1 {
         margin-bottom: 10px;
+        font-size: 20px;
     }
 
     .admin-nav {
+        display: flex;
         flex-direction: column;
+        gap: 5px;
     }
 
     .nav-item {
         margin-right: 0;
     }
+
+    .nav-item .nav-link {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin: 2px 0;
+    }
+
+    .admin-container {
+        margin: 10px auto;
+        padding: 0 10px;
+    }
+
+    .admin-sidebar {
+        padding: 15px;
+    }
 }
 
-/* Table Styles */
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .header-content {
+        padding: 0 5px;
+    }
+
+    .university-title h1 {
+        font-size: 16px;
+    }
+
+    .university-title h2 {
+        font-size: 11px;
+    }
+
+    .university-logo {
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    .admin-container {
+        padding: 0 5px;
+        margin: 5px auto;
+    }
+
+    .admin-sidebar {
+        padding: 10px;
+    }
+
+    .admin-profile {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .profile-image {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 18px;
+    }
+
+    .date-filter {
+        font-size: 12px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 320px) {
+    .university-title h1 {
+        font-size: 14px;
+    }
+
+    .university-title h2 {
+        font-size: 10px;
+    }
+
+    .university-logo {
+        height: 35px;
+        margin-right: 8px;
+    }
+
+    .admin-nav {
+        gap: 3px;
+    }
+
+    .nav-item .nav-link {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 16px;
+    }
+}
+
+/* Enhanced Responsive Table Styles */
 .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
 }
 
-.applications-table {
+.applications-table,
+.students-table,
+.archive-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px; /* Minimum width to prevent cramping */
 }
 
-.applications-table th {
+.applications-table th,
+.students-table th,
+.archive-table th {
     text-align: left;
     padding: 12px 15px;
     background-color: #f9f9f9;
     font-size: 14px;
     color: #666;
     border-bottom: 1px solid #eee;
+    border-right: 1px solid #eee;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.applications-table td {
+.applications-table th:last-child,
+.students-table th:last-child,
+.archive-table th:last-child {
+    border-right: none;
+}
+
+.applications-table td,
+.students-table td,
+.archive-table td {
     padding: 12px 15px;
     font-size: 14px;
     color: #333;
     border-bottom: 1px solid #eee;
+    border-right: 1px solid #eee;
+    vertical-align: middle;
 }
 
-.applications-table tr:hover {
+.applications-table td:last-child,
+.students-table td:last-child,
+.archive-table td:last-child {
+    border-right: none;
+}
+
+.applications-table tr:hover,
+.students-table tr:hover,
+.archive-table tr:hover {
     background-color: #f5f5f5;
+}
+
+/* Mobile table responsiveness */
+@media (max-width: 768px) {
+    .table-container {
+        margin: 0 -10px;
+        border-radius: 0;
+    }
+
+    .applications-table,
+    .students-table,
+    .archive-table {
+        min-width: 500px;
+    }
+
+    .applications-table th,
+    .students-table th,
+    .archive-table th,
+    .applications-table td,
+    .students-table td,
+    .archive-table td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    /* Hide less critical columns on mobile */
+    .applications-table th:nth-child(3),
+    .applications-table td:nth-child(3),
+    .students-table th:nth-child(3),
+    .students-table td:nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .applications-table,
+    .students-table,
+    .archive-table {
+        min-width: 400px;
+    }
+
+    .applications-table th,
+    .students-table th,
+    .archive-table th,
+    .applications-table td,
+    .students-table td,
+    .archive-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+
+    /* Hide more columns on very small screens */
+    .applications-table th:nth-child(4),
+    .applications-table td:nth-child(4),
+    .students-table th:nth-child(4),
+    .students-table td:nth-child(4),
+    .students-table th:nth-child(5),
+    .students-table td:nth-child(5) {
+        display: none;
+    }
 }
 
 /* Pagination */
@@ -404,12 +635,13 @@ body {
     cursor: default;
 }
 
-/* Mobile responsive */
+/* Enhanced Mobile responsive pagination */
 @media (max-width: 768px) {
     .pagination-container {
         flex-direction: column;
         gap: 15px;
         text-align: center;
+        padding: 15px;
     }
 
     .pagination li a,
@@ -417,10 +649,40 @@ body {
         min-width: 35px;
         height: 35px;
         font-size: 13px;
+        padding: 0 8px;
     }
 
     .pagination-info {
         font-size: 12px;
+    }
+
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-container {
+        padding: 10px;
+    }
+
+    .pagination li a,
+    .pagination li span {
+        min-width: 30px;
+        height: 30px;
+        font-size: 12px;
+        padding: 0 6px;
+    }
+
+    .pagination-info {
+        font-size: 11px;
+    }
+
+    /* Hide some pagination numbers on very small screens */
+    .pagination li:not(.active):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+        display: none;
     }
 }
 

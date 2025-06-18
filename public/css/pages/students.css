@@ -389,8 +389,27 @@
     display: inline-block;
 }
 
-/* Responsive Design */
+/* Enhanced Responsive Design */
+@media (max-width: 1024px) {
+    .student-categories {
+        padding: 20px;
+    }
+
+    .category-tabs {
+        gap: 10px;
+    }
+
+    .tab-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
 @media (max-width: 768px) {
+    .student-categories {
+        padding: 15px;
+    }
+
     .category-tabs {
         flex-direction: column;
         gap: 8px;
@@ -400,17 +419,26 @@
         padding: 10px 15px;
         font-size: 14px;
         text-align: center;
+        width: 100%;
     }
 
     .table-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
+        padding: 15px;
     }
 
     .table-actions {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .table-actions button {
+        flex: 1;
+        min-width: 120px;
     }
 
     .students-table {
@@ -429,24 +457,107 @@
     .students-table td:nth-child(5) {
         display: none;
     }
+
+    /* Make action buttons stack vertically */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .action-btn {
+        width: 100%;
+        text-align: center;
+        padding: 8px 10px;
+    }
 }
 
 @media (max-width: 480px) {
     .student-categories {
-        padding: 15px;
+        padding: 10px;
     }
 
     .table-header {
-        padding: 15px;
+        padding: 10px;
     }
 
     .table-header h3 {
         font-size: 16px;
     }
 
+    .category-tabs {
+        gap: 5px;
+    }
+
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
     .export-btn {
         padding: 8px 12px;
         font-size: 12px;
+    }
+
+    .students-table {
+        font-size: 11px;
+    }
+
+    .students-table th,
+    .students-table td {
+        padding: 8px 6px;
+    }
+
+    /* Hide even more columns on very small screens */
+    .students-table th:nth-child(4),
+    .students-table td:nth-child(4),
+    .students-table th:nth-child(6),
+    .students-table td:nth-child(6) {
+        display: none;
+    }
+
+    .table-actions button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 320px) {
+    .student-categories {
+        padding: 8px;
+    }
+
+    .table-header {
+        padding: 8px;
+    }
+
+    .table-header h3 {
+        font-size: 14px;
+    }
+
+    .tab-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .students-table {
+        font-size: 10px;
+    }
+
+    .students-table th,
+    .students-table td {
+        padding: 6px 4px;
+    }
+
+    /* Show only essential columns on extra small screens */
+    .students-table th:not(:first-child):not(:nth-child(2)):not(:last-child),
+    .students-table td:not(:first-child):not(:nth-child(2)):not(:last-child) {
+        display: none;
+    }
+
+    .action-btn {
+        font-size: 10px;
+        padding: 6px 8px;
     }
 }
 

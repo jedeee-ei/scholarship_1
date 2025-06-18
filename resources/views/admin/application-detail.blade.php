@@ -634,10 +634,14 @@
                                     </div>
                                     <div class="document-actions">
                                         @php
-                                            $documentPath = is_string($document) ? $document : ($document['path'] ?? '');
+                                            $documentPath = is_string($document) ? $document : $document['path'] ?? '';
                                             $fileExists = Storage::disk('local')->exists($documentPath);
-                                            $documentName = is_array($document) ? ($document['original_name'] ?? 'Document ' . ($index + 1)) : 'Document ' . ($index + 1);
-                                            $mimeType = is_array($document) ? ($document['mime_type'] ?? 'application/octet-stream') : 'application/octet-stream';
+                                            $documentName = is_array($document)
+                                                ? $document['original_name'] ?? 'Document ' . ($index + 1)
+                                                : 'Document ' . ($index + 1);
+                                            $mimeType = is_array($document)
+                                                ? $document['mime_type'] ?? 'application/octet-stream'
+                                                : 'application/octet-stream';
                                         @endphp
                                         @if ($fileExists)
                                             <a href="{{ route('admin.application.document.download', ['application' => $application->application_id, 'document' => $index]) }}"

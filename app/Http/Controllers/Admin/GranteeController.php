@@ -207,37 +207,7 @@ class GranteeController extends Controller
         return response()->json($students);
     }
 
-    /**
-     * Add new student
-     */
-    public function addStudent(Request $request)
-    {
-        $request->validate([
-            'student_id' => 'required|string|unique:grantees,student_id',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:grantees,email',
-            'scholarship_type' => 'required|string',
-            'course' => 'required|string',
-            'department' => 'required|string',
-            'year_level' => 'required|string',
-            'gwa' => 'nullable|numeric|min:1|max:5'
-        ]);
 
-        $granteeData = $request->all();
-        $granteeData['approved_date'] = now();
-        $granteeData['approved_by'] = 'Admin Manual Entry';
-        $granteeData['scholarship_start_date'] = now();
-        $granteeData['status'] = 'Active';
-
-        $grantee = Grantee::create($granteeData);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Student added successfully',
-            'data' => $grantee
-        ]);
-    }
 
     /**
      * Add new grantee
@@ -328,7 +298,7 @@ class GranteeController extends Controller
                 'role' => 'student'
             ];
 
-            $user = User::updateOrCreate(
+            User::updateOrCreate(
                 ['student_id' => $request->student_id],
                 $userData
             );
@@ -404,7 +374,6 @@ class GranteeController extends Controller
                 'message' => 'Grantee added successfully',
                 'data' => $grantee
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation error adding grantee', [
                 'errors' => $e->errors(),
@@ -428,7 +397,7 @@ class GranteeController extends Controller
     /**
      * Export students data
      */
-    public function exportStudents(Request $request)
+    public function exportStudents()
     {
         $students = Grantee::all();
         $filename = 'students_export_' . date('Y-m-d_H-i-s') . '.csv';
@@ -470,17 +439,5 @@ class GranteeController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv',
         ]);
-    }
-
-    /**
-     * Get course or strand for display
-     */
-    private function getCourseOrStrand($grantee)
-    {
-        // For BEU students, show strand if available, otherwise course
-        if ($grantee->education_stage === 'BEU' && $grantee->strand) {
-            return $grantee->strand;
-        }
-        return $grantee->course;
     }
 }

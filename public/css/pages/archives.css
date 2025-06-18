@@ -271,3 +271,168 @@
     border-color: #052F11;
     box-shadow: 0 0 0 2px rgba(5, 47, 17, 0.1);
 }
+
+/* Student Categories - matching grantees tab exactly */
+.student-categories {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.category-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tab-group {
+    display: flex;
+    gap: 5px;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    border: 2px solid #052F11;
+    background-color: white;
+    color: #052F11;
+    cursor: pointer;
+    font-weight: 500;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-btn:hover {
+    background-color: #052F11;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5, 47, 17, 0.3);
+}
+
+.tab-btn.active {
+    background-color: #052F11;
+    color: white;
+    box-shadow: 0 0 15px rgba(5, 47, 17, 0.4);
+    border: 2px solid rgba(5, 47, 17, 0.8);
+    font-weight: 600;
+}
+
+.archive-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Remarks badge styling */
+.remarks-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.remarks-badge:hover {
+    background: #e9ecef;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-width: none;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.remarks-badge.inactive-remarks {
+    background-color: #dc3545;
+    color: white;
+}
+
+.remarks-badge.masterlist-remarks {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Student Details Modal */
+.student-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.detail-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.detail-section h3 {
+    margin: 0 0 16px 0;
+    color: #1e5631;
+    font-size: 18px;
+    border-bottom: 2px solid #1e5631;
+    padding-bottom: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-weight: 600;
+    color: #495057;
+    flex: 0 0 40%;
+}
+
+.detail-row .value {
+    flex: 1;
+    text-align: right;
+    color: #212529;
+}
+
+.detail-row .value.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.detail-row .value.badge.masterlist {
+    background-color: #28a745;
+    color: white;
+}
+
+.detail-row .value.badge.inactive {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Hidden elements by default */
+.table-header.hidden {
+    display: none;
+}
+
+#archivedStudentModal {
+    display: none;
+}

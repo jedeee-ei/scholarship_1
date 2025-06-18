@@ -221,6 +221,168 @@ body {
     .toast-message {
         font-size: 13px;
     }
+
+    /* Enhanced mobile responsiveness */
+    .container {
+        padding: 0 10px;
+    }
+
+    .dashboard-content {
+        gap: 15px;
+    }
+
+    .main-content {
+        padding: 10px 0;
+    }
+
+    .scholarship-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .scholarship-card {
+        padding: 20px;
+    }
+
+    .scholarship-title {
+        font-size: 16px;
+    }
+
+    .scholarship-description {
+        font-size: 13px;
+    }
+
+    .apply-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 18px;
+    }
+
+    .card-header {
+        padding: 12px 15px;
+        font-size: 16px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .user-actions {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .action-link {
+        justify-content: center;
+        padding: 8px;
+        background: rgba(5, 47, 17, 0.1);
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 5px;
+    }
+
+    .welcome-section {
+        padding: 10px;
+    }
+
+    .welcome-greeting {
+        font-size: 16px;
+    }
+
+    .student-id-display {
+        font-size: 12px;
+        padding: 3px 6px;
+    }
+
+    .scholarship-card {
+        padding: 15px;
+    }
+
+    .scholarship-title {
+        font-size: 15px;
+    }
+
+    .scholarship-description {
+        font-size: 12px;
+    }
+
+    .apply-btn {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .card-header {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .notification-content {
+        padding: 15px !important;
+        gap: 10px !important;
+    }
+
+    .notification-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .notification-text {
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        padding: 0 3px;
+    }
+
+    .welcome-section {
+        padding: 8px;
+    }
+
+    .welcome-greeting {
+        font-size: 14px;
+    }
+
+    .student-id-display {
+        font-size: 11px;
+        padding: 2px 4px;
+    }
+
+    .scholarship-card {
+        padding: 12px;
+    }
+
+    .scholarship-title {
+        font-size: 14px;
+    }
+
+    .scholarship-description {
+        font-size: 11px;
+    }
+
+    .apply-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .card-header {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
 }
 
 .welcome-text {

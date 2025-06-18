@@ -15,34 +15,15 @@ use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Student\ScholarshipController;
 use App\Http\Controllers\Student\ScholarshipTrackerController;
-use App\Http\Controllers\Api\ScholarshipDataController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DataController;
 
 Route::get('/welcome', function () {
     return view('layouts.welcome');
 })->name('welcome');
+
 Route::get('/splashscreen', function () {
     return view('layouts.splashscreen');
 });
-Route::get('/login', function () {
-    return view('layouts.login');
-})->name('login');
-
-Route::get('/logout', function () {
-    // If using Laravel's built-in auth
-    if (Auth::check()) {
-        Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
-    }
-
-    // For custom session handling
-    session()->forget('user_id');
-    session()->forget('user_name');
-    session()->forget('user_role');
-
-    return redirect()->route('login');
-})->name('logout');
 
 // Authentication routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -67,80 +48,19 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Scholarship Application Tracker - remove ownership middleware for now to test
     Route::get('/scholarship/tracker', [ScholarshipTrackerController::class, 'showTracker'])->name('scholarship.tracker');
     Route::post('/scholarship/track', [ScholarshipTrackerController::class, 'trackApplication'])->name('scholarship.track');
-
-    // Test routes
-    Route::get('/test-applications', function() {
-        $student = Auth::user();
-        if (!$student) {
-            return response()->json(['error' => 'Not logged in']);
-        }
-
-        $allApplications = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)->get();
-        $permanentStatus = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)
-            ->whereIn('status', ['Approved', 'Rejected'])
-            ->orderBy('updated_at', 'desc')
-            ->first();
-
-        return response()->json([
-            'student_id' => $student->student_id,
-            'student_name' => $student->name,
-            'all_applications' => $allApplications->map(function($app) {
-                return [
-                    'id' => $app->application_id,
-                    'status' => $app->status,
-                    'type' => $app->scholarship_type,
-                    'created' => $app->created_at,
-                    'updated' => $app->updated_at
-                ];
-            }),
-            'permanent_status' => $permanentStatus ? [
-                'id' => $permanentStatus->application_id,
-                'status' => $permanentStatus->status,
-                'type' => $permanentStatus->scholarship_type,
-                'subtype' => $permanentStatus->scholarship_subtype,
-                'updated_at' => $permanentStatus->updated_at
-            ] : null
-        ]);
-    });
-
-    // Route to create test data for current user
-    Route::get('/create-test-data', function() {
-        $student = Auth::user();
-        if (!$student) {
-            return response()->json(['error' => 'Not logged in']);
-        }
-
-        // Check if user already has applications
-        $existing = \App\Models\ScholarshipApplication::where('student_id', $student->student_id)->first();
-        if ($existing) {
-            return response()->json(['message' => 'Test data already exists', 'application_id' => $existing->application_id]);
-        }
-
-        // Create test application
-        $application = \App\Models\ScholarshipApplication::create([
-            'application_id' => 'SCH-' . strtoupper(substr($student->student_id, -6)),
-            'student_id' => $student->student_id,
-            'first_name' => $student->first_name ?? 'Test',
-            'last_name' => $student->last_name ?? 'Student',
-            'email' => $student->email,
-            'contact_number' => '09123456789',
-            'scholarship_type' => 'academic',
-            'scholarship_subtype' => 'PL',
-            'department' => 'SITE',
-            'course' => 'BSIT',
-            'year_level' => '3rd Year',
-            'gwa' => '1.25',
-            'status' => 'Approved',
-            'created_at' => now()->subDays(30),
-            'updated_at' => now()->subDays(5)
-        ]);
-
-        return response()->json(['message' => 'Test data created', 'application_id' => $application->application_id]);
-    });
 });
 
-// API route for loading subjects (used by student dashboard) - accessible to authenticated users
-Route::get('/api/subjects', [ScholarshipDataController::class, 'getSubjectsForDashboard'])->middleware('auth');
+// API routes for data (accessible to authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/api/subjects', [DataController::class, 'getSubjectsForDashboard']);
+    Route::prefix('api/scholarship')->group(function () {
+        Route::get('/departments', [DataController::class, 'getDepartments']);
+        Route::get('/departments/{departmentCode}/courses', [DataController::class, 'getCoursesByDepartment']);
+        Route::get('/course-durations', [DataController::class, 'getCourseDurations']);
+        Route::get('/department-course-mapping', [DataController::class, 'getDepartmentCourseMapping']);
+        Route::get('/subjects/{courseName}/{yearLevel}/{semester}', [DataController::class, 'getSubjects']);
+    });
+});
 
 // Admin routes with authentication and authorization
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -198,14 +118,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/applications/{application}/documents/{document}/download', [DocumentController::class, 'downloadDocument'])->name('admin.application.document.download');
     Route::get('/admin/applications/{application}/documents/{document}/view', [DocumentController::class, 'viewDocument'])->name('admin.application.document.view');
 
-    // API routes for scholarship data
-    Route::prefix('api/scholarship')->group(function () {
-        Route::get('/departments', [ScholarshipDataController::class, 'getDepartments']);
-        Route::get('/departments/{departmentCode}/courses', [ScholarshipDataController::class, 'getCoursesByDepartment']);
-        Route::get('/course-durations', [ScholarshipDataController::class, 'getAllCourseDurations']);
-        Route::get('/department-course-mapping', [ScholarshipDataController::class, 'getDepartmentCourseMapping']);
-        Route::get('/subjects/{courseName}/{yearLevel}/{semester}', [ScholarshipDataController::class, 'getSubjects']);
-    });
+
 
     // API routes for dashboard analytics
     Route::prefix('api/admin')->group(function () {
@@ -244,10 +157,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/import-grantees-dynamic', [ImportExportController::class, 'importGranteesDynamic'])->name('admin.import-grantees-dynamic');
     Route::post('/admin/add-grantee', [GranteeController::class, 'addGrantee'])->name('admin.add-grantee');
 
-    // Test route to debug
-    Route::post('/admin/test-route', function() {
-        return response()->json(['message' => 'Test route works']);
-    })->name('admin.test-route');
+
     Route::get('/admin/download-student-template', [ImportExportController::class, 'downloadStudentTemplate'])->name('admin.download-student-template');
     Route::get('/admin/download-grantee-template', [ImportExportController::class, 'downloadGranteeTemplate'])->name('admin.download-grantee-template');
 
