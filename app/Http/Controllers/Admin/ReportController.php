@@ -385,6 +385,47 @@ class ReportController extends Controller
     }
 
     /**
+     * Generate Executive Summary Report
+     */
+    public function generateExecutiveSummary()
+    {
+        try {
+            $reportService = new \App\Services\SimpleReportService();
+            return $reportService->generateExecutiveSummary();
+        } catch (\Exception $e) {
+            \Log::error('Executive Summary PDF Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'PDF generation failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate Department Performance Report
+     */
+    public function generateDepartmentReport()
+    {
+        try {
+            $reportService = new \App\Services\SimpleReportService();
+            return $reportService->generateDepartmentReport();
+        } catch (\Exception $e) {
+            Log::error('Department Performance PDF Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'PDF generation failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate Enhanced Excel Report
+     */
+    public function generateEnhancedExcel()
+    {
+        $reportService = new \App\Services\SimpleReportService();
+        return $reportService->generateEnhancedExcelReport();
+    }
+
+    /**
      * Get report preview data
      */
     private function getReportPreviewData($reportType, $dateRange)

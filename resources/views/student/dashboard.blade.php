@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="{{ asset('css/student/student-dashboard.css') }}">
 @endpush
 
+@push('scripts')
+    <script src="{{ asset('js/course-mapping.js') }}"></script>
+@endpush
+
 @section('content')
     <div class="page-container">
 
@@ -698,12 +702,14 @@
                                                 <option value="SITE">School of Information Technology and Engineering
                                                     (SITE)
                                                 </option>
+                                                <option value="SBAHM">School of Business, Accountancy, and Hospitality Management
+                                                    (SBAHM)
+                                                </option>
+                                                <option value="SNASH">School of Nursing and Allied Health Sciences
+                                                    (SNASH)
+                                                </option>
                                                 <option value="SASTE">School of Arts, Sciences and Teacher Education
                                                     (SASTE)
-                                                </option>
-                                                <option value="SBAHM">School of Business Administration and Hospitality
-                                                    Management (SBAHM)</option>
-                                                <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)
                                                 </option>
                                             </select>
                                         </div>
@@ -1492,7 +1498,7 @@
                         'Bachelor of Science in Tourism Management',
                         'Bachelor of Science in Product Design and Marketing Innovation'
                     ],
-                    'SNAHS': [
+                    'SNASH': [
                         'Bachelor of Science in Nursing',
                         'Bachelor of Science in Pharmacy',
                         'Bachelor of Science in Medical Technology',
@@ -1577,7 +1583,7 @@
                         'Bachelor of Science in Tourism Management',
                         'Bachelor of Science in Product Design and Marketing Innovation'
                     ],
-                    'SNAHS': [
+                    'SNASH': [
                         'Bachelor of Science in Nursing',
                         'Bachelor of Science in Pharmacy',
                         'Bachelor of Science in Medical Technology',
@@ -1633,8 +1639,8 @@
                         }
                         // For 1st Year, keep the original semester name
 
-                        // Load subjects from API
-                        loadSubjectsFromAPI(selectedCourse, selectedYearLevel, selectedSemester);
+                        // Load subjects directly
+                        loadSubjectsDirectlyFromHelper(selectedCourse, selectedYearLevel, selectedSemester);
                     } else {
                         hideSubjectsSection();
                     }
@@ -1651,8 +1657,8 @@
                 }
             }
 
-            // Load subjects from API
-            function loadSubjectsFromAPI(course, yearLevel, semester) {
+            // Load subjects directly from helper data
+            function loadSubjectsDirectlyFromHelper(course, yearLevel, semester) {
                 // Show loading state
                 const subjectsSection = document.getElementById('academic-subjects-section');
                 const subjectsList = document.getElementById('academic-subjects-list');
@@ -1662,24 +1668,23 @@
                 subjectsSection.style.display = 'block';
                 subjectsList.innerHTML = '<div class="loading">Loading subjects...</div>';
 
-                // Make API call to get subjects
-                fetch(
-                        `/api/subjects?course=${encodeURIComponent(course)}&year_level=${encodeURIComponent(yearLevel)}&semester=${encodeURIComponent(semester)}`
-                    )
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.subjects) {
-                            displaySubjects(data.subjects);
-                        } else {
-                            subjectsList.innerHTML =
-                                '<div class="error">No subjects found for the selected criteria.</div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading subjects:', error);
-                        subjectsList.innerHTML = '<div class="error">Error loading subjects. Please try again.</div>';
-                    });
+                // Get subjects data from ScholarshipDataHelper
+                const subjectsData = @json(\App\Helpers\ScholarshipDataHelper::getSubjects());
+
+                // Use shared function to load subjects
+                loadSubjectsDirectly(
+                    course,
+                    yearLevel,
+                    semester,
+                    subjectsData,
+                    displaySubjects, // Success callback
+                    function(course, yearLevel, semester) { // Error callback
+                        subjectsList.innerHTML = `<div class="error">No subjects found for ${course} - ${yearLevel} - ${semester}</div>`;
+                    }
+                );
             }
+
+
 
             // Display subjects in the form
             function displaySubjects(subjects) {

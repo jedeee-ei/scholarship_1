@@ -622,6 +622,7 @@
 </div>
 
 @push('scripts')
+    <script src="{{ asset('js/course-mapping.js') }}"></script>
     <script>
         // Add event listener when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -987,7 +988,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1058,7 +1059,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1205,9 +1206,9 @@
                             <select id="department" name="department" required onchange="populateCoursesDirectly(this.value); console.log('Department changed to:', this.value);">
                                 <option value="">Select Department</option>
                                 <option value="SITE">School of Information Technology and Engineering (SITE)</option>
+                                <option value="SBAHM">School of Business, Accountancy, and Hospitality Management (SBAHM)</option>
+                                <option value="SNASH">School of Nursing and Allied Health Sciences (SNASH)</option>
                                 <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
-                                <option value="SBAHM">School of Business Administration and Hospitality Management (SBAHM)</option>
-                                <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1279,9 +1280,9 @@
                                 <select id="governmentDepartment" name="department" required onchange="populateGovernmentCoursesDirectly(this.value)">
                                     <option value="">Select Department</option>
                                     <option value="SITE">School of Information Technology and Engineering (SITE)</option>
+                                    <option value="SBAHM">School of Business, Accountancy, and Hospitality Management (SBAHM)</option>
+                                    <option value="SNASH">School of Nursing and Allied Health Sciences (SNASH)</option>
                                     <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
-                                    <option value="SBAHM">School of Business Administration and Hospitality Management (SBAHM)</option>
-                                    <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1400,7 +1401,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1409,26 +1410,21 @@
             };
 
             try {
-                // Try to load from API first
-                console.log('Attempting to fetch from API...');
-                const response = await fetch('/api/scholarship/department-course-mapping');
-                console.log('API response status:', response.status);
+                // Get department-course mapping directly from helper data
+                console.log('Loading courses from helper data...');
+                const departmentCourseMapping = @json(\App\Helpers\ScholarshipDataHelper::getCoursesByDepartment());
+                console.log('Department course mapping:', departmentCourseMapping);
 
-                if (response.ok) {
-                    const apiData = await response.json();
-                    console.log('API data received:', apiData);
-
-                    if (apiData[selectedDepartment] && apiData[selectedDepartment].length > 0) {
-                        console.log('Using API data for courses');
-                        apiData[selectedDepartment].forEach(course => {
-                            const option = document.createElement('option');
-                            option.value = course;
-                            option.textContent = course;
-                            courseSelect.appendChild(option);
-                        });
-                        courseSelect.disabled = false;
-                        return;
-                    }
+                if (departmentCourseMapping[selectedDepartment] && departmentCourseMapping[selectedDepartment].length > 0) {
+                    console.log('Using helper data for courses');
+                    departmentCourseMapping[selectedDepartment].forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course;
+                        option.textContent = course;
+                        courseSelect.appendChild(option);
+                    });
+                    courseSelect.disabled = false;
+                    return;
                 }
             } catch (error) {
                 console.error('API error:', error);
@@ -1506,7 +1502,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1515,26 +1511,21 @@
             };
 
             try {
-                // Try to load from API first
-                console.log('Attempting to fetch from API for Academic...');
-                const response = await fetch('/api/scholarship/department-course-mapping');
-                console.log('API response status for Academic:', response.status);
+                // Get department-course mapping directly from helper data
+                console.log('Loading courses from helper data for Academic...');
+                const departmentCourseMapping = @json(\App\Helpers\ScholarshipDataHelper::getCoursesByDepartment());
+                console.log('Department course mapping for Academic:', departmentCourseMapping);
 
-                if (response.ok) {
-                    const apiData = await response.json();
-                    console.log('API data received for Academic:', apiData);
-
-                    if (apiData[selectedDepartment] && apiData[selectedDepartment].length > 0) {
-                        console.log('Using API data for Academic courses');
-                        apiData[selectedDepartment].forEach(course => {
-                            const option = document.createElement('option');
-                            option.value = course;
-                            option.textContent = course;
-                            courseSelect.appendChild(option);
-                        });
-                        courseSelect.disabled = false;
-                        return;
-                    }
+                if (departmentCourseMapping[selectedDepartment] && departmentCourseMapping[selectedDepartment].length > 0) {
+                    console.log('Using helper data for Academic courses');
+                    departmentCourseMapping[selectedDepartment].forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course;
+                        option.textContent = course;
+                        courseSelect.appendChild(option);
+                    });
+                    courseSelect.disabled = false;
+                    return;
                 }
             } catch (error) {
                 console.error('API error for Academic:', error);
@@ -1570,9 +1561,8 @@
             if (!selectedCourse) return;
 
             try {
-                // Get course duration to determine available year levels
-                const response = await fetch(`/api/scholarship/course-durations`);
-                const courseDurations = await response.json();
+                // Get course duration directly from helper data
+                const courseDurations = @json(\App\Helpers\ScholarshipDataHelper::getCourseDuration());
 
                 // Find the course duration
                 let duration = 4; // Default to 4 years
@@ -1620,27 +1610,26 @@
             const selectedYearLevel = yearLevelSelect.value;
 
             if (selectedCourse && selectedSemester && selectedYearLevel) {
-                loadSubjectsFromAPI(selectedCourse, selectedYearLevel, selectedSemester);
+                loadSubjectsDirectlyFromHelper(selectedCourse, selectedYearLevel, selectedSemester);
             } else {
                 hideSubjectsSection();
             }
         }
 
-        async function loadSubjectsFromAPI(courseName, yearLevel, semester) {
+        function loadSubjectsDirectlyFromHelper(courseName, yearLevel, semester) {
             try {
-                // Convert year level to number for API
-                const yearLevelNumber = parseInt(yearLevel.replace(/\D/g, ''));
+                // Get subjects data from ScholarshipDataHelper
+                const subjectsData = @json(\App\Helpers\ScholarshipDataHelper::getSubjects());
 
-                const response = await fetch(
-                    `/api/scholarship/subjects/${encodeURIComponent(courseName)}/${yearLevelNumber}/${encodeURIComponent(semester)}`
+                // Use shared function to load subjects
+                loadSubjectsDirectly(
+                    courseName,
+                    yearLevel,
+                    semester,
+                    subjectsData,
+                    showSubjectsFromAPI, // Success callback
+                    showNoSubjectsMessage // Error callback
                 );
-                const data = await response.json();
-
-                if (response.ok && data.subjects && data.subjects.length > 0) {
-                    showSubjectsFromAPI(data.subjects);
-                } else {
-                    showNoSubjectsMessage(courseName, yearLevel, semester);
-                }
             } catch (error) {
                 console.error('Error loading subjects:', error);
                 showNoSubjectsMessage(courseName, yearLevel, semester);

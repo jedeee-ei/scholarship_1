@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="{{ asset('css/pages/application-detail.css') }}">
 @endpush
 
+@push('scripts')
+    <script src="{{ asset('js/course-mapping.js') }}"></script>
+@endpush
+
 @section('breadcrumbs')
     <x-breadcrumb :items="[
         [
@@ -853,24 +857,25 @@
             }
 
             try {
-                // Convert year level to number for API
-                const yearLevelNumber = parseInt(yearLevel.replace(/\D/g, ''));
+                // Get subjects data from ScholarshipDataHelper
+                const subjectsData = @json(\App\Helpers\ScholarshipDataHelper::getSubjects());
 
-                const response = await fetch(
-                    `/api/scholarship/subjects/${encodeURIComponent(course)}/${yearLevelNumber}/${encodeURIComponent(semester)}`
+                // Use shared function to load subjects
+                loadSubjectsDirectly(
+                    course,
+                    yearLevel,
+                    semester,
+                    subjectsData,
+                    displayAcademicSubjects, // Success callback
+                    function(course, yearLevel, semester) { // Error callback
+                        subjectsList.innerHTML = `
+                            <div class="no-subjects-message">
+                                <p>No subjects found for ${course} - ${yearLevel} - ${semester}</p>
+                                <small>Please check if subjects are configured for this course.</small>
+                            </div>
+                        `;
+                    }
                 );
-                const data = await response.json();
-
-                if (response.ok && data.subjects && data.subjects.length > 0) {
-                    displayAcademicSubjects(data.subjects);
-                } else {
-                    subjectsList.innerHTML = `
-                        <div class="no-subjects-message">
-                            <p>No subjects found for ${course} - ${yearLevel} - ${semester}</p>
-                            <small>This may indicate that subjects haven't been configured for this course yet.</small>
-                        </div>
-                    `;
-                }
             } catch (error) {
                 console.error('Error loading subjects:', error);
                 subjectsList.innerHTML = `

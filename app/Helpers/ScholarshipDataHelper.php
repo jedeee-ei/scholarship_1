@@ -11,10 +11,10 @@ class ScholarshipDataHelper
     {
         return [
             'SITE' => 'School of Information Technology and Engineering',
-            'SBA' => 'School of Business Administration',
-            'SHANS' => 'School of Health and Natural Sciences',
-            'SHSS' => 'School of Humanities and Social Sciences',
-            'STE' => 'School of Teacher Education'
+            'SBAHM' => 'School of Business, Accountancy, and Hospitality Management',
+            'SNAHS' => 'School of Nursing and Allied Health Sciences',
+            'SASTE' => 'School of Arts, Sciences and Teacher Education',
+            'BEU' => 'Basic Education Unit'
         ];
     }
 
@@ -33,7 +33,7 @@ class ScholarshipDataHelper
                 'BSCE' => 'Bachelor of Science in Civil Engineering',
                 'BSME' => 'Bachelor of Science in Mechanical Engineering'
             ],
-            'SBA' => [
+            'SBAHM' => [
                 'BSBA-MM' => 'Bachelor of Science in Business Administration Major in Marketing Management',
                 'BSBA-FM' => 'Bachelor of Science in Business Administration Major in Financial Management',
                 'BSBA-HRM' => 'Bachelor of Science in Business Administration Major in Human Resource Management',
@@ -42,7 +42,7 @@ class ScholarshipDataHelper
                 'BSTM' => 'Bachelor of Science in Tourism Management',
                 'BSHM' => 'Bachelor of Science in Hospitality Management'
             ],
-            'SHANS' => [
+            'SNAHS' => [
                 'BSN' => 'Bachelor of Science in Nursing',
                 'BSMT' => 'Bachelor of Science in Medical Technology',
                 'BSPT' => 'Bachelor of Science in Physical Therapy',
@@ -52,15 +52,13 @@ class ScholarshipDataHelper
                 'BSChem' => 'Bachelor of Science in Chemistry',
                 'BSMath' => 'Bachelor of Science in Mathematics'
             ],
-            'SHSS' => [
+            'SASTE' => [
                 'AB-Eng' => 'Bachelor of Arts in English',
                 'AB-Pol' => 'Bachelor of Arts in Political Science',
                 'AB-Hist' => 'Bachelor of Arts in History',
                 'AB-Phil' => 'Bachelor of Arts in Philosophy',
                 'BSDC' => 'Bachelor of Science in Development Communication',
-                'BSS' => 'Bachelor of Science in Sociology'
-            ],
-            'STE' => [
+                'BSS' => 'Bachelor of Science in Sociology',
                 'BEEd' => 'Bachelor of Elementary Education',
                 'BSEd-Eng' => 'Bachelor of Secondary Education Major in English',
                 'BSEd-Math' => 'Bachelor of Secondary Education Major in Mathematics',
@@ -117,11 +115,7 @@ class ScholarshipDataHelper
         return [
             'STEM' => 'Science, Technology, Engineering and Mathematics',
             'ABM' => 'Accountancy, Business and Management',
-            'HUMSS' => 'Humanities and Social Sciences',
-            'GAS' => 'General Academic Strand',
-            'TVL-ICT' => 'Technical-Vocational-Livelihood - Information and Communications Technology',
-            'TVL-HE' => 'Technical-Vocational-Livelihood - Home Economics',
-            'TVL-IA' => 'Technical-Vocational-Livelihood - Industrial Arts'
+            'HUMSS' => 'Humanities and Social Sciences'
         ];
     }
 
@@ -161,8 +155,7 @@ class ScholarshipDataHelper
     {
         return [
             '1st Semester',
-            '2nd Semester',
-            'Summer'
+            '2nd Semester'
         ];
     }
 
@@ -373,7 +366,7 @@ class ScholarshipDataHelper
             'BSCE' => 5,
             'BSME' => 5,
 
-            // SBA Courses
+            // SBAHM Courses
             'BSBA-MM' => 4,
             'BSBA-FM' => 4,
             'BSBA-HRM' => 4,
@@ -382,7 +375,7 @@ class ScholarshipDataHelper
             'BSTM' => 4,
             'BSHM' => 4,
 
-            // SHANS Courses
+            // SNAHS Courses
             'BSN' => 4,
             'BSMT' => 4,
             'BSPT' => 4,
@@ -392,15 +385,13 @@ class ScholarshipDataHelper
             'BSChem' => 4,
             'BSMath' => 4,
 
-            // SHSS Courses
+            // SASTE Courses
             'AB-Eng' => 4,
             'AB-Pol' => 4,
             'AB-Hist' => 4,
             'AB-Phil' => 4,
             'BSDC' => 4,
             'BSS' => 4,
-
-            // STE Courses
             'BEEd' => 4,
             'BSEd-Eng' => 4,
             'BSEd-Math' => 4,

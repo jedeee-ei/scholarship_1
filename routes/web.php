@@ -52,13 +52,8 @@ Route::middleware(['auth', 'student'])->group(function () {
 
 // API routes for data (accessible to authenticated users)
 Route::middleware('auth')->group(function () {
-    Route::get('/api/subjects', [DataController::class, 'getSubjectsForDashboard']);
     Route::prefix('api/scholarship')->group(function () {
-        Route::get('/departments', [DataController::class, 'getDepartments']);
-        Route::get('/departments/{departmentCode}/courses', [DataController::class, 'getCoursesByDepartment']);
-        Route::get('/course-durations', [DataController::class, 'getCourseDurations']);
         Route::get('/department-course-mapping', [DataController::class, 'getDepartmentCourseMapping']);
-        Route::get('/subjects/{courseName}/{yearLevel}/{semester}', [DataController::class, 'getSubjects']);
     });
 });
 
@@ -99,6 +94,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Reports and Archive routes
     Route::post('/admin/reports/generate', [ReportController::class, 'generateReport'])->name('admin.reports.generate');
     Route::post('/admin/reports/preview', [ReportController::class, 'previewReport'])->name('admin.reports.preview');
+
+    // Advanced Reports routes
+    Route::get('/admin/reports/executive-summary', [ReportController::class, 'generateExecutiveSummary'])->name('admin.reports.executive-summary');
+    Route::get('/admin/reports/department-performance', [ReportController::class, 'generateDepartmentReport'])->name('admin.reports.department-performance');
+    Route::get('/admin/reports/enhanced-excel', [ReportController::class, 'generateEnhancedExcel'])->name('admin.reports.enhanced-excel');
     Route::get('/admin/archive/search', [ArchiveController::class, 'searchArchive'])->name('admin.archive.search');
     Route::get('/admin/archive/download/{fileId}', [ArchiveController::class, 'downloadArchive'])->name('admin.archive.download');
     Route::delete('/admin/archive/delete/{fileId}', [ArchiveController::class, 'deleteArchive'])->name('admin.archive.delete');
@@ -161,8 +161,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/download-student-template', [ImportExportController::class, 'downloadStudentTemplate'])->name('admin.download-student-template');
     Route::get('/admin/download-grantee-template', [ImportExportController::class, 'downloadGranteeTemplate'])->name('admin.download-grantee-template');
 
-    // Settings routes
-    Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings');
+    // Settings API routes (used by dashboard)
     Route::get('/admin/current-semester-year', [SettingsController::class, 'getCurrentSemesterYear'])->name('admin.current-semester-year');
     Route::post('/admin/settings', [SettingsController::class, 'saveSettings'])->name('admin.settings.save');
     Route::post('/admin/settings/update-semester', [SettingsController::class, 'updateSemester'])->name('admin.settings.update-semester');

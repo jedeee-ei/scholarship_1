@@ -85,13 +85,13 @@
 
         <div class="chart-container">
             <div class="chart-header">
-                <h3 class="chart-title">Scholarship Types</h3>
-                <button class="chart-download-btn" onclick="downloadChartAsPDF('scholarshipTypesChart', 'Scholarship_Types')" title="Download as PDF">
+                <h3 class="chart-title">Students per Department</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('departmentChart', 'Students_per_Department')" title="Download as PDF">
                     <i class="fas fa-download"></i>
                 </button>
             </div>
             <div class="chart-canvas">
-                <canvas id="scholarshipTypesChart"></canvas>
+                <canvas id="departmentChart"></canvas>
             </div>
         </div>
 
@@ -224,7 +224,6 @@
                                         <select id="currentSem" name="current_semester">
                                             <option value="1st Semester" ${data.current_semester === '1st Semester' ? 'selected' : ''}>1st Semester</option>
                                             <option value="2nd Semester" ${data.current_semester === '2nd Semester' ? 'selected' : ''}>2nd Semester</option>
-                                            <option value="Summer" ${data.current_semester === 'Summer' ? 'selected' : ''}>Summer</option>
                                         </select>
                                     </div>
                                 </div>
@@ -452,14 +451,14 @@
                             datasets: [{
                                 data: Object.values(studentsData),
                                 backgroundColor: [
-                                    '#3498db', // Government - Blue
-                                    '#e74c3c', // Academic - Red
-                                    '#f39c12', // Employee - Orange
-                                    '#9b59b6', // Alumni - Purple
-                                    '#1abc9c', // Others - Teal
-                                    '#34495e', // Additional - Dark Gray
-                                    '#e67e22', // Extra - Dark Orange
-                                    '#2ecc71'  // Extra - Green
+                                    '#e74c3c', // Government - Warm Red
+                                    '#f39c12', // Academic - Warm Orange
+                                    '#e67e22', // Employee - Warm Dark Orange
+                                    '#d35400', // Alumni - Warm Burnt Orange
+                                    '#c0392b', // Others - Warm Dark Red
+                                    '#a93226', // Additional - Deep Red
+                                    '#922b21', // Extra - Darker Red
+                                    '#7b241c'  // Extra - Darkest Red
                                 ],
                                 borderColor: '#ffffff',
                                 borderWidth: 2
@@ -492,33 +491,94 @@
                     });
                 }
 
-                // 2. Scholarship Types Count Chart (Pie Chart)
-                const scholarshipTypesCtx = document.getElementById('scholarshipTypesChart').getContext('2d');
-                const scholarshipTypesData = chartData.scholarshipTypesCount || {};
+                // 2. Students per Department Chart (Pie Chart)
+                const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+                const departmentData = chartData.studentsPerDepartment || {};
 
-                // Check if we have scholarship types data
-                if (Object.keys(scholarshipTypesData).length === 0) {
+                // Check if we have department data
+                if (Object.keys(departmentData).length === 0) {
                     // Show "No data" message
-                    scholarshipTypesCtx.font = "16px Arial";
-                    scholarshipTypesCtx.fillStyle = "#666";
-                    scholarshipTypesCtx.textAlign = "center";
-                    scholarshipTypesCtx.fillText("No scholarship types data available", scholarshipTypesCtx.canvas.width / 2, scholarshipTypesCtx.canvas.height / 2);
+                    departmentCtx.font = "16px Arial";
+                    departmentCtx.fillStyle = "#666";
+                    departmentCtx.textAlign = "center";
+                    departmentCtx.fillText("No department data available", departmentCtx.canvas.width / 2, departmentCtx.canvas.height / 2);
                 } else {
-                    new Chart(scholarshipTypesCtx, {
+                    new Chart(departmentCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(departmentData),
+                            datasets: [{
+                                data: Object.values(departmentData),
+                                backgroundColor: [
+                                    '#3498db', // SITE - Cool Blue
+                                    '#2980b9', // SBAHM - Cool Dark Blue
+                                    '#1abc9c', // SNAHS - Cool Turquoise
+                                    '#16a085', // SASTE - Cool Dark Turquoise
+                                    '#9b59b6', // BEU - Cool Purple
+                                    '#8e44ad', // Additional - Cool Dark Purple
+                                    '#6c5ce7', // Additional - Cool Light Purple
+                                    '#74b9ff'  // Additional - Cool Light Blue
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%', // Makes it a doughnut with 60% cutout
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} student${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 3. Application Status Distribution Chart (Pie Chart)
+                const applicationStatusCtx = document.getElementById('applicationStatusChart').getContext('2d');
+                const applicationStatusData = chartData.applicationStatusData || {};
+
+                // Check if we have application status data
+                if (Object.keys(applicationStatusData).length === 0) {
+                    // Show "No data" message
+                    applicationStatusCtx.font = "16px Arial";
+                    applicationStatusCtx.fillStyle = "#666";
+                    applicationStatusCtx.textAlign = "center";
+                    applicationStatusCtx.fillText("No application data available", applicationStatusCtx.canvas.width / 2, applicationStatusCtx.canvas.height / 2);
+                } else {
+                    new Chart(applicationStatusCtx, {
                         type: 'pie',
                         data: {
-                            labels: Object.keys(scholarshipTypesData),
+                            labels: Object.keys(applicationStatusData),
                             datasets: [{
-                                data: Object.values(scholarshipTypesData),
+                                data: Object.values(applicationStatusData),
                                 backgroundColor: [
-                                    '#27ae60', // Government - Green
-                                    '#8e44ad', // Academic - Purple
-                                    '#e67e22', // Employee - Orange
-                                    '#2980b9', // Alumni - Blue
-                                    '#f39c12', // Others - Yellow
-                                    '#95a5a6', // Additional - Gray
-                                    '#c0392b', // Extra - Red
-                                    '#16a085'  // Extra - Teal
+                                    '#f4d03f', // Pending - Soft Yellow
+                                    '#58d68d', // Approved - Soft Green
+                                    '#ec7063', // Rejected - Soft Red
+                                    '#85c1e9', // Under Review - Soft Blue
+                                    '#bb8fce', // Conditional - Soft Purple
+                                    '#aab7b8', // Others - Soft Gray
                                 ],
                                 borderColor: '#ffffff',
                                 borderWidth: 2
@@ -542,7 +602,7 @@
                                             const value = context.parsed || 0;
                                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                            return `${label}: ${value} type${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                            return `${label}: ${value} applications (${percentage}%)`;
                                         }
                                     }
                                 }
@@ -551,7 +611,7 @@
                     });
                 }
 
-                // 3. Graduates Chart (Pie Chart)
+                // 4. Graduates Chart (Pie Chart)
                 const graduatesCtx = document.getElementById('graduatesChart').getContext('2d');
                 const graduatesData = chartData.graduatesData || {};
 
@@ -570,14 +630,14 @@
                             datasets: [{
                                 data: Object.values(graduatesData),
                                 backgroundColor: [
-                                    '#2ecc71', // Green
-                                    '#3498db', // Blue
-                                    '#e74c3c', // Red
-                                    '#f39c12', // Orange
-                                    '#9b59b6', // Purple
-                                    '#1abc9c', // Teal
-                                    '#34495e', // Dark Gray
-                                    '#e67e22'  // Dark Orange
+                                    '#2ecc71', // Light Green
+                                    '#27ae60', // Medium Green
+                                    '#229954', // Dark Green
+                                    '#1e8449', // Darker Green
+                                    '#196f3d', // Deep Green
+                                    '#145a32', // Very Dark Green
+                                    '#0e4b99', // Green-Blue
+                                    '#0a3d62'  // Dark Green-Blue
                                 ],
                                 borderColor: '#ffffff',
                                 borderWidth: 2

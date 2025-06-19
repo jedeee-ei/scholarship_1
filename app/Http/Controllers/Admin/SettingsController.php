@@ -6,23 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use App\Models\Grantee;
 use App\Models\ScholarshipApplication;
-use App\Models\Archive;
+use App\Models\ArchivedStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class SettingsController extends Controller
 {
-    /**
-     * Show settings page
-     */
-    public function index()
-    {
-        $currentSemester = SystemSetting::get('current_semester', '1st Semester');
-        $currentAcademicYear = SystemSetting::get('current_academic_year', '2024-2025');
-        $applicationStatus = SystemSetting::get('application_status', 'closed');
 
-        return view('admin.settings', compact('currentSemester', 'currentAcademicYear', 'applicationStatus'));
-    }
 
     /**
      * Get current semester and academic year
@@ -147,7 +137,7 @@ class SettingsController extends Controller
                 : ($grantee->notes ?: 'Previously inactive - archived due to semester/year update');
 
             // Create archive record
-            Archive::create([
+            ArchivedStudent::create([
                 'original_application_id' => $grantee->id ?? 'N/A',
                 'student_id' => $grantee->student_id,
                 'first_name' => $grantee->first_name,

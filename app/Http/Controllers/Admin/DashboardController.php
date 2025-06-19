@@ -178,9 +178,31 @@ class DashboardController extends Controller
             $scholarshipCounts[] = $granteesUpToYear + $archivedUpToYear;
         }
 
+        // 4. Enhanced Chart: Students per Department
+        $studentsPerDepartment = [];
+        $departments = Grantee::select('department', DB::raw('count(*) as count'))
+            ->whereNotNull('department')
+            ->groupBy('department')
+            ->pluck('count', 'department')
+            ->toArray();
+
+        // Use short department codes for chart display
+        $departmentMapping = [
+            'SITE' => 'SITE',
+            'SBAHM' => 'SBAHM',
+            'SNASH' => 'SNAHS',  // Fixed typo: SNASH -> SNAHS
+            'SASTE' => 'SASTE',
+            'BEU' => 'BEU'  // Added BEU for completeness
+        ];
+
+        foreach ($departments as $dept => $count) {
+            $displayName = $departmentMapping[$dept] ?? $dept;
+            $studentsPerDepartment[$displayName] = $count;
+        }
+
         return [
             'studentsPerScholarshipType' => $studentsPerScholarshipType,
-            'scholarshipTypesCount' => $scholarshipTypesCount,
+            'studentsPerDepartment' => $studentsPerDepartment,
             'graduatesData' => $graduatesData,
             'years' => $years,
             'scholarshipCounts' => $scholarshipCounts,
