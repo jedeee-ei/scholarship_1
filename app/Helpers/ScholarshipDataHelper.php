@@ -26,45 +26,38 @@ class ScholarshipDataHelper
         $courses = [
             'SITE' => [
                 'BSIT' => 'Bachelor of Science in Information Technology',
-                'BSCS' => 'Bachelor of Science in Computer Science',
+                'BLIS' => 'Bachelor of  Library and Information Science',
                 'BSCpE' => 'Bachelor of Science in Computer Engineering',
-                'BSECE' => 'Bachelor of Science in Electronics and Communications Engineering',
-                'BSEE' => 'Bachelor of Science in Electrical Engineering',
                 'BSCE' => 'Bachelor of Science in Civil Engineering',
-                'BSME' => 'Bachelor of Science in Mechanical Engineering'
+                'BSEsE' => 'Bachelor of Science in Environmental and Sanitary Engineering'
             ],
             'SBAHM' => [
                 'BSBA-MM' => 'Bachelor of Science in Business Administration Major in Marketing Management',
                 'BSBA-FM' => 'Bachelor of Science in Business Administration Major in Financial Management',
-                'BSBA-HRM' => 'Bachelor of Science in Business Administration Major in Human Resource Management',
+                'BSBA-OM' => 'Bachelor of Science in Business Administration Major in Operations Management',
                 'BSA' => 'Bachelor of Science in Accountancy',
+                'BSE' => 'Bachelor of Science in Entrepreneurship',
                 'BSMA' => 'Bachelor of Science in Management Accounting',
+                'BSHM' => 'Bachelor of Science in Hospitality Management',
                 'BSTM' => 'Bachelor of Science in Tourism Management',
-                'BSHM' => 'Bachelor of Science in Hospitality Management'
+                'BSPDMI'=> 'Bachelor of Science in Product Design and Marketing Innovation'
             ],
             'SNAHS' => [
                 'BSN' => 'Bachelor of Science in Nursing',
                 'BSMT' => 'Bachelor of Science in Medical Technology',
                 'BSPT' => 'Bachelor of Science in Physical Therapy',
                 'BSRT' => 'Bachelor of Science in Radiologic Technology',
-                'BSPsych' => 'Bachelor of Science in Psychology',
-                'BSBio' => 'Bachelor of Science in Biology',
-                'BSChem' => 'Bachelor of Science in Chemistry',
-                'BSMath' => 'Bachelor of Science in Mathematics'
+                'BSM' => 'Bachelor of Science in Midwifery',
             ],
             'SASTE' => [
-                'AB-Eng' => 'Bachelor of Arts in English',
-                'AB-Pol' => 'Bachelor of Arts in Political Science',
-                'AB-Hist' => 'Bachelor of Arts in History',
-                'AB-Phil' => 'Bachelor of Arts in Philosophy',
-                'BSDC' => 'Bachelor of Science in Development Communication',
-                'BSS' => 'Bachelor of Science in Sociology',
-                'BEEd' => 'Bachelor of Elementary Education',
-                'BSEd-Eng' => 'Bachelor of Secondary Education Major in English',
-                'BSEd-Math' => 'Bachelor of Secondary Education Major in Mathematics',
-                'BSEd-Sci' => 'Bachelor of Secondary Education Major in Science',
-                'BSEd-SS' => 'Bachelor of Secondary Education Major in Social Studies',
-                'BSEd-Fil' => 'Bachelor of Secondary Education Major in Filipino',
+                'AB-Eng' => 'Bachelor of Arts in English Language Studies',
+                'BSP' => 'Bachelor of Science in Psychology',
+                'BSB' => 'Bachelor of Science in Biology',
+                'BSPA' => 'Bachelor of Science in Public Administration',
+                'BSSW' => 'Bachelor of Science in Social Work',
+                'BSB-M' => 'Bachelor of Science in Biology Major in MicroBiology',
+                'BSE' => 'Bachelor of Secondary Education',
+                'BEE' => 'Bachelor of Elementary Education',
                 'BPED' => 'Bachelor of Physical Education'
             ]
         ];
