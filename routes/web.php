@@ -112,7 +112,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Applications management routes
     Route::get('/admin/applications/data', [ApplicationController::class, 'getApplicationsData'])->name('admin.applications.data');
     Route::get('/admin/applications/{id}/detail', [ApplicationController::class, 'getApplicationDetail'])->name('admin.application.detail');
-    Route::post('/admin/applications/{id}/status', [ApplicationController::class, 'updateApplicationStatus'])->name('admin.application.update-status');
+    Route::post('/admin/applications/{id}/status', [ApplicationController::class, 'updateStatus'])->name('admin.application.update-status');
+    Route::post('/applications/{id}/status', [ApplicationController::class, 'updateStatus'])->name('admin.application.status');
 
     // Document management routes
     Route::get('/admin/applications/{application}/documents/{document}/download', [DocumentController::class, 'downloadDocument'])->name('admin.application.document.download');

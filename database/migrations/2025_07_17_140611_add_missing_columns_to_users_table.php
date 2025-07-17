@@ -12,6 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            // Add middle_name column if it doesn't exist
+            if (!Schema::hasColumn('users', 'middle_name')) {
+                $table->string('middle_name')->nullable()->after('last_name');
+            }
+
             // Add contact_number column if it doesn't exist
             if (!Schema::hasColumn('users', 'contact_number')) {
                 $table->string('contact_number', 11)->nullable()->after('password_changed');
@@ -37,6 +42,10 @@ return new class extends Migration
 
             if (Schema::hasColumn('users', 'contact_number')) {
                 $table->dropColumn('contact_number');
+            }
+
+            if (Schema::hasColumn('users', 'middle_name')) {
+                $table->dropColumn('middle_name');
             }
         });
     }
