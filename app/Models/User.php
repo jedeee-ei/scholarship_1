@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'first_name',
         'last_name',
+        'middle_name',
         'email',
         'password',
         'role',
@@ -30,6 +31,8 @@ class User extends Authenticatable
         'year_level',
         'status',
         'password_changed',
+        'contact_number',
+        'is_active',
     ];
 
     /**
@@ -53,6 +56,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'password_changed' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -91,4 +95,3 @@ class User extends Authenticatable
         return $this->role === 'administrator';
     }
 }
-

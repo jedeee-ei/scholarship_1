@@ -62,7 +62,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/applications', [ApplicationController::class, 'index'])->name('admin.applications');
     Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('admin.application.view');
-    Route::post('/applications/{id}/status', [ApplicationController::class, 'updateStatus'])->name('admin.application.status');
+
 
     // New admin page routes
     Route::get('/admin/students', [GranteeController::class, 'index'])->name('admin.students');
@@ -85,10 +85,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/archived-students', [ArchiveController::class, 'index'])->name('admin.archived-students');
     Route::get('/admin/archived-students/export', [ArchiveController::class, 'exportArchivedStudents'])->name('admin.archived-students.export');
     Route::get('/admin/archived-students/{id}/details', [ArchiveController::class, 'getArchivedStudentDetails'])->name('admin.archived-students.details');
-    Route::get('/admin/archived-scholarships', [ArchiveController::class, 'index'])->name('admin.archived-scholarships');
+
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports');
     // New admin functionality routes
-    Route::post('/admin/students/import', [ImportExportController::class, 'bulkImportStudents'])->name('admin.students.import');
+
     Route::get('/admin/applications/export', [ImportExportController::class, 'exportApplicationsData'])->name('admin.applications.export');
 
     // Reports and Archive routes
@@ -127,8 +127,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard-stats', [DashboardController::class, 'getDashboardStats']);
     });
 
-    // API route for checking duplicate student IDs
-    Route::post('/api/check-student-id', [ScholarshipController::class, 'checkStudentId'])->middleware('auth');
+
 
     // CSRF token refresh route
     Route::get('/csrf-token', function () {
@@ -145,20 +144,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Toggle application status route
     Route::post('/admin/toggle-application-status', [DashboardController::class, 'toggleApplicationStatus'])->name('admin.toggle-application-status');
 
-    // Dashboard action routes
-    Route::post('/admin/bulk-import', [ImportExportController::class, 'bulkImport'])->name('admin.bulk-import');
+
     Route::get('/admin/download-template', [ImportExportController::class, 'downloadTemplate'])->name('admin.download-template');
     Route::get('/admin/export/{type}', [ImportExportController::class, 'exportData'])->name('admin.export');
 
 
     // Student import routes
-    Route::post('/admin/import-students', [ImportExportController::class, 'importStudents'])->name('admin.import-students');
+    Route::post('/admin/students/import', [ImportExportController::class, 'bulkImportStudents'])->name('admin.students.import');
     Route::post('/admin/import-grantees', [ImportExportController::class, 'importGrantees'])->name('admin.import-grantees');
     Route::post('/admin/import-grantees-dynamic', [ImportExportController::class, 'importGranteesDynamic'])->name('admin.import-grantees-dynamic');
     Route::post('/admin/add-grantee', [GranteeController::class, 'addGrantee'])->name('admin.add-grantee');
 
 
-    Route::get('/admin/download-student-template', [ImportExportController::class, 'downloadStudentTemplate'])->name('admin.download-student-template');
+    Route::get('/admin/download-student-template', [ImportExportController::class, 'downloadTemplate'])->name('admin.download-student-template');
     Route::get('/admin/download-grantee-template', [ImportExportController::class, 'downloadGranteeTemplate'])->name('admin.download-grantee-template');
 
     // Settings API routes (used by dashboard)

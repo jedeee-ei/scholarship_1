@@ -1,6 +1,5 @@
 // Login Page Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Login page loaded');
 
     // Add entrance animation to buttons
     const buttons = document.querySelectorAll('.login-btn');
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Handle login selection
 function selectLogin(loginType) {
-    console.log(`Selected login type: ${loginType}`);
 
     // Add click animation
     const clickedButton = event.target.closest('.login-btn');
@@ -272,7 +270,7 @@ function handleLogin(event, type) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    console.log(`Login attempt for ${type}:`, { username, password });
+
 
     // Show loading state
     const submitBtn = document.querySelector('.login-submit-btn');

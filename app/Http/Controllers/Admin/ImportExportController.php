@@ -407,29 +407,7 @@ class ImportExportController extends Controller
         ]);
     }
 
-    /**
-     * Download student template
-     */
-    public function downloadStudentTemplate()
-    {
-        return $this->downloadTemplate();
-    }
 
-    /**
-     * Import students (alternative method)
-     */
-    public function importStudents(Request $request)
-    {
-        return $this->bulkImportStudents($request);
-    }
-
-    /**
-     * Bulk import (alternative method)
-     */
-    public function bulkImport(Request $request)
-    {
-        return $this->bulkImportStudents($request);
-    }
 
     /**
      * Import grantees with simplified format (Student ID, Name, Scholarship Type)
@@ -740,7 +718,7 @@ class ImportExportController extends Controller
         $header = fgetcsv($handle); // Get header row
 
         // Normalize header names
-        $header = array_map(function($col) {
+        $header = array_map(function ($col) {
             return strtolower(trim(str_replace(' ', '_', $col)));
         }, $header);
 
@@ -872,7 +850,7 @@ class ImportExportController extends Controller
         $header = array_shift($rows); // Remove header row
 
         // Normalize header names
-        $header = array_map(function($col) {
+        $header = array_map(function ($col) {
             return strtolower(trim(str_replace(' ', '_', $col)));
         }, $header);
 

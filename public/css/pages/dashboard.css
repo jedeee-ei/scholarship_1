@@ -423,6 +423,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    padding: 20px;
 }
 
 .table-header {
@@ -449,7 +450,6 @@
 .students-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 .archive-table th,
@@ -524,38 +524,8 @@
    INLINE STYLES MOVED FROM ADMIN DASHBOARD BLADE FILE
    =================================== */
 
-/* Modal Styles */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 12px;
-    padding: 0;
-    max-width: 650px;
-    width: 95%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    margin: 20px;
-}
-
+/* Dashboard-specific modal overrides */
 .modal-header {
-    padding: 20px 25px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     background: #1e5631;
     color: white;
     border-radius: 12px 12px 0 0;
@@ -747,60 +717,7 @@
     border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
-/* Enhanced Toggle Switch Styles */
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 64px;
-    height: 32px;
-    flex-shrink: 0;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #e74c3c;
-    border-radius: 32px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 3px;
-    top: 3px;
-    background: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease;
-}
-
-input:checked + .toggle-slider {
-    background: #052f11;
-}
-
-input:checked + .toggle-slider:before {
-    transform: translateX(32px);
-}
+/* Dashboard-specific toggle styles removed - using modal styles instead */
 
 /* Application Control Section */
 .application-control-section {
@@ -1036,70 +953,8 @@ input:checked + .toggle-slider:before {
     z-index: 1000;
 }
 
-.modal-content {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 0;
-    max-width: 700px;
-    width: 95%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    margin: 20px;
-}
-
-.modal-header {
-    padding: 24px 32px;
-    border-bottom: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1e5631;
-    color: white;
-    border-radius: 20px 20px 0 0;
-}
-
-.modal-header h3 {
-    margin: 0;
-    color: white;
-    font-size: 20px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
+/* Dashboard-specific modal overrides for settings modal */
 .modal-header h3::before {
     content: '⚙️';
     font-size: 18px;
-}
-
-.close-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    font-size: 20px;
-    cursor: pointer;
-    color: white;
-    padding: 0;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.modal-body {
-    padding: 32px 40px;
-    background: #ffffff;
-}
-
-.modal-footer {
-    padding: 24px 40px;
-    border-top: 1px solid #e8f0fe;
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    background: #f8fffe;
-    border-radius: 0 0 20px 20px;
 }

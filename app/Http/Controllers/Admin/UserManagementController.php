@@ -281,69 +281,8 @@ class UserManagementController extends Controller
         }
     }
 
-    /**
-     * Toggle student active status
-     */
-    public function toggleActiveStatus($id)
-    {
-        try {
-            $user = User::findOrFail($id);
 
-            $user->update([
-                'is_active' => !$user->is_active
-            ]);
 
-            $status = $user->is_active ? 'activated' : 'deactivated';
-
-            Log::info("Student {$status} by admin", [
-                'student_id' => $user->student_id,
-                'new_status' => $user->is_active,
-                'updated_by' => Auth::user() ? Auth::user()->name : 'Admin'
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => "Student {$status} successfully",
-                'is_active' => $user->is_active
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Toggle active status error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Status update failed: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get student statistics
-     */
-    public function getStudentStatistics()
-    {
-        $stats = [
-            'total' => User::where('role', 'student')->count(),
-            'active' => User::where('role', 'student')->where('is_active', true)->count(),
-            'inactive' => User::where('role', 'student')->where('is_active', false)->count(),
-            'by_year_level' => User::where('role', 'student')
-                ->selectRaw('year_level, COUNT(*) as count')
-                ->groupBy('year_level')
-                ->pluck('count', 'year_level')
-                ->toArray(),
-            'by_course' => User::where('role', 'student')
-                ->selectRaw('course, COUNT(*) as count')
-                ->groupBy('course')
-                ->orderBy('count', 'desc')
-                ->take(10)
-                ->pluck('count', 'course')
-                ->toArray(),
-            'recent_registrations' => User::where('role', 'student')
-                ->orderBy('created_at', 'desc')
-                ->take(5)
-                ->get(['student_id', 'first_name', 'last_name', 'email', 'created_at'])
-        ];
-
-        return response()->json($stats);
-    }
 
     /**
      * Get students registered for scholarships
@@ -379,21 +318,21 @@ class UserManagementController extends Controller
             'created_at',
             'application_id'
         )
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($student) {
-            return [
-                'id' => $student->application_id,
-                'student_id' => $student->student_id,
-                'first_name' => $student->first_name,
-                'last_name' => $student->last_name,
-                'name' => trim($student->first_name . ' ' . $student->last_name),
-                'email' => $student->email,
-                'contact_number' => $student->contact_number,
-                'registration_date' => $student->created_at->format('M d, Y'),
-                'source' => 'application'
-            ];
-        });
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($student) {
+                return [
+                    'id' => $student->application_id,
+                    'student_id' => $student->student_id,
+                    'first_name' => $student->first_name,
+                    'last_name' => $student->last_name,
+                    'name' => trim($student->first_name . ' ' . $student->last_name),
+                    'email' => $student->email,
+                    'contact_number' => $student->contact_number,
+                    'registration_date' => $student->created_at->format('M d, Y'),
+                    'source' => 'application'
+                ];
+            });
 
         // Get students from grantees (approved scholarships)
         $granteeStudents = Grantee::select(
@@ -405,21 +344,21 @@ class UserManagementController extends Controller
             'created_at',
             'application_id'
         )
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($student) {
-            return [
-                'id' => $student->student_id,
-                'student_id' => $student->student_id,
-                'first_name' => $student->first_name,
-                'last_name' => $student->last_name,
-                'name' => trim($student->first_name . ' ' . $student->last_name),
-                'email' => $student->email,
-                'contact_number' => $student->contact_number,
-                'registration_date' => $student->created_at->format('M d, Y'),
-                'source' => 'grantee'
-            ];
-        });
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($student) {
+                return [
+                    'id' => $student->student_id,
+                    'student_id' => $student->student_id,
+                    'first_name' => $student->first_name,
+                    'last_name' => $student->last_name,
+                    'name' => trim($student->first_name . ' ' . $student->last_name),
+                    'email' => $student->email,
+                    'contact_number' => $student->contact_number,
+                    'registration_date' => $student->created_at->format('M d, Y'),
+                    'source' => 'grantee'
+                ];
+            });
 
         // Get archived students
         $archivedStudents = ArchivedStudent::select(
@@ -431,21 +370,21 @@ class UserManagementController extends Controller
             'contact_number',
             'created_at'
         )
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($student) {
-            return [
-                'id' => $student->id,
-                'student_id' => $student->student_id,
-                'first_name' => $student->first_name,
-                'last_name' => $student->last_name,
-                'name' => trim($student->first_name . ' ' . $student->last_name),
-                'email' => $student->email,
-                'contact_number' => $student->contact_number,
-                'registration_date' => $student->created_at->format('M d, Y'),
-                'source' => 'archived'
-            ];
-        });
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'student_id' => $student->student_id,
+                    'first_name' => $student->first_name,
+                    'last_name' => $student->last_name,
+                    'name' => trim($student->first_name . ' ' . $student->last_name),
+                    'email' => $student->email,
+                    'contact_number' => $student->contact_number,
+                    'registration_date' => $student->created_at->format('M d, Y'),
+                    'source' => 'archived'
+                ];
+            });
 
         // Combine all students (including archived) and remove duplicates
         // Priority: grantees > applications > users > archived

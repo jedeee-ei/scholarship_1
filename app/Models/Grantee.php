@@ -117,39 +117,7 @@ class Grantee extends Model
         return trim($this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . $this->last_name);
     }
 
-    /**
-     * Get the formatted scholarship type.
-     */
-    public function getFormattedScholarshipTypeAttribute(): string
-    {
-        return match ($this->scholarship_type) {
-            'government' => 'Government Scholarship',
-            'academic' => 'Academic Scholarship',
-            'employees' => 'Employee\'s Scholarship',
-            'alumni' => 'Alumni Scholarship',
-            default => ucfirst($this->scholarship_type) . ' Scholarship'
-        };
-    }
 
-    /**
-     * Get the complete address.
-     */
-    public function getCompleteAddressAttribute(): string
-    {
-        if ($this->address) {
-            return $this->address;
-        }
-
-        $addressParts = array_filter([
-            $this->street,
-            $this->barangay,
-            $this->city,
-            $this->province,
-            $this->zipcode
-        ]);
-
-        return implode(', ', $addressParts);
-    }
 
     /**
      * Scope for active grantees.
@@ -183,13 +151,5 @@ class Grantee extends Model
         return $this->is_renewable &&
             $this->next_renewal_date &&
             $this->next_renewal_date <= now();
-    }
-
-    /**
-     * Get the original application.
-     */
-    public function application()
-    {
-        return $this->belongsTo(ScholarshipApplication::class, 'application_id', 'application_id');
     }
 }

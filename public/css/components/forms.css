@@ -236,35 +236,7 @@
     background-color: #c82333;
 }
 
-/* Toggle Switches */
-.toggle-switch {
-    position: relative;
-    width: 50px;
-    height: 24px;
-    background-color: #ccc;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.toggle-switch.active {
-    background-color: #1e5631;
-}
-
-.toggle-slider {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.toggle-switch.active .toggle-slider {
-    transform: translateX(26px);
-}
+/* Toggle Switches - Using modal-specific styles instead */
 
 /* Status Badges */
 .status-badge {

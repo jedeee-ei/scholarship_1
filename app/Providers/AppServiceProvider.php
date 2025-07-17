@@ -19,11 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register the middleware
-        $this->app['router']->aliasMiddleware('ensure.application.ownership', \App\Http\Middleware\EnsureStudentOwnsApplication::class);
-
         // Add scholarship renewal period config
         config(['scholarship.renewal_period' => false]); // Set to true during renewal periods
     }
 }
-

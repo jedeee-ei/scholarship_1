@@ -4,7 +4,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/students.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/pages/archived-students.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pages/archives.css') }}">
 @endpush
 
 @section('breadcrumbs')
@@ -62,10 +62,11 @@
                             </span>
                         </td>
                         <td>
-                            <span class="remarks-badge {{ $student->archive_type === 'inactive' ? 'inactive-remarks' : 'masterlist-remarks' }}"
-                                  title="Archive Type: {{ $student->archive_type }} | Remarks: {{ $student->remarks ?? 'NULL' }}">
-                                @if($student->archive_type === 'inactive')
-                                    @if($student->remarks)
+                            <span
+                                class="remarks-badge {{ $student->archive_type === 'inactive' ? 'inactive-remarks' : 'masterlist-remarks' }}"
+                                title="Archive Type: {{ $student->archive_type }} | Remarks: {{ $student->remarks ?? 'NULL' }}">
+                                @if ($student->archive_type === 'inactive')
+                                    @if ($student->remarks)
                                         {{ $student->remarks }}
                                     @else
                                         No specific reason provided

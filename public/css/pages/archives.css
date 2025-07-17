@@ -192,12 +192,14 @@
 }
 
 /* Table Styling */
-.archive-table {
+.archive-table,
+.students-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.archive-table th {
+.archive-table th,
+.students-table th {
     background-color: #f8f9fa;
     padding: 15px;
     text-align: left;
@@ -207,7 +209,8 @@
     font-size: 14px;
 }
 
-.archive-table td {
+.archive-table td,
+.students-table td {
     padding: 15px;
     border-bottom: 1px solid #eee;
     font-size: 14px;
@@ -215,12 +218,14 @@
     vertical-align: middle;
 }
 
-.archive-table tr:last-child td {
+.archive-table tr:last-child td,
+.students-table tr:last-child td {
     border-bottom: none;
 }
 
 /* Hover effects for table rows */
-.archive-table tbody tr:hover {
+.archive-table tbody tr:hover,
+.students-table tbody tr:hover {
     background-color: rgba(5, 47, 17, 0.05);
 }
 
