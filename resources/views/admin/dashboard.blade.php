@@ -5,6 +5,8 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/dashboard.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 @endpush
 
 @section('breadcrumbs')
@@ -18,53 +20,8 @@
             <div class="date">{{ date('F d, Y') }}</div>
         </div>
     </div>
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <a href="#" class="action-card" onclick="showAddScholarshipForm()">
-            <div class="action-icon">
-                <i class="fas fa-plus-circle"></i>
-            </div>
-            <div class="action-title">Add Scholarship</div>
-            <div class="action-description">Create new scholarship program</div>
-        </a>
-        <a href="#" class="action-card" onclick="showBulkImportForm()">
-            <div class="action-icon">
-                <i class="fas fa-upload"></i>
-            </div>
-            <div class="action-title">Import Grantees</div>
-            <div class="action-description">Bulk import grantee data</div>
-        </a>
-        <a href="#" class="action-card" onclick="exportApplications()">
-            <div class="action-icon">
-                <i class="fas fa-download"></i>
-            </div>
-            <div class="action-title">Export Data</div>
-            <div class="action-description">Download application reports</div>
-        </a>
-        <a href="#" class="action-card" onclick="showSystemSettings()">
-            <div class="action-icon">
-                <i class="fas fa-cogs"></i>
-            </div>
-            <div class="action-title">System Settings</div>
-            <div class="action-description">Configure system parameters</div>
-        </a>
-    </div>
-
     <!-- Statistics Cards -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-header">
-                <h3 class="stat-title">Total Applications</h3>
-                <div class="stat-icon total">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-            </div>
-            <div class="stat-value">{{ $stats['total'] }}</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{ $changes['total'] }}% from last month
-            </div>
-        </div>
-
         <div class="stat-card">
             <div class="stat-header">
                 <h3 class="stat-title">Pending Applications</h3>
@@ -72,12 +29,12 @@
                     <i class="fas fa-clock"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ $stats['pending'] }}</div>
-            <div class="stat-change {{ $changes['pending'] > 0 ? 'negative' : 'positive' }}">
-                <i class="fas fa-arrow-{{ $changes['pending'] > 0 ? 'up' : 'down' }}"></i>
-                {{ abs($changes['pending']) }}% from last month
+            <div class="stat-value" id="pendingApplicationsCount">{{ $pendingApplicationsCount }}</div>
+            <div class="stat-change neutral">
+                <i class="fas fa-calendar"></i> Current Semester
             </div>
         </div>
+
         <div class="stat-card">
             <div class="stat-header">
                 <h3 class="stat-title">Approved Applications</h3>
@@ -85,52 +42,83 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ $stats['approved'] }}</div>
+            <div class="stat-value" id="approvedApplicationsCount">{{ $approvedApplicationsCount }}</div>
             <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{ $changes['approved'] }}% from last month
+                <i class="fas fa-users"></i> Active Grantees
             </div>
         </div>
+
         <div class="stat-card">
             <div class="stat-header">
-                <h3 class="stat-title">Rejected Applications</h3>
-                <div class="stat-icon rejected">
-                    <i class="fas fa-times-circle"></i>
+                <h3 class="stat-title">System Settings</h3>
+                <div class="stat-icon total">
+                    <i class="fas fa-cogs"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ $stats['rejected'] }}</div>
+            <div class="stat-value" style="font-size: 18px; line-height: 1.2;">
+                {{ $currentSemester }}<br>
+                <small style="font-size: 14px; color: #666;">{{ $currentAcademicYear }}</small>
+            </div>
             <div class="stat-change neutral">
-                <i class="fas fa-minus"></i> {{ $changes['rejected'] }}% from last month
+                <a href="#" onclick="showSettingsModal(); return false;" style="color: #1e5631; text-decoration: none;">
+                    <i class="fas fa-edit"></i> Configure
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Charts Section -->
+
+
+    <!-- Pie Charts Section -->
     <div class="charts-section">
         <div class="chart-container">
-            <h3 class="chart-title">Applications Trend (Last 6 Months)</h3>
+            <div class="chart-header">
+                <h3 class="chart-title">Grantees per Scholarship Type</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('studentsChart', 'Grantees_per_Scholarship_Type')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
             <div class="chart-canvas">
-                <canvas id="applicationsChart"></canvas>
+                <canvas id="studentsChart"></canvas>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 class="chart-title">Application Status</h3>
-            <div class="chart-canvas">
-                <canvas id="statusChart"></canvas>
+            <div class="chart-header">
+                <h3 class="chart-title">Students per Department</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('departmentChart', 'Students_per_Department')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
             </div>
-        </div>
-
-        <div class="chart-container">
-            <h3 class="chart-title">GWA Distribution</h3>
-            <div class="chart-canvas">
-                <canvas id="gwaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h3 class="chart-title">Department Distribution</h3>
             <div class="chart-canvas">
                 <canvas id="departmentChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Graduates per Academic Year</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('graduatesChart', 'Graduates_per_Academic_Year')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+            <div class="chart-canvas">
+                <canvas id="graduatesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line Chart Section -->
+    <div class="charts-section line-chart-section">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Total Scholarship Recipients Growth</h3>
+                <button class="chart-download-btn" onclick="downloadChartAsPDF('yearlyChart', 'Total_Scholarship_Recipients_Growth')" title="Download as PDF">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+            <div class="chart-canvas">
+                <canvas id="yearlyChart"></canvas>
             </div>
         </div>
     </div>
@@ -138,10 +126,158 @@
 
 @push('scripts')
     <script>
+        // Action button functions - Define immediately for onclick handlers
+        window.showBulkImportForm = function() {
+            console.log('showBulkImportForm called');
+            try {
+                // Show modal for bulk import
+                window.showBulkImportModal();
+            } catch (error) {
+                console.error('Error in showBulkImportForm:', error);
+            }
+        };
+
+        window.exportApplications = function() {
+            console.log('exportApplications called');
+            try {
+                // Show export options modal
+                window.showExportModal();
+            } catch (error) {
+                console.error('Error in exportApplications:', error);
+            }
+        };
+
+        window.showSystemSettings = function() {
+            console.log('showSystemSettings called');
+            try {
+                // Show system settings modal
+                window.showSettingsModal();
+            } catch (error) {
+                console.error('Error in showSystemSettings:', error);
+                alert('Error opening system settings. Please try again.');
+            }
+        };
+
+        // Modal utility functions
+        window.closeModal = function() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+
+
+        // System Settings Modal
+        window.showSettingsModal = async function() {
+            try {
+                // Fetch current settings
+                const response = await fetch('/admin/current-semester-year');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>System Settings</h3>
+                            <button onclick="closeModal()" class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="settingsForm">
+                                <!-- Application Control Section -->
+                                <div class="settings-section">
+                                    <h4>Application Control</h4>
+                                    <div class="application-control-section">
+                                        <div class="application-control-info">
+                                            <h5>Allow New Applications</h5>
+                                            <p>Enable or disable student scholarship applications</p>
+                                        </div>
+                                        <div class="toggle-control">
+                                            <div class="toggle-container">
+                                                <label class="toggle-switch">
+                                                    <input type="checkbox" id="modalApplicationToggle" name="application_status" ${data.application_status === 'open' ? 'checked' : ''}>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                                <span id="modalApplicationStatusText" class="status-text" style="color: ${data.application_status === 'open' ? '#28a745' : '#dc3545'};">
+                                                    ${data.application_status === 'open' ? 'Open' : 'Closed'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Year Settings Section -->
+                                <div class="settings-section">
+                                    <h4>Academic Year Settings</h4>
+                                    <div class="form-group">
+                                        <label for="currentAY">Current Academic Year:</label>
+                                        <input type="text" id="currentAY" name="current_academic_year" value="${data.current_academic_year}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="currentSem">Current Semester:</label>
+                                        <select id="currentSem" name="current_semester">
+                                            <option value="1st Semester" ${data.current_semester === '1st Semester' ? 'selected' : ''}>1st Semester</option>
+                                            <option value="2nd Semester" ${data.current_semester === '2nd Semester' ? 'selected' : ''}>2nd Semester</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Advanced Operations Section -->
+                                <div class="settings-section">
+                                    <h4>Advanced Operations</h4>
+                                    <div class="advanced-operations">
+                                        <button type="button" onclick="updateSemester()" class="btn-warning">
+                                            <i class="fas fa-calendar-alt"></i> Update Semester
+                                        </button>
+                                        <button type="button" onclick="updateAcademicYear()" class="btn-danger">
+                                            <i class="fas fa-calendar-check"></i> Update Academic Year
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                            <button onclick="saveSettings()" class="btn-primary">Save Settings</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Add toggle functionality
+                const toggle = document.getElementById('modalApplicationToggle');
+                const statusText = document.getElementById('modalApplicationStatusText');
+
+                if (toggle && statusText) {
+                    toggle.addEventListener('change', function() {
+                        const isOpen = this.checked;
+                        statusText.textContent = isOpen ? 'Open' : 'Closed';
+                        statusText.style.color = isOpen ? '#28a745' : '#dc3545';
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                alert('Error loading current settings. Please try again.');
+            }
+        };
+
         // Initialize charts when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
-            initializeNavigation();
+            console.log('Dashboard DOM loaded, initializing...');
+            try {
+                initializeCharts();
+                initializeNavigation();
+                console.log('Dashboard initialization complete');
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+            }
         });
 
         // Initialize navigation to ensure proper link behavior
@@ -155,366 +291,502 @@
             });
         }
 
-        // Chart initialization
+        // Simple notification function
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 500;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // PDF Download Function
+        async function downloadChartAsPDF(chartId, filename) {
+            try {
+                // Show loading state
+                const button = event.target.closest('.chart-download-btn');
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                button.disabled = true;
+
+                // Get the chart container and ensure it's fully visible
+                const chartContainer = document.getElementById(chartId).closest('.chart-container');
+
+                // Wait a moment for any animations to complete
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Create canvas from the chart container with better options
+                const canvas = await html2canvas(chartContainer, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    width: chartContainer.offsetWidth,
+                    height: chartContainer.offsetHeight,
+                    scrollX: 0,
+                    scrollY: 0
+                });
+
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Calculate dimensions to fit the page better
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const margin = 20;
+                const availableWidth = pageWidth - (margin * 2);
+                const availableHeight = pageHeight - 80; // Leave space for title and date
+
+                // Calculate image dimensions maintaining aspect ratio
+                const imgAspectRatio = canvas.width / canvas.height;
+                let imgWidth = availableWidth;
+                let imgHeight = imgWidth / imgAspectRatio;
+
+                // If height is too large, scale down based on height
+                if (imgHeight > availableHeight) {
+                    imgHeight = availableHeight;
+                    imgWidth = imgHeight * imgAspectRatio;
+                }
+
+                // Center the image horizontally
+                const imgX = (pageWidth - imgWidth) / 2;
+
+                // Add title
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                const title = filename.replace(/_/g, ' ');
+                const titleWidth = pdf.getTextWidth(title);
+                const titleX = (pageWidth - titleWidth) / 2;
+                pdf.text(title, titleX, 20);
+
+                // Add current date
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                const currentDate = new Date().toLocaleDateString();
+                const dateText = `Generated on: ${currentDate}`;
+                const dateWidth = pdf.getTextWidth(dateText);
+                const dateX = (pageWidth - dateWidth) / 2;
+                pdf.text(dateText, dateX, 30);
+
+                // Add chart image
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', imgX, 40, imgWidth, imgHeight);
+
+                // Save the PDF
+                pdf.save(`${filename}_${currentDate.replace(/\//g, '-')}.pdf`);
+
+                // Reset button state
+                button.innerHTML = originalContent;
+                button.disabled = false;
+
+                // Show success message
+                showNotification('Chart downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+
+                // Reset button state
+                const button = event.target.closest('.chart-download-btn');
+                button.innerHTML = '<i class="fas fa-download"></i>';
+                button.disabled = false;
+
+                showNotification('Error generating PDF. Please try again.', 'error');
+            }
+        }
+
+        // Chart initialization with 4 charts
         function initializeCharts() {
-            const chartData = {!! json_encode($chartData) !!};
+            try {
+                const chartData = {!! json_encode($chartData) !!};
+                console.log('Dashboard Chart Data:', chartData); // Debug log to see what data we have
 
-            // 1. Applications Trend Chart (Line Chart)
-            const applicationsCtx = document.getElementById('applicationsChart').getContext('2d');
-            new Chart(applicationsCtx, {
-                type: 'line',
-                data: {
-                    labels: chartData.months,
-                    datasets: [{
-                        label: 'Applications',
-                        data: chartData.applicationCounts,
-                        borderColor: '#1e5631',
-                        backgroundColor: 'rgba(30, 86, 49, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#1e5631',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded');
+                    return;
                 }
-            });
 
-            // 2. Status Distribution Chart (Doughnut)
-            const statusCtx = document.getElementById('statusChart').getContext('2d');
-            new Chart(statusCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pending', 'Under Review', 'Approved', 'Rejected'],
-                    datasets: [{
-                        data: [
-                            chartData.statusDistribution.pending,
-                            chartData.statusDistribution.under_review,
-                            chartData.statusDistribution.approved,
-                            chartData.statusDistribution.rejected
-                        ],
-                        backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
+                // 1. Students per Scholarship Type Chart (Pie Chart)
+                const studentsCtx = document.getElementById('studentsChart').getContext('2d');
+                const studentsData = chartData.studentsPerScholarshipType || {};
 
-            // 3. GWA Distribution Chart (Bar)
-            const gwaCtx = document.getElementById('gwaChart').getContext('2d');
-            new Chart(gwaCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(chartData.gwaRanges),
-                    datasets: [{
-                        label: 'Grantees',
-                        data: Object.values(chartData.gwaRanges),
-                        backgroundColor: [
-                            '#1e5631', // 1.00-1.25 (Excellent)
-                            '#2d7a3d', // 1.26-1.50 (Very Good)
-                            '#3e8e4a', // 1.51-1.75 (Good)
-                            '#4fa256', // 1.76-2.00 (Satisfactory)
-                            '#60b662' // 2.01+ (Needs Improvement)
-                        ],
-                        borderColor: '#164023',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+                // Check if we have data
+                if (Object.keys(studentsData).length === 0) {
+                    // Show "No data" message
+                    studentsCtx.font = "16px Arial";
+                    studentsCtx.fillStyle = "#666";
+                    studentsCtx.textAlign = "center";
+                    studentsCtx.fillText("No student data available", studentsCtx.canvas.width / 2, studentsCtx.canvas.height / 2);
+                } else {
+                    new Chart(studentsCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(studentsData),
+                            datasets: [{
+                                data: Object.values(studentsData),
+                                backgroundColor: [
+                                    '#e74c3c', // Government - Warm Red
+                                    '#f39c12', // Academic - Warm Orange
+                                    '#e67e22', // Employee - Warm Dark Orange
+                                    '#d35400', // Alumni - Warm Burnt Orange
+                                    '#c0392b', // Others - Warm Dark Red
+                                    '#a93226', // Additional - Deep Red
+                                    '#922b21', // Extra - Darker Red
+                                    '#7b241c'  // Extra - Darkest Red
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                title: function(context) {
-                                    return 'GWA Range: ' + context[0].label;
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
                                 },
-                                label: function(context) {
-                                    return context.parsed.y + ' student' + (context.parsed.y !== 1 ? 's' : '');
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} student${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }
+                    });
+                }
+
+                // 2. Students per Department Chart (Pie Chart)
+                const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+                const departmentData = chartData.studentsPerDepartment || {};
+
+                // Check if we have department data
+                if (Object.keys(departmentData).length === 0) {
+                    // Show "No data" message
+                    departmentCtx.font = "16px Arial";
+                    departmentCtx.fillStyle = "#666";
+                    departmentCtx.textAlign = "center";
+                    departmentCtx.fillText("No department data available", departmentCtx.canvas.width / 2, departmentCtx.canvas.height / 2);
+                } else {
+                    new Chart(departmentCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(departmentData),
+                            datasets: [{
+                                data: Object.values(departmentData),
+                                backgroundColor: [
+                                    '#3498db', // SITE - Cool Blue
+                                    '#2980b9', // SBAHM - Cool Dark Blue
+                                    '#1abc9c', // SNAHS - Cool Turquoise
+                                    '#16a085', // SASTE - Cool Dark Turquoise
+                                    '#9b59b6', // BEU - Cool Purple
+                                    '#8e44ad', // Additional - Cool Dark Purple
+                                    '#6c5ce7', // Additional - Cool Light Purple
+                                    '#74b9ff'  // Additional - Cool Light Blue
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%', // Makes it a doughnut with 60% cutout
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} student${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 3. Application Status Distribution Chart (Pie Chart)
+                const applicationStatusCtx = document.getElementById('applicationStatusChart').getContext('2d');
+                const applicationStatusData = chartData.applicationStatusData || {};
+
+                // Check if we have application status data
+                if (Object.keys(applicationStatusData).length === 0) {
+                    // Show "No data" message
+                    applicationStatusCtx.font = "16px Arial";
+                    applicationStatusCtx.fillStyle = "#666";
+                    applicationStatusCtx.textAlign = "center";
+                    applicationStatusCtx.fillText("No application data available", applicationStatusCtx.canvas.width / 2, applicationStatusCtx.canvas.height / 2);
+                } else {
+                    new Chart(applicationStatusCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(applicationStatusData),
+                            datasets: [{
+                                data: Object.values(applicationStatusData),
+                                backgroundColor: [
+                                    '#f4d03f', // Pending - Soft Yellow
+                                    '#58d68d', // Approved - Soft Green
+                                    '#ec7063', // Rejected - Soft Red
+                                    '#85c1e9', // Under Review - Soft Blue
+                                    '#bb8fce', // Conditional - Soft Purple
+                                    '#aab7b8', // Others - Soft Gray
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} applications (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 4. Graduates Chart (Pie Chart)
+                const graduatesCtx = document.getElementById('graduatesChart').getContext('2d');
+                const graduatesData = chartData.graduatesData || {};
+
+                // Check if we have graduates data
+                if (Object.keys(graduatesData).length === 0) {
+                    // Show "No data" message
+                    graduatesCtx.font = "16px Arial";
+                    graduatesCtx.fillStyle = "#666";
+                    graduatesCtx.textAlign = "center";
+                    graduatesCtx.fillText("No graduates data available", graduatesCtx.canvas.width / 2, graduatesCtx.canvas.height / 2);
+                } else {
+                    new Chart(graduatesCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(graduatesData),
+                            datasets: [{
+                                data: Object.values(graduatesData),
+                                backgroundColor: [
+                                    '#2ecc71', // Light Green
+                                    '#27ae60', // Medium Green
+                                    '#229954', // Dark Green
+                                    '#1e8449', // Darker Green
+                                    '#196f3d', // Deep Green
+                                    '#145a32', // Very Dark Green
+                                    '#0e4b99', // Green-Blue
+                                    '#0a3d62'  // Dark Green-Blue
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} graduate${value !== 1 ? 's' : ''} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 4. Yearly Scholarships Chart (Line Chart)
+                const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+                new Chart(yearlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.years,
+                        datasets: [{
+                            label: 'Total Recipients',
+                            data: chartData.scholarshipCounts,
+                            borderColor: '#1e5631',
+                            backgroundColor: 'rgba(30, 86, 49, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#1e5631',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 3,
+                            pointRadius: 5
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            title: {
-                                display: true,
-                                text: 'Number of Grantees'
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        return 'Year: ' + context[0].label;
+                                    },
+                                    label: function(context) {
+                                        const count = context.parsed.y;
+                                        return 'Total: ' + count + ' scholarship recipient' + (count !== 1 ? 's' : '');
+                                    }
+                                }
                             }
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'GWA Range'
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Total Recipients'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Year'
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            // 4. Department Distribution Chart (Bar)
-            const departmentCtx = document.getElementById('departmentChart').getContext('2d');
-            new Chart(departmentCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(chartData.departmentDistribution),
-                    datasets: [{
-                        label: 'Applications',
-                        data: Object.values(chartData.departmentDistribution),
-                        backgroundColor: '#1e5631',
-                        borderColor: '#164023',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
         }
 
         // Refresh charts and data
         function refreshDashboard() {
             // Refresh charts by reinitializing them
             initializeCharts();
+            // Refresh dashboard stats
+            refreshDashboardStats();
         }
 
-        // Action button functions
-        function showAddScholarshipForm() {
-            // Redirect to benefactor programs page where they can add new benefactors
-            window.location.href = '/admin/scholarship-programs';
-        }
-
-        function showBulkImportForm() {
-            // Show modal for bulk import
-            showBulkImportModal();
-        }
-
-        function exportApplications() {
-            // Show export options modal
-            showExportModal();
-        }
-
-        function showSystemSettings() {
-            // Show system settings modal
-            showSettingsModal();
-        }
-
-        // Bulk Import Modal
-        function showBulkImportModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Bulk Import Grantees</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="bulkImportForm" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="importFile">Select CSV File:</label>
-                                <input type="file" id="importFile" name="file" accept=".csv" required>
-                                <small>Upload a CSV file with student data. <a href="/admin/download-template" target="_blank">Download Template</a></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="scholarshipType">Scholarship Type:</label>
-                                <select id="scholarshipType" name="scholarship_type" required>
-                                    <option value="">Select Type</option>
-                                    <option value="ched">CHED Scholarship</option>
-                                    <option value="presidents">President's Scholarship</option>
-                                    <option value="employees">Employee Scholarship</option>
-                                    <option value="private">Private Scholarship</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Cancel</button>
-                        <button onclick="submitBulkImport()" class="btn-primary">Import</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Export Modal
-        function showExportModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Export Data</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="export-options">
-                            <div class="export-option" onclick="exportData('applications')">
-                                <i class="fas fa-file-alt"></i>
-                                <h4>Applications Report</h4>
-                                <p>Export all scholarship applications</p>
-                            </div>
-                            <div class="export-option" onclick="exportData('students')">
-                                <i class="fas fa-users"></i>
-                                <h4>Grantees Report</h4>
-                                <p>Export active benefactor grantees</p>
-                            </div>
-                            <div class="export-option" onclick="exportData('analytics')">
-                                <i class="fas fa-chart-bar"></i>
-                                <h4>Analytics Report</h4>
-                                <p>Export dashboard analytics data</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Close</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // System Settings Modal
-        function showSettingsModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>System Settings</h3>
-                        <button onclick="closeModal()" class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="settingsForm">
-                            <div class="settings-section">
-                                <h4>Academic Year Settings</h4>
-                                <div class="form-group">
-                                    <label for="currentAY">Current Academic Year:</label>
-                                    <input type="text" id="currentAY" name="academic_year" value="2024-2025">
-                                </div>
-                                <div class="form-group">
-                                    <label for="currentSem">Current Semester:</label>
-                                    <select id="currentSem" name="semester">
-                                        <option value="1st Semester">1st Semester</option>
-                                        <option value="2nd Semester">2nd Semester</option>
-                                        <option value="Summer">Summer</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="settings-section">
-                                <h4>Application Settings</h4>
-                                <div class="form-group">
-                                    <label for="maxApplications">Max Applications per Student:</label>
-                                    <input type="number" id="maxApplications" name="max_applications" value="3" min="1">
-                                </div>
-                                <div class="form-group">
-                                    <label for="minGWA">Minimum GWA Requirement:</label>
-                                    <input type="number" id="minGWA" name="min_gwa" value="1.75" step="0.01" min="1.00" max="5.00">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="closeModal()" class="btn-secondary">Cancel</button>
-                        <button onclick="saveSettings()" class="btn-primary">Save Settings</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Modal utility functions
-        function closeModal() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) {
-                modal.remove();
-            }
-        }
-
-        // Submit functions
-        async function submitBulkImport() {
-            const form = document.getElementById('bulkImportForm');
-            const formData = new FormData(form);
-
+        // Refresh dashboard stats
+        async function refreshDashboardStats() {
             try {
-                const response = await fetch('/admin/bulk-import', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    }
-                });
-
-                const result = await response.json();
-
+                const response = await fetch('/api/admin/dashboard-stats');
                 if (response.ok) {
-                    alert('Import successful! ' + result.message);
-                    closeModal();
-                    location.reload();
+                    const data = await response.json();
+
+                    // Update pending applications count
+                    const pendingElement = document.getElementById('pendingApplicationsCount');
+                    if (pendingElement) {
+                        pendingElement.textContent = data.pending_applications;
+                    }
+
+                    // Update approved applications count
+                    const approvedElement = document.getElementById('approvedApplicationsCount');
+                    if (approvedElement) {
+                        approvedElement.textContent = data.approved_applications;
+                    }
+
+                    console.log('Dashboard stats refreshed:', data);
                 } else {
-                    alert('Import failed: ' + result.message);
+                    console.error('Failed to refresh dashboard stats');
                 }
             } catch (error) {
-                alert('Error during import: ' + error.message);
+                console.error('Error refreshing dashboard stats:', error);
             }
         }
 
-        function exportData(type) {
-            const url = `/admin/export/${type}`;
-            window.open(url, '_blank');
-            closeModal();
-        }
 
-        async function saveSettings() {
+
+
+
+
+
+
+
+        window.saveSettings = async function() {
             const form = document.getElementById('settingsForm');
             const formData = new FormData(form);
+
+            // Handle checkbox for application status
+            const toggle = document.getElementById('modalApplicationToggle');
+            if (toggle) {
+                formData.set('application_status', toggle.checked ? 'open' : 'closed');
+            }
 
             try {
                 const response = await fetch('/admin/settings', {
@@ -529,14 +801,156 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Settings saved successfully!');
+                    showNotification('Settings saved successfully!', 'success');
                     closeModal();
+                    // Refresh the page to update any displayed settings
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('Failed to save settings: ' + result.message);
+                    showNotification('Failed to save settings: ' + result.message, 'error');
                 }
             } catch (error) {
-                alert('Error saving settings: ' + error.message);
+                showNotification('Settings save failed. Please try again.', 'error');
             }
+        };
+
+        // Semester update function
+        window.updateSemester = async function() {
+            try {
+                // Fetch current semester data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
+                }
+
+                const data = await response.json();
+                const currentSemester = data.current_semester;
+                const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
+
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentSemester}" to "${nextSemester}"?\n\nThis will archive current students and reset applications.`,
+                    'Update Semester',
+                    'warning'
+                );
+
+                if (confirmed) {
+                    const updateResponse = await fetch('/admin/settings/update-semester', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            current_semester: currentSemester,
+                            new_semester: nextSemester
+                        })
+                    });
+
+                    const result = await updateResponse.json();
+
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        closeModal();
+                        // Refresh dashboard stats immediately
+                        refreshDashboardStats();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to update semester: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating semester:', error);
+                showNotification('Error updating semester. Please try again.', 'error');
+            }
+        };
+
+        // Academic year update function
+        window.updateAcademicYear = async function() {
+            try {
+                // Fetch current academic year data
+                const response = await fetch('/admin/current-semester-year');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current semester/year');
+                }
+
+                const data = await response.json();
+                const currentYear = data.current_academic_year;
+                const yearParts = currentYear.split('-');
+                const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
+
+                const confirmed = await customConfirm(
+                    `Are you sure you want to update from "${currentYear}" to "${nextYear}"?\n\nThis will reset to 1st Semester, archive current students, and reset applications.`,
+                    'Update Academic Year',
+                    'warning'
+                );
+
+                if (confirmed) {
+                    const updateResponse = await fetch('/admin/settings/update-year', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            current_year: currentYear,
+                            new_year: nextYear
+                        })
+                    });
+
+                    const result = await updateResponse.json();
+
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        closeModal();
+                        // Refresh dashboard stats immediately
+                        refreshDashboardStats();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to update academic year: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating academic year:', error);
+                showNotification('Error updating academic year. Please try again.', 'error');
+            }
+        };
+
+        // Custom confirm dialog with modal
+        function customConfirm(message, title = 'Confirm', type = 'warning') {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content confirm-dialog">
+                        <div class="modal-header">
+                            <h3>${title}</h3>
+                            <button onclick="closeConfirmModal(false)" class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="confirm-icon">⚠️</div>
+                            <div class="confirm-message">${message.replace(/\n/g, '<br>')}</div>
+                            <div class="confirm-buttons">
+                                <button onclick="closeConfirmModal(true)" class="btn-primary">Yes</button>
+                                <button onclick="closeConfirmModal(false)" class="btn-secondary">No</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Store the resolve function globally so the buttons can access it
+                window.currentConfirmResolve = resolve;
+
+                // Function to close modal and resolve promise
+                window.closeConfirmModal = function(result) {
+                    if (window.currentConfirmResolve) {
+                        window.currentConfirmResolve(result);
+                        window.currentConfirmResolve = null;
+                    }
+                    if (modal.parentElement) {
+                        modal.remove();
+                    }
+                };
+            });
         }
 
         // Dropdown toggle function

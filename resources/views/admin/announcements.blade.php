@@ -66,11 +66,17 @@
                         </tr>
 
                     @empty
+                        <tr>
+                            <td colspan="4" class="no-data">
+                                <i class="fas fa-bullhorn"></i>
+                                <p>No announcements found</p>
+                                <small>Click "Add Announcement" to create your first announcement.</small>
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </div>
     </div>
 
     <!-- Add/Edit Announcement Modal -->
@@ -128,7 +134,7 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin/announcements.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pages/announcements.css') }}">
 @endpush
 
 @push('scripts')

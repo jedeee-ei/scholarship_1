@@ -235,4 +235,254 @@
 .table-actions {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Enhanced Responsive Card Design */
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .action-card,
+    .category-card,
+    .stat-card {
+        min-height: 120px;
+        padding: 24px;
+    }
+
+    .action-icon,
+    .category-icon {
+        font-size: 36px;
+    }
+
+    .table-actions button,
+    .table-actions .btn {
+        min-height: 44px;
+        padding: 12px 16px;
+        touch-action: manipulation;
+    }
+}
+
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+    .card-body,
+    .section-body {
+        padding: 25px;
+    }
+
+    .card-header,
+    .table-header,
+    .section-header {
+        padding: 15px 20px;
+    }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+    }
+
+    .card-body,
+    .section-body {
+        padding: 20px;
+    }
+
+    .card-header,
+    .table-header,
+    .section-header {
+        padding: 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .table-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .action-card,
+    .category-card {
+        padding: 18px;
+    }
+
+    .action-icon,
+    .category-icon {
+        font-size: 28px;
+    }
+
+    .action-title,
+    .category-title {
+        font-size: 15px;
+    }
+
+    .action-description,
+    .category-description {
+        font-size: 12px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .card-body,
+    .section-body {
+        padding: 15px;
+    }
+
+    .card-header,
+    .table-header,
+    .section-header {
+        padding: 12px;
+    }
+
+    .card-header h3,
+    .table-header h3,
+    .section-header h3 {
+        font-size: 16px;
+    }
+
+    .table-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .table-actions button,
+    .table-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .action-card,
+    .category-card {
+        padding: 15px;
+    }
+
+    .action-icon,
+    .category-icon {
+        font-size: 24px;
+    }
+
+    .action-title,
+    .category-title {
+        font-size: 14px;
+    }
+
+    .action-description,
+    .category-description {
+        font-size: 11px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    .stat-title {
+        font-size: 13px;
+    }
+
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .stat-change {
+        font-size: 11px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 320px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .card-body,
+    .section-body {
+        padding: 12px;
+    }
+
+    .card-header,
+    .table-header,
+    .section-header {
+        padding: 10px;
+    }
+
+    .card-header h3,
+    .table-header h3,
+    .section-header h3 {
+        font-size: 15px;
+    }
+
+    .action-card,
+    .category-card {
+        padding: 12px;
+    }
+
+    .action-icon,
+    .category-icon {
+        font-size: 20px;
+    }
+
+    .action-title,
+    .category-title {
+        font-size: 13px;
+    }
+
+    .action-description,
+    .category-description {
+        font-size: 10px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .stat-title {
+        font-size: 12px;
+    }
+
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .stat-change {
+        font-size: 10px;
+    }
 }

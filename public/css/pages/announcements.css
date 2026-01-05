@@ -1,0 +1,543 @@
+/* Announcements Page - Logo Color Scheme */
+
+/* Main Container */
+.announcements-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Table Header */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-header h2 {
+    margin: 0;
+    color: #052F11;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Table Responsive */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Action Buttons in Table */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-action {
+    padding: 6px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action.btn-edit {
+    background: #052F11;
+    color: white;
+}
+
+.btn-action.btn-edit:hover {
+    background: rgba(5, 47, 17, 0.8);
+    transform: translateY(-1px);
+}
+
+.btn-action.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-action.btn-delete:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Date Info */
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.date-info .date {
+    font-weight: 500;
+    color: #052F11;
+    font-size: 13px;
+}
+
+.date-info .time {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Content Preview */
+.content-preview {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* No Data State */
+.no-data {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-data i {
+    font-size: 48px;
+    color: #ddd;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.no-data p {
+    margin: 10px 0 5px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.no-data small {
+    color: #999;
+    font-size: 14px;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.published {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+.status-badge.draft {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.archived {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Action Buttons */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    margin: 0 2px;
+    border: 1px solid #052F11;
+    background-color: #052F11;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: rgba(5, 47, 17, 0.8);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(5, 47, 17, 0.3);
+}
+
+.action-btn.view {
+    background-color: #052F11;
+    border-color: #052F11;
+}
+
+.action-btn.edit {
+    background-color: rgba(5, 47, 17, 0.7);
+    border-color: rgba(5, 47, 17, 0.7);
+}
+
+.action-btn.delete {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.action-btn.delete:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.action-btn.publish {
+    background-color: rgba(5, 47, 17, 0.8);
+    border-color: rgba(5, 47, 17, 0.8);
+}
+
+/* Add Announcement Button */
+.add-announcement-btn {
+    background: #052F11;
+    color: white;
+    border: 1px solid #052F11;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.add-announcement-btn:hover {
+    background: rgba(5, 47, 17, 0.8);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
+}
+
+/* Primary Buttons */
+.btn-primary {
+    background: #052F11;
+    color: white;
+    border: 1px solid #052F11;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.btn-primary:hover {
+    background: rgba(5, 47, 17, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
+}
+
+/* Secondary Buttons */
+.btn-secondary {
+    background: rgba(5, 47, 17, 0.6);
+    color: white;
+    border: 1px solid rgba(5, 47, 17, 0.6);
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.btn-secondary:hover {
+    background: #052F11;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5, 47, 17, 0.3);
+}
+
+/* Priority Badges */
+.priority-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.priority-badge.high {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.priority-badge.medium {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.priority-badge.low {
+    background-color: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+}
+
+/* Table Styling */
+.announcements-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.announcements-table th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 14px;
+}
+
+.announcements-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
+    vertical-align: middle;
+}
+
+.announcements-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Hover effects for table rows */
+.announcements-table tbody tr:hover {
+    background-color: rgba(5, 47, 17, 0.05);
+}
+
+/* Announcement Type Indicators */
+.announcement-type {
+    padding: 4px 8px;
+    font-size: 12px;
+    background: rgba(5, 47, 17, 0.1);
+    color: #052F11;
+    border: 1px solid rgba(5, 47, 17, 0.3);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Date Styling */
+.announcement-date {
+    color: #666;
+    font-size: 13px;
+}
+
+/* Title Styling */
+.announcement-title {
+    font-weight: 600;
+    color: #052F11;
+    margin-bottom: 4px;
+}
+
+/* Content Preview */
+.announcement-content {
+    color: #666;
+    font-size: 13px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Filter Buttons */
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #052F11;
+    background-color: white;
+    color: #052F11;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+    border-radius: 4px;
+}
+
+.filter-btn:hover {
+    background-color: #052F11;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(5, 47, 17, 0.3);
+}
+
+.filter-btn.active {
+    background-color: #052F11;
+    color: white;
+}
+
+/* Announcements page modal overrides */
+.modal-header {
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h2 {
+    color: #052F11;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-footer {
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #052F11;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #052F11;
+    box-shadow: 0 0 0 2px rgba(5, 47, 17, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Confirmation Modal */
+.confirmation-modal {
+    max-width: 400px;
+}
+
+.confirmation-content {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.warning-icon {
+    font-size: 48px;
+    color: #ffc107;
+    margin-bottom: 15px;
+}
+
+.confirmation-content p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Danger Button */
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    border-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .table-header h2 {
+        font-size: 18px;
+    }
+
+    .announcements-table {
+        font-size: 12px;
+    }
+
+    .announcements-table th,
+    .announcements-table td {
+        padding: 10px 8px;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 15px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .announcements-table th,
+    .announcements-table td {
+        padding: 8px 5px;
+        font-size: 11px;
+    }
+
+    .content-preview {
+        font-size: 12px;
+    }
+
+    .date-info .date,
+    .date-info .time {
+        font-size: 11px;
+    }
+}

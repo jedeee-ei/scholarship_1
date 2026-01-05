@@ -4,6 +4,196 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/pages/students.css') }}">
+    <style>
+        /* Grade Disqualification Notification Styles */
+        .main-screen-grade-disqualification-notification {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+            animation: slideDownBounce 0.5s ease-out;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .notification-icon {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .notification-text {
+            flex: 1;
+            color: #721c24;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .notification-text strong {
+            color: #dc3545;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .warning-note {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #856404;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 6px 10px;
+            border-radius: 4px;
+            border-left: 3px solid #dc3545;
+        }
+
+        .notification-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            background: rgba(220, 53, 69, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Disqualified Grade Input Styles */
+        input.grade-disqualified {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+            background-color: #fff5f5 !important;
+            animation: gradeShake 0.5s ease-in-out;
+        }
+
+        @keyframes gradeShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes slideDownBounce {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+
+            60% {
+                opacity: 1;
+                transform: translateY(5px) scale(1.02);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Responsive Design for Grade Disqualification Notification */
+        @media (max-width: 768px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 15px 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .notification-content {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .notification-icon i {
+                font-size: 1.2rem;
+            }
+
+            .notification-text {
+                font-size: 0.9rem;
+            }
+
+            .notification-text strong {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-screen-grade-disqualification-notification {
+                margin: 10px 5px;
+            }
+
+            .notification-content {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .notification-text {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+
+            .notification-close {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
 @endpush
 
 @section('breadcrumbs')
@@ -22,34 +212,25 @@
         <div class="date">{{ date('F d, Y') }}</div>
     </div>
 
-    @if (isset($scholarshipName))
-        <div class="filter-info">
-            <div class="filter-badge">
-                <i class="fas fa-filter"></i>
-                Showing grantees for: <strong>{{ $scholarshipName }}</strong>
-                <a href="{{ route('admin.students') }}" class="clear-filter">
-                    <i class="fas fa-times"></i> Show All Grantees
-                </a>
-            </div>
-        </div>
-    @endif
+
 
     <!-- Grantee Categories -->
     <div class="student-categories">
         <div class="category-tabs">
             <button class="tab-btn {{ !isset($scholarshipTypeFilter) ? 'active' : '' }}"
-                onclick="showStudentCategory('all')">All Grantees</button>
-            <button class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'ched' ? 'active' : '' }}"
-                onclick="showStudentCategory('ched')">CHED Grantees</button>
+                onclick="showStudentCategory('all', this)">All Grantees</button>
             <button
-                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'presidents' ? 'active' : '' }}"
-                onclick="showStudentCategory('presidents')">Institutional Grantees</button>
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'government' ? 'active' : '' }}"
+                onclick="showStudentCategory('government', this)">Government Grantees</button>
+            <button
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'academic' ? 'active' : '' }}"
+                onclick="showStudentCategory('academic', this)">Academic Grantees</button>
             <button
                 class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'employees' ? 'active' : '' }}"
-                onclick="showStudentCategory('employees')">Employee Grantees</button>
+                onclick="showStudentCategory('employees', this)">Employee Grantees</button>
             <button
-                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'private' ? 'active' : '' }}"
-                onclick="showStudentCategory('private')">Private Grantees</button>
+                class="tab-btn {{ isset($scholarshipTypeFilter) && $scholarshipTypeFilter === 'alumni' ? 'active' : '' }}"
+                onclick="showStudentCategory('alumni', this)">Alumni Grantees</button>
         </div>
     </div>
 
@@ -59,20 +240,20 @@
             <h3 id="categoryTitle">
                 @if (isset($scholarshipTypeFilter))
                     @switch($scholarshipTypeFilter)
-                        @case('ched')
-                            CHED Grantees
+                        @case('government')
+                            Government Grantees
                         @break
 
-                        @case('presidents')
-                            Institutional Grantees
+                        @case('academic')
+                            Academic Grantees
                         @break
 
                         @case('employees')
                             Employee Grantees
                         @break
 
-                        @case('private')
-                            Private Grantees
+                        @case('alumni')
+                            Alumni Grantees
                         @break
 
                         @default
@@ -87,61 +268,222 @@
                     style="display: {{ isset($scholarshipTypeFilter) ? 'none' : 'block' }};">
                     <i class="fas fa-upload"></i> Import
                 </button>
-                <button class="btn-primary" onclick="showAddStudentForm()">
-                    <i class="fas fa-plus"></i> Add Grantee
-                </button>
+
             </div>
         </div>
         <table class="students-table">
             <thead>
-                <tr>
-                    <th>Grantee ID</th>
-                    <th>Name</th>
-                    <th>Course</th>
-                    <th>Benefactor Type</th>
-                    <th>Semester</th>
-                    <th>Academic Year</th>
-                    <th>Status</th>
-                    <th>GWA</th>
-                    <th>Actions</th>
+                <tr id="tableHeader">
+                    @if (isset($scholarshipTypeFilter))
+                        @if ($scholarshipTypeFilter == 'government')
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Course/Strand</th>
+                            <th>Benefactor Type</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'academic')
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>GWA</th>
+                            <th>Classification</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'employees')
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Employee Name</th>
+                            <th>Relationship</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        @elseif($scholarshipTypeFilter == 'alumni')
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>Scholarship Name</th>
+                            <th>Semester</th>
+                            <th>Academic Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        @endif
+                    @else
+                        <!-- Default view for all grantees -->
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Course/Strand</th>
+                        <th>Benefactor Type</th>
+                        <th>Semester</th>
+                        <th>Academic Year</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    @endif
                 </tr>
             </thead>
             <tbody id="studentsTableBody">
                 @forelse($students as $student)
                     <tr data-type="{{ strtolower(str_replace(' ', '', $student['scholarship_type'])) }}">
-                        <td>{{ $student['id'] }}</td>
-                        <td>{{ $student['name'] }}</td>
-                        <td>{{ $student['course'] }}</td>
-                        <td>{{ $student['scholarship_type'] }}</td>
-                        <td>
-                            <span class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
-                        </td>
-                        <td>
-                            <span
-                                class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
-                        </td>
-                        <td><span class="status-badge active">{{ $student['status'] }}</span></td>
-                        <td>{{ $student['gwa'] }}</td>
-                        <td>
-                            <button class="action-btn edit"
-                                onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
-                                title="Edit Grantee" data-student-id="{{ $student['id'] }}"
-                                data-student-name="{{ $student['name'] }}" data-student-course="{{ $student['course'] }}"
-                                data-student-gwa="{{ $student['gwa'] }}"
-                                data-student-email="{{ $student['email'] ?? '' }}"
-                                data-student-contact="{{ $student['contact_number'] ?? '' }}"
-                                data-student-department="{{ $student['department'] ?? '' }}"
-                                data-student-year="{{ $student['year_level'] ?? '' }}"
-                                data-application-id="{{ $student['application_id'] }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
+                        @if (isset($scholarshipTypeFilter))
+                            @if ($scholarshipTypeFilter == 'government')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>
+                                    @if (!empty($student['strand']))
+                                        {{ $student['strand'] }}
+                                    @elseif (!empty($student['course']))
+                                        {{ $student['course'] }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="benefactor-badge">
+                                        {{ $student['government_benefactor_type'] ?? 'N/A' }}
+                                    </span>
+                                </td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'academic')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['course'] }}</td>
+                                <td>{{ $student['gwa'] }}</td>
+                                <td>
+                                    <span class="classification-badge">
+                                        @if ($student['gwa'] >= 1.0 && $student['gwa'] <= 1.25)
+                                            PL (President's Lister)
+                                        @elseif($student['gwa'] >= 1.26 && $student['gwa'] <= 1.74)
+                                            DL (Dean's Lister)
+                                        @else
+                                            N/A
+                                        @endif
+                                    </span>
+                                </td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'employees')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['employee_name'] ?? 'N/A' }}</td>
+                                <td>{{ $student['employee_relationship'] ?? 'N/A' }}</td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @elseif($scholarshipTypeFilter == 'alumni')
+                                <td>{{ $student['id'] }}</td>
+                                <td>{{ $student['name'] }}</td>
+                                <td>{{ $student['course'] }}</td>
+                                <td>{{ $student['scholarship_name'] ?? 'N/A' }}</td>
+                                <td><span
+                                        class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                                </td>
+                                <td><span
+                                        class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                        {{ $student['status'] ?? 'Active' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="action-btn edit"
+                                        onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                        title="Edit Grantee">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            @endif
+                        @else
+                            <!-- Default view for all grantees -->
+                            <td>{{ $student['id'] }}</td>
+                            <td>{{ $student['name'] }}</td>
+                            <td>
+                                @if (!empty($student['strand']))
+                                    {{ $student['strand'] }}
+                                @elseif (!empty($student['course']))
+                                    {{ $student['course'] }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td>{{ $student['scholarship_type'] }}</td>
+                            <td><span class="semester-badge">{{ $student['current_semester'] ?? $currentSemester }}</span>
+                            </td>
+                            <td><span
+                                    class="academic-year-badge">{{ $student['current_academic_year'] ?? $currentAcademicYear }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ strtolower($student['status'] ?? 'active') }}">
+                                    {{ $student['status'] ?? 'Active' }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn edit"
+                                    onclick="editStudent('{{ $student['application_id'] }}', '{{ $student['id'] }}')"
+                                    title="Edit Grantee">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="empty-state">
-                            No grantees found. Grantees will appear here once benefactor applications are
-                            approved.
+                        <td colspan="{{ isset($scholarshipTypeFilter) && in_array($scholarshipTypeFilter, ['government', 'academic']) ? '9' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'employees' ? '8' : (isset($scholarshipTypeFilter) && $scholarshipTypeFilter == 'alumni' ? '8' : '8')) }}"
+                            class="empty-state">
+                            No grantees found. Grantees will appear here once benefactor applications are approved.
                         </td>
                     </tr>
                 @endforelse
@@ -151,7 +493,7 @@
 @endsection
 
 <!-- Edit Grantee Modal -->
-<div id="editStudentModal" class="modal">
+<div id="editStudentModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
             <h2>Edit Grantee Information</h2>
@@ -171,43 +513,27 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="editStudentEmail">Email</label>
-                        <input type="email" id="editStudentEmail" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStudentContact">Contact Number</label>
-                        <input type="text" id="editStudentContact" name="contact_number">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editStudentCourse">Course</label>
-                        <input type="text" id="editStudentCourse" name="course" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStudentDepartment">Department</label>
-                        <input type="text" id="editStudentDepartment" name="department">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editStudentYear">Year Level</label>
-                        <select id="editStudentYear" name="year_level">
-                            <option value="">Select Year</option>
-                            <option value="1st Year">1st Year</option>
-                            <option value="2nd Year">2nd Year</option>
-                            <option value="3rd Year">3rd Year</option>
-                            <option value="4th Year">4th Year</option>
-                            <option value="5th Year">5th Year</option>
+                        <label for="editStudentStatus">Status</label>
+                        <select id="editStudentStatus" name="status" required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-row" id="remarksRow" style="display: none;">
                     <div class="form-group">
-                        <label for="editStudentGwa">GWA</label>
-                        <input type="number" id="editStudentGwa" name="gwa" step="0.01" min="1"
-                            max="4">
+                        <label for="editStudentRemarks">Remarks (Required if status is Inactive)</label>
+                        <select id="editStudentRemarks" name="notes" required>
+                            <option value="">Select Reason</option>
+                            <option value="Transferred">Transferred</option>
+                            <option value="Graduated">Graduated</option>
+                            <option value="Failure to Meet Academic Requirements">Failure to Meet Academic Requirements
+                            </option>
+                        </select>
                     </div>
                 </div>
                 <input type="hidden" id="editApplicationId" name="application_id">
+                <input type="hidden" id="editGranteeId" name="grantee_id">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
@@ -217,113 +543,22 @@
     </div>
 </div>
 
-<!-- Add Grantee Modal -->
-<div id="addStudentModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add New Grantee</h2>
-            <span class="close" onclick="closeAddStudentModal()">&times;</span>
-        </div>
-        <form id="addStudentForm" onsubmit="saveNewStudent(event)">
-            <div class="modal-body">
-                <!-- Scholarship Type Selection -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="scholarshipType">Benefactor Type *</label>
-                        <select id="scholarshipType" name="scholarship_type" required onchange="updateFormFields()">
-                            <option value="">Select Benefactor Type</option>
-                            <option value="ched">CHED Benefactor</option>
-                            <option value="presidents">Institutional Benefactor</option>
-                            <option value="employees">Employee Benefactor</option>
-                            <option value="private">Private Benefactor</option>
-                        </select>
-                    </div>
-                </div>
 
-                <!-- Basic Information (Common for all types) -->
-                <div class="form-section">
-                    <h3>Basic Information</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="studentId">Grantee ID *</label>
-                            <input type="text" id="studentId" name="student_id" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="first_name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="middleName">Middle Name</label>
-                            <input type="text" id="middleName" name="middle_name">
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="last_name" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="sex">Sex *</label>
-                            <select id="sex" name="sex" required>
-                                <option value="">Select Sex</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="birthdate">Birthdate *</label>
-                            <input type="date" id="birthdate" name="birthdate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactNumber">Contact Number</label>
-                            <input type="text" id="contactNumber" name="contact_number">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dynamic Fields Container -->
-                <div id="dynamicFields"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
-                <button type="submit" class="btn-primary">Add Student</button>
-            </div>
-        </form>
-    </div>
-</div>
 
 <!-- Hidden file input for import -->
 <input type="file" id="hiddenFileInput" accept=".xlsx,.xls,.csv" style="display: none;"
     onchange="handleFileSelection(event)">
 
-<!-- Scholarship Type Selection Modal (shown after file selection) -->
-<div id="scholarshipTypeModal" class="modal" style="display: none;">
+<!-- Import Confirmation Modal (shown after file selection) -->
+<div id="importConfirmationModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Select Scholarship Type</h2>
-            <span class="close" onclick="closeScholarshipTypeModal()">&times;</span>
+            <h2>Import Grantees</h2>
+            <span class="close" onclick="closeImportConfirmationModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div class="form-section">
                 <p>Selected file: <strong id="selectedFileName"></strong></p>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="scholarshipTypeSelect">Benefactor Type *</label>
-                        <select id="scholarshipTypeSelect" required>
-                            <option value="">Select Benefactor Type</option>
-                            <option value="ched">CHED Benefactor</option>
-                            <option value="presidents">Institutional Benefactor</option>
-                            <option value="employees">Employee Benefactor</option>
-                            <option value="private">Private Benefactor</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>
@@ -332,38 +567,66 @@
                         </label>
                     </div>
                 </div>
-                <div class="import-info">
-                    <p><strong>Import Instructions:</strong></p>
-                    <ul>
-                        <li>Excel file should contain columns: Grantee ID, First Name, Last Name, Middle Name,
-                            Email, Course, Department, Year Level, GWA, Contact Number</li>
-                        <li>Grantee ID, First Name, and Last Name are required</li>
-                        <li>The first row should contain column headers</li>
-                        <li><a href="/admin/download-student-template" target="_blank">Download Excel Template</a>
-                        </li>
-                    </ul>
+                <div class="import-instructions">
+                    <div class="instruction-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>Import Instructions</h4>
+                    </div>
+                    <div class="instruction-content">
+                        <p>Excel file should contain the following columns:</p>
+                        <div class="column-list">
+                            <span class="required-column">Student ID</span>
+                            <span class="required-column">First Name</span>
+                            <span class="required-column">Last Name</span>
+                            <span class="required-column">Scholarship Type</span>
+                            <span class="optional-column">Middle Name</span>
+                            <span class="optional-column">Email</span>
+                            <span class="optional-column">Course</span>
+                            <span class="optional-column">Department</span>
+                            <span class="optional-column">Year Level</span>
+                            <span class="optional-column">GWA</span>
+                        </div>
+                        <div class="import-notes">
+                            <div class="note-item">
+                                <i class="fas fa-asterisk"></i>
+                                <span>Required fields: Student ID, First Name, Last Name, Scholarship Type</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-table"></i>
+                                <span>First row should contain column headers</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-users"></i>
+                                <span>Students will be automatically grouped by their scholarship type from the file</span>
+                            </div>
+                            <div class="note-item">
+                                <i class="fas fa-list"></i>
+                                <span>Valid scholarship types: government, academic, employees, alumni</span>
+                            </div>
+                        </div>
+                        <div class="template-download">
+                            <a href="/admin/download-student-template" target="_blank" class="download-link">
+                                <i class="fas fa-download"></i>
+                                Download Template
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-secondary" onclick="closeScholarshipTypeModal()">Cancel</button>
+            <button type="button" class="btn-secondary" onclick="closeImportConfirmationModal()">Cancel</button>
             <button type="button" class="btn-primary" onclick="proceedWithImport()">Import Students</button>
         </div>
     </div>
 </div>
 
 @push('scripts')
+    <script src="{{ asset('js/course-mapping.js') }}"></script>
     <script>
         // Add event listener when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Add backup event listener for Add Student button
-            const addBtn = document.querySelector('button[onclick="showAddStudentForm()"]');
-            if (addBtn) {
-                addBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showAddStudentForm();
-                });
-            }
+            // Remove the duplicate event listener - button already has onclick attribute
 
             // Test function to manually populate courses
             window.testCoursePopulation = function() {
@@ -393,12 +656,12 @@
             window.forcePopulateCourses = function() {
                 console.log('Force populating courses...');
 
-                // Check for Institutional form
+                // Check for Academic form
                 const deptSelect = document.getElementById('department');
                 const courseSelect = document.getElementById('course');
 
                 if (deptSelect && courseSelect && deptSelect.value) {
-                    console.log('Found Institutional form, department:', deptSelect.value);
+                    console.log('Found Academic form, department:', deptSelect.value);
                     const siteCourses = [
                         'Bachelor of Science in Information Technology',
                         'Bachelor of Science in Computer Science',
@@ -415,16 +678,16 @@
                         courseSelect.appendChild(option);
                     });
                     courseSelect.disabled = false;
-                    console.log('Courses populated for Institutional form');
+                    console.log('Courses populated for Academic form');
                     return;
                 }
 
-                // Check for CHED form
-                const chedDeptSelect = document.getElementById('chedDepartment');
-                const chedCourseSelect = document.getElementById('chedCourse');
+                // Check for Government form
+                const govDeptSelect = document.getElementById('governmentDepartment');
+                const govCourseSelect = document.getElementById('governmentCourse');
 
-                if (chedDeptSelect && chedCourseSelect && chedDeptSelect.value) {
-                    console.log('Found CHED form, department:', chedDeptSelect.value);
+                if (govDeptSelect && govCourseSelect && govDeptSelect.value) {
+                    console.log('Found Government form, department:', govDeptSelect.value);
                     const siteCourses = [
                         'Bachelor of Science in Information Technology',
                         'Bachelor of Science in Computer Science',
@@ -433,15 +696,15 @@
                         'Bachelor of Science in Civil Engineering'
                     ];
 
-                    chedCourseSelect.innerHTML = '<option value="">Select Course</option>';
+                    govCourseSelect.innerHTML = '<option value="">Select Course</option>';
                     siteCourses.forEach(course => {
                         const option = document.createElement('option');
                         option.value = course;
                         option.textContent = course;
-                        chedCourseSelect.appendChild(option);
+                        govCourseSelect.appendChild(option);
                     });
-                    chedCourseSelect.disabled = false;
-                    console.log('Courses populated for CHED form');
+                    govCourseSelect.disabled = false;
+                    console.log('Courses populated for Government form');
                     return;
                 }
 
@@ -450,7 +713,7 @@
 
             // Add direct event listeners for department dropdowns
             setTimeout(() => {
-                // For Institutional scholarship
+                // For Academic scholarship
                 const deptSelect = document.getElementById('department');
                 if (deptSelect) {
                     deptSelect.addEventListener('change', function() {
@@ -459,23 +722,34 @@
                     });
                 }
 
-                // For CHED scholarship
-                const chedDeptSelect = document.getElementById('chedDepartment');
-                if (chedDeptSelect) {
-                    chedDeptSelect.addEventListener('change', function() {
-                        console.log('CHED Department changed via event listener:', this.value);
-                        loadChedCoursesByDepartment();
+                // For Government scholarship
+                const governmentDeptSelect = document.getElementById('governmentDepartment');
+                if (governmentDeptSelect) {
+                    governmentDeptSelect.addEventListener('change', function() {
+                        console.log('Government Department changed via event listener:', this
+                            .value);
+                        loadGovernmentCoursesByDepartment();
                     });
                 }
             }, 1000);
-        });
 
-        // Initialize page with correct active tab based on filter
-        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize page with correct active tab based on filter
             @if (isset($scholarshipTypeFilter))
                 // If there's a scholarship type filter, activate the corresponding tab
                 const filterType = '{{ $scholarshipTypeFilter }}';
+                console.log('Initializing with filter type:', filterType);
                 activateTabByType(filterType);
+
+                // Also ensure the correct tab is visually highlighted
+                setTimeout(() => {
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab) {
+                        console.log('Active tab found:', activeTab.textContent);
+                        // Add a subtle visual indicator that this tab is filtered
+                        activeTab.classList.add('viewing');
+                        activeTab.style.boxShadow = '0 0 15px rgba(5, 47, 17, 0.4)';
+                    }
+                }, 100);
             @endif
         });
 
@@ -489,19 +763,19 @@
             tabButtons.forEach(btn => {
                 const btnText = btn.textContent.toLowerCase();
                 if (
-                    (scholarshipType === 'ched' && btnText.includes('ched')) ||
-                    (scholarshipType === 'presidents' && btnText.includes('institutional')) ||
+                    (scholarshipType === 'government' && btnText.includes('government')) ||
+                    (scholarshipType === 'academic' && btnText.includes('academic')) ||
                     (scholarshipType === 'employees' && btnText.includes('employee')) ||
-                    (scholarshipType === 'private' && btnText.includes('private'))
+                    (scholarshipType === 'alumni' && btnText.includes('alumni'))
                 ) {
                     btn.classList.add('active');
 
                     // Update table title
                     const titles = {
-                        'ched': 'CHED Grantees',
-                        'presidents': 'Institutional Grantees',
+                        'government': 'Government Grantees',
+                        'academic': 'Academic Grantees',
                         'employees': 'Employee Grantees',
-                        'private': 'Private Grantees'
+                        'alumni': 'Alumni Grantees'
                     };
                     document.getElementById('categoryTitle').textContent = titles[scholarshipType] ||
                         'All Grantees';
@@ -515,53 +789,54 @@
             });
         }
 
+
+
         // Student management functions
-        function showStudentCategory(category) {
-            // Update active tab
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        let isTabSwitching = false;
 
-            // Update table title
-            const titles = {
-                'all': 'All Grantees',
-                'ched': 'CHED Grantees',
-                'presidents': 'Institutional Grantees',
-                'employees': 'Employee Grantees',
-                'private': 'Private Grantees'
-            };
-            document.getElementById('categoryTitle').textContent = titles[category];
+        function showStudentCategory(category, clickedButton) {
+            // Prevent rapid clicking
+            if (isTabSwitching) {
+                return;
+            }
 
-            // Show/hide import button - only show for "All Grantees"
-            const importBtn = document.getElementById('importBtn');
-            if (importBtn) {
-                if (category === 'all') {
-                    importBtn.style.display = 'block';
-                } else {
-                    importBtn.style.display = 'none';
+            isTabSwitching = true;
+
+            // Add visual feedback for the clicked button
+            clickedButton.style.transform = 'scale(0.95)';
+            clickedButton.style.transition = 'all 0.1s ease';
+
+            // Remove viewing class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('viewing');
+                btn.style.boxShadow = '';
+            });
+
+            // Add loading effect to clicked button
+            setTimeout(() => {
+                clickedButton.style.transform = '';
+                clickedButton.classList.add('viewing');
+            }, 100);
+
+            // Build the URL with the appropriate scholarship type parameter
+            let url = "{{ route('admin.students') }}";
+
+            if (category !== 'all') {
+                // Map category to scholarship type parameter
+                const categoryMap = {
+                    'government': 'government',
+                    'academic': 'academic',
+                    'employees': 'employees',
+                    'alumni': 'alumni'
+                };
+
+                if (categoryMap[category]) {
+                    url += '?scholarship_type=' + categoryMap[category];
                 }
             }
 
-            // Filter table rows
-            const rows = document.querySelectorAll('#studentsTableBody tr[data-type]');
-            rows.forEach(row => {
-                if (category === 'all') {
-                    row.style.display = '';
-                } else {
-                    const rowType = row.getAttribute('data-type');
-                    const categoryMap = {
-                        'ched': 'ched',
-                        'presidents': 'institutional',
-                        'employees': 'employee',
-                        'private': 'private'
-                    };
-
-                    if (rowType === categoryMap[category]) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
+            // Redirect to the URL with the scholarship type filter
+            window.location.href = url;
         }
 
         // Import functions
@@ -576,13 +851,12 @@
             if (file) {
                 selectedFile = file;
                 document.getElementById('selectedFileName').textContent = file.name;
-                document.getElementById('scholarshipTypeModal').style.display = 'block';
+                document.getElementById('importConfirmationModal').style.display = 'block';
             }
         }
 
-        function closeScholarshipTypeModal() {
-            document.getElementById('scholarshipTypeModal').style.display = 'none';
-            document.getElementById('scholarshipTypeSelect').value = '';
+        function closeImportConfirmationModal() {
+            document.getElementById('importConfirmationModal').style.display = 'none';
             document.getElementById('updateExistingCheckbox').checked = false;
             selectedFile = null;
             // Reset the file input
@@ -590,18 +864,17 @@
         }
 
         async function proceedWithImport() {
-            const scholarshipType = document.getElementById('scholarshipTypeSelect').value;
             const updateExisting = document.getElementById('updateExistingCheckbox').checked;
-
-            if (!scholarshipType) {
-                alert('Please select a scholarship type.');
-                return;
-            }
 
             if (!selectedFile) {
                 alert('No file selected.');
                 return;
             }
+
+            const endpoint = '/admin/import-grantees-dynamic';
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('update_existing', updateExisting ? '1' : '0');
 
             const submitBtn = event.target;
             const originalText = submitBtn.textContent;
@@ -611,12 +884,7 @@
             submitBtn.disabled = true;
 
             try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                formData.append('scholarship_type', scholarshipType);
-                formData.append('update_existing', updateExisting ? '1' : '0');
-
-                const response = await fetch('/admin/import-students', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -628,8 +896,27 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert(`Import successful! ${result.message}`);
-                    closeScholarshipTypeModal();
+                    let message = result.message;
+                    if (result.details) {
+                        message += `\n\nDetails:\n- Total imported: ${result.details.total_imported}`;
+                        if (result.details.users_created) {
+                            message += `\n- Users created: ${result.details.users_created}`;
+                        }
+                        if (result.details.grantees_created) {
+                            message += `\n- Grantees created: ${result.details.grantees_created}`;
+                        }
+                        if (result.details.scholarship_types) {
+                            message += `\n- Scholarship types found: ${result.details.scholarship_types.join(', ')}`;
+                        }
+                        if (result.details.errors && result.details.errors.length > 0) {
+                            message += `\n\nErrors encountered:\n${result.details.errors.slice(0, 5).join('\n')}`;
+                            if (result.details.errors.length > 5) {
+                                message += `\n... and ${result.details.errors.length - 5} more errors`;
+                            }
+                        }
+                    }
+                    alert(message);
+                    closeImportConfirmationModal();
                     // Reload the page to show new grantees
                     window.location.reload();
                 } else {
@@ -647,7 +934,7 @@
 
         // Simple, direct course population functions
         function populateCoursesDirectly(department) {
-            console.log('=== INSTITUTIONAL COURSE POPULATION ===');
+            console.log('=== ACADEMIC COURSE POPULATION ===');
             console.log('Department selected:', department);
             console.log('Function called at:', new Date().toLocaleTimeString());
 
@@ -701,7 +988,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -732,12 +1019,72 @@
             }
         }
 
-        function populateChedCoursesDirectly(department) {
-            console.log('Direct course population for CHED:', department);
+        function populateGovernmentCoursesDirectly(department) {
+            console.log('Direct course population for Government:', department);
 
-            const courseSelect = document.getElementById('chedCourse');
+            const courseSelect = document.getElementById('governmentCourse');
             if (!courseSelect) {
-                console.error('CHED Course select not found');
+                console.error('Government Course select not found');
+                return;
+            }
+
+            // Clear existing options
+            courseSelect.innerHTML = '<option value="">Select Course</option>';
+            courseSelect.disabled = true;
+
+            if (!department) return;
+
+            const courses = {
+                'SITE': [
+                    'Bachelor of Science in Information Technology',
+                    'Bachelor of Science in Computer Science',
+                    'Bachelor of Science in Computer Engineering',
+                    'Bachelor of Library and Information Science',
+                    'Bachelor of Science in Civil Engineering',
+                    'Bachelor of Science in Environmental and Sanitary Engineering'
+                ],
+                'SASTE': [
+                    'Bachelor of Elementary Education',
+                    'Bachelor of Secondary Education',
+                    'Bachelor of Science in Psychology',
+                    'Bachelor of Arts in English Language Studies',
+                    'Bachelor of Science in Biology',
+                    'Bachelor of Science in Social Work',
+                    'Bachelor of Science in Public Administration',
+                    'Bachelor of Physical Education'
+                ],
+                'SBAHM': [
+                    'Bachelor of Science in Business Administration',
+                    'Bachelor of Science in Hospitality Management',
+                    'Bachelor of Science in Tourism Management',
+                    'Bachelor of Science in Entrepreneurship'
+                ],
+                'SNASH': [
+                    'Bachelor of Science in Nursing',
+                    'Bachelor of Science in Medical Technology',
+                    'Bachelor of Science in Pharmacy',
+                    'Bachelor of Science in Physical Therapy'
+                ]
+            };
+
+            if (courses[department]) {
+                courses[department].forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course;
+                    option.textContent = course;
+                    courseSelect.appendChild(option);
+                });
+                courseSelect.disabled = false;
+                console.log('Government Courses populated successfully for', department);
+            }
+        }
+
+        function populateAcademicCoursesDirectly(department) {
+            console.log('Direct course population for Academic:', department);
+
+            const courseSelect = document.getElementById('academicCourse');
+            if (!courseSelect) {
+                console.error('Academic Course select not found');
                 return;
             }
 
@@ -788,225 +1135,59 @@
                     courseSelect.appendChild(option);
                 });
                 courseSelect.disabled = false;
-                console.log('CHED Courses populated successfully for', department);
+                console.log('Academic Courses populated successfully for', department);
             }
         }
 
-        function showAddStudentForm() {
-            console.log('Add Student button clicked');
-            const modal = document.getElementById('addStudentModal');
 
-            if (modal) {
-                modal.style.display = 'block';
-                console.log('Modal opened successfully');
 
-                // Test course population after modal opens
-                setTimeout(() => {
-                    console.log('Testing course population after modal open...');
-                    const deptSelect = document.getElementById('department');
-                    const courseSelect = document.getElementById('course');
-                    console.log('Department select found:', !!deptSelect);
-                    console.log('Course select found:', !!courseSelect);
 
-                    if (deptSelect && courseSelect) {
-                        console.log('Both selects found, testing population...');
-                        populateCoursesDirectly('SITE');
-                    }
-                }, 500);
+
+        function updateEducationStageFields() {
+            const educationStage = document.getElementById('educationStage')?.value;
+            const beuFields = document.getElementById('beuFields');
+            const collegeFields = document.getElementById('collegeFields');
+
+            if (!beuFields || !collegeFields) return;
+
+            if (educationStage === 'BEU') {
+                beuFields.style.display = 'block';
+                collegeFields.style.display = 'none';
+
+                // Make BEU fields required
+                const gradeLevel = document.getElementById('gradeLevel');
+                if (gradeLevel) gradeLevel.required = true;
+
+                // Make college fields not required
+                const department = document.getElementById('department');
+                const course = document.getElementById('course');
+                const yearLevel = document.getElementById('yearLevel');
+                if (department) department.required = false;
+                if (course) course.required = false;
+                if (yearLevel) yearLevel.required = false;
+
+            } else if (educationStage === 'College') {
+                beuFields.style.display = 'none';
+                collegeFields.style.display = 'block';
+
+                // Make college fields required
+                const department = document.getElementById('department');
+                const course = document.getElementById('course');
+                const yearLevel = document.getElementById('yearLevel');
+                if (department) department.required = true;
+                if (course) course.required = true;
+                if (yearLevel) yearLevel.required = true;
+
+                // Make BEU fields not required
+                const gradeLevel = document.getElementById('gradeLevel');
+                const strand = document.getElementById('strand');
+                if (gradeLevel) gradeLevel.required = false;
+                if (strand) strand.required = false;
+
             } else {
-                console.error('Modal not found!');
+                beuFields.style.display = 'none';
+                collegeFields.style.display = 'none';
             }
-        }
-
-        function closeAddStudentModal() {
-            document.getElementById('addStudentModal').style.display = 'none';
-            document.getElementById('addStudentForm').reset();
-            document.getElementById('dynamicFields').innerHTML = '';
-        }
-
-        function updateFormFields() {
-            const scholarshipType = document.getElementById('scholarshipType').value;
-            const dynamicFields = document.getElementById('dynamicFields');
-
-            // Clear previous dynamic fields
-            dynamicFields.innerHTML = '';
-
-            if (!scholarshipType) return;
-
-            let fieldsHTML = '';
-
-            switch (scholarshipType) {
-                case 'ched':
-                    fieldsHTML = `
-                        <div class="form-section">
-                            <h3>CHED Scholarship Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="educationStage">Education Stage *</label>
-                                    <select id="educationStage" name="education_stage" required onchange="updateChedEducationFields()">
-                                        <option value="">Select Education Stage</option>
-                                        <option value="College">College</option>
-                                        <option value="BSU">Basic Education</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="chedEducationSpecificFields"></div>
-
-                            <!-- Parents Information -->
-                            <div class="form-section">
-                                <h3>Parents Information</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="fatherFirstName">Father's First Name</label>
-                                        <input type="text" id="fatherFirstName" name="father_first_name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fatherLastName">Father's Last Name</label>
-                                        <input type="text" id="fatherLastName" name="father_last_name">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="motherFirstName">Mother's First Name</label>
-                                        <input type="text" id="motherFirstName" name="mother_first_name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="motherLastName">Mother's Last Name</label>
-                                        <input type="text" id="motherLastName" name="mother_last_name">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Address Information -->
-                            <div class="form-section">
-                                <h3>Address Information</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="street">Street</label>
-                                        <input type="text" id="street" name="street">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="barangay">Barangay</label>
-                                        <input type="text" id="barangay" name="barangay">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="city">City</label>
-                                        <input type="text" id="city" name="city">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="province">Province</label>
-                                        <input type="text" id="province" name="province">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="zipcode">Zip Code</label>
-                                        <input type="text" id="zipcode" name="zipcode">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    break;
-
-                case 'presidents':
-                    fieldsHTML = `
-                        <div class="form-section">
-                            <h3>Institutional Scholarship Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="educationStage">Education Stage *</label>
-                                    <select id="educationStage" name="education_stage" required onchange="updateEducationFields()">
-                                        <option value="">Select Education Stage</option>
-                                        <option value="College">College</option>
-                                        <option value="BSU">Basic Education</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="semester">Semester *</label>
-                                    <select id="semester" name="semester" required onchange="checkAndShowSubjects()">
-                                        <option value="">Select Semester</option>
-                                        <option value="1st Semester">1st Semester</option>
-                                        <option value="2nd Semester">2nd Semester</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="academicYear">Academic Year *</label>
-                                    <input type="text" id="academicYear" name="academic_year" placeholder="e.g., 2024-2025" required>
-                                </div>
-                            </div>
-                            <div id="educationSpecificFields"></div>
-
-                            <!-- Subjects Section -->
-                            <div id="subjectsSection" style="display: none;">
-                                <div class="form-section">
-                                    <h3>Subjects and Grades</h3>
-                                    <div id="subjectsContainer"></div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="calculatedGwa">Calculated GWA</label>
-                                            <input type="number" id="calculatedGwa" name="gwa" step="0.01" min="1.0" max="4.0" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    break;
-
-                case 'employees':
-                    fieldsHTML = `
-                        <div class="form-section">
-                            <h3>Employee Scholarship Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="employeeName">Employee Name *</label>
-                                    <input type="text" id="employeeName" name="employee_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="employeeRelationship">Relationship *</label>
-                                    <select id="employeeRelationship" name="employee_relationship" required>
-                                        <option value="">Select Relationship</option>
-                                        <option value="Son">Son</option>
-                                        <option value="Daughter">Daughter</option>
-                                        <option value="Spouse">Spouse</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="employeeDepartment">Employee Department *</label>
-                                    <input type="text" id="employeeDepartment" name="employee_department" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="employeePosition">Employee Position *</label>
-                                    <input type="text" id="employeePosition" name="employee_position" required>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    break;
-
-                case 'private':
-                    fieldsHTML = `
-                        <div class="form-section">
-                            <h3>Private Scholarship Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="scholarshipName">Scholarship Name *</label>
-                                    <input type="text" id="scholarshipName" name="scholarship_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="otherScholarship">Other Scholarship Details</label>
-                                    <textarea id="otherScholarship" name="other_scholarship" rows="3"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
-
-            dynamicFields.innerHTML = fieldsHTML;
         }
 
         function updateEducationFields() {
@@ -1025,9 +1206,9 @@
                             <select id="department" name="department" required onchange="populateCoursesDirectly(this.value); console.log('Department changed to:', this.value);">
                                 <option value="">Select Department</option>
                                 <option value="SITE">School of Information Technology and Engineering (SITE)</option>
+                                <option value="SBAHM">School of Business, Accountancy, and Hospitality Management (SBAHM)</option>
+                                <option value="SNASH">School of Nursing and Allied Health Sciences (SNASH)</option>
                                 <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
-                                <option value="SBAHM">School of Business Administration and Hospitality Management (SBAHM)</option>
-                                <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1055,7 +1236,7 @@
                         </div>
                     </div>
                 `;
-            } else if (educationStage === 'BSU') {
+            } else if (educationStage === 'BEU') {
                 fieldsHTML = `
                     <div class="form-row">
                         <div class="form-group">
@@ -1080,10 +1261,10 @@
             hideSubjectsSection();
         }
 
-        // CHED Education Fields Handler
-        function updateChedEducationFields() {
+        // Government Education Fields Handler
+        function updateGovernmentEducationFields() {
             const educationStage = document.getElementById('educationStage').value;
-            const specificFields = document.getElementById('chedEducationSpecificFields');
+            const specificFields = document.getElementById('governmentEducationSpecificFields');
 
             if (!specificFields) return;
 
@@ -1095,24 +1276,24 @@
                         <h3>Academic Information</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="chedDepartment">Department *</label>
-                                <select id="chedDepartment" name="department" required onchange="populateChedCoursesDirectly(this.value)">
+                                <label for="governmentDepartment">Department *</label>
+                                <select id="governmentDepartment" name="department" required onchange="populateGovernmentCoursesDirectly(this.value)">
                                     <option value="">Select Department</option>
                                     <option value="SITE">School of Information Technology and Engineering (SITE)</option>
+                                    <option value="SBAHM">School of Business, Accountancy, and Hospitality Management (SBAHM)</option>
+                                    <option value="SNASH">School of Nursing and Allied Health Sciences (SNASH)</option>
                                     <option value="SASTE">School of Arts, Sciences and Teacher Education (SASTE)</option>
-                                    <option value="SBAHM">School of Business Administration and Hospitality Management (SBAHM)</option>
-                                    <option value="SNAHS">School of Nursing and Allied Health Sciences (SNAHS)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="chedCourse">Course *</label>
-                                <select id="chedCourse" name="course" required disabled>
+                                <label for="governmentCourse">Course *</label>
+                                <select id="governmentCourse" name="course" required disabled>
                                     <option value="">Select Course</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="chedYearLevel">Year Level *</label>
-                                <select id="chedYearLevel" name="year_level" required>
+                                <label for="governmentYearLevel">Year Level *</label>
+                                <select id="governmentYearLevel" name="year_level" required>
                                     <option value="">Select Year Level</option>
                                     <option value="1st Year">1st Year</option>
                                     <option value="2nd Year">2nd Year</option>
@@ -1123,14 +1304,14 @@
                         </div>
                     </div>
                 `;
-            } else if (educationStage === 'BSU') {
+            } else if (educationStage === 'BEU') {
                 fieldsHTML = `
                     <div class="form-section">
                         <h3>Basic Education Information</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="chedGradeLevel">Grade Level *</label>
-                                <select id="chedGradeLevel" name="grade_level" required onchange="updateChedStrandField()">
+                                <label for="governmentGradeLevel">Grade Level *</label>
+                                <select id="governmentGradeLevel" name="grade_level" required onchange="updateGovernmentStrandField()">
                                     <option value="">Select Grade Level</option>
                                     <option value="Grade 7">Grade 7</option>
                                     <option value="Grade 8">Grade 8</option>
@@ -1140,7 +1321,7 @@
                                     <option value="Grade 12">Grade 12</option>
                                 </select>
                             </div>
-                            <div id="chedStrandField"></div>
+                            <div id="governmentStrandField"></div>
                         </div>
                     </div>
                 `;
@@ -1149,9 +1330,9 @@
             specificFields.innerHTML = fieldsHTML;
         }
 
-        function updateChedStrandField() {
-            const gradeLevel = document.getElementById('chedGradeLevel').value;
-            const strandField = document.getElementById('chedStrandField');
+        function updateGovernmentStrandField() {
+            const gradeLevel = document.getElementById('governmentGradeLevel').value;
+            const strandField = document.getElementById('governmentStrandField');
 
             if (!strandField) return;
 
@@ -1160,19 +1341,12 @@
             if (gradeLevel === 'Grade 11' || gradeLevel === 'Grade 12') {
                 strandHTML = `
                     <div class="form-group">
-                        <label for="chedStrand">Strand *</label>
-                        <select id="chedStrand" name="strand" required>
+                        <label for="governmentStrand">Strand *</label>
+                        <select id="governmentStrand" name="strand" required>
                             <option value="">Select Strand</option>
                             <option value="STEM">Science, Technology, Engineering and Mathematics (STEM)</option>
                             <option value="ABM">Accountancy, Business and Management (ABM)</option>
                             <option value="HUMSS">Humanities and Social Sciences (HUMSS)</option>
-                            <option value="GAS">General Academic Strand (GAS)</option>
-                            <option value="TVL-ICT">Technical-Vocational-Livelihood - Information and Communications Technology (TVL-ICT)</option>
-                            <option value="TVL-HE">Technical-Vocational-Livelihood - Home Economics (TVL-HE)</option>
-                            <option value="TVL-IA">Technical-Vocational-Livelihood - Industrial Arts (TVL-IA)</option>
-                            <option value="TVL-Agri">Technical-Vocational-Livelihood - Agri-Fishery Arts (TVL-Agri)</option>
-                            <option value="Arts and Design">Arts and Design Track</option>
-                            <option value="Sports">Sports Track</option>
                         </select>
                     </div>
                 `;
@@ -1181,11 +1355,11 @@
             strandField.innerHTML = strandHTML;
         }
 
-        async function loadChedCoursesByDepartment() {
-            const departmentSelect = document.getElementById('chedDepartment');
-            const courseSelect = document.getElementById('chedCourse');
+        async function loadGovernmentCoursesByDepartment() {
+            const departmentSelect = document.getElementById('governmentDepartment');
+            const courseSelect = document.getElementById('governmentCourse');
 
-            console.log('Loading CHED courses for department...');
+            console.log('Loading Government courses for department...');
 
             if (!departmentSelect || !courseSelect) {
                 console.error('Department or course select not found');
@@ -1227,7 +1401,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1236,29 +1410,25 @@
             };
 
             try {
-                // Try to load from API first
-                console.log('Attempting to fetch from API...');
-                const response = await fetch('/api/scholarship/department-course-mapping');
-                console.log('API response status:', response.status);
+                // Get department-course mapping directly from helper data
+                console.log('Loading courses from helper data...');
+                const departmentCourseMapping = @json(\App\Helpers\ScholarshipDataHelper::getCoursesByDepartment());
+                console.log('Department course mapping:', departmentCourseMapping);
 
-                if (response.ok) {
-                    const apiData = await response.json();
-                    console.log('API data received:', apiData);
-
-                    if (apiData[selectedDepartment] && apiData[selectedDepartment].length > 0) {
-                        console.log('Using API data for courses');
-                        apiData[selectedDepartment].forEach(course => {
-                            const option = document.createElement('option');
-                            option.value = course;
-                            option.textContent = course;
-                            courseSelect.appendChild(option);
-                        });
-                        courseSelect.disabled = false;
-                        return;
-                    }
+                if (departmentCourseMapping[selectedDepartment] && departmentCourseMapping[selectedDepartment].length > 0) {
+                    console.log('Using helper data for courses');
+                    departmentCourseMapping[selectedDepartment].forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course;
+                        option.textContent = course;
+                        courseSelect.appendChild(option);
+                    });
+                    courseSelect.disabled = false;
+                    return;
                 }
             } catch (error) {
                 console.error('API error:', error);
+                // Fallback to default courses will be handled below
             }
 
             // Use fallback data
@@ -1285,15 +1455,15 @@
             const courseSelect = document.getElementById('course');
             const yearLevelSelect = document.getElementById('yearLevel');
 
-            console.log('Loading Institutional courses for department...');
+            console.log('Loading Academic courses for department...');
 
             if (!departmentSelect || !courseSelect) {
-                console.error('Department or course select not found for Institutional');
+                console.error('Department or course select not found for Academic');
                 return;
             }
 
             const selectedDepartment = departmentSelect.value;
-            console.log('Selected department for Institutional:', selectedDepartment);
+            console.log('Selected department for Academic:', selectedDepartment);
 
             // Clear existing options
             courseSelect.innerHTML = '<option value="">Select Course</option>';
@@ -1332,7 +1502,7 @@
                     'Bachelor of Science in Tourism Management',
                     'Bachelor of Science in Entrepreneurship'
                 ],
-                'SNAHS': [
+                'SNASH': [
                     'Bachelor of Science in Nursing',
                     'Bachelor of Science in Medical Technology',
                     'Bachelor of Science in Pharmacy',
@@ -1341,33 +1511,28 @@
             };
 
             try {
-                // Try to load from API first
-                console.log('Attempting to fetch from API for Institutional...');
-                const response = await fetch('/api/scholarship/department-course-mapping');
-                console.log('API response status for Institutional:', response.status);
+                // Get department-course mapping directly from helper data
+                console.log('Loading courses from helper data for Academic...');
+                const departmentCourseMapping = @json(\App\Helpers\ScholarshipDataHelper::getCoursesByDepartment());
+                console.log('Department course mapping for Academic:', departmentCourseMapping);
 
-                if (response.ok) {
-                    const apiData = await response.json();
-                    console.log('API data received for Institutional:', apiData);
-
-                    if (apiData[selectedDepartment] && apiData[selectedDepartment].length > 0) {
-                        console.log('Using API data for Institutional courses');
-                        apiData[selectedDepartment].forEach(course => {
-                            const option = document.createElement('option');
-                            option.value = course;
-                            option.textContent = course;
-                            courseSelect.appendChild(option);
-                        });
-                        courseSelect.disabled = false;
-                        return;
-                    }
+                if (departmentCourseMapping[selectedDepartment] && departmentCourseMapping[selectedDepartment].length > 0) {
+                    console.log('Using helper data for Academic courses');
+                    departmentCourseMapping[selectedDepartment].forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course;
+                        option.textContent = course;
+                        courseSelect.appendChild(option);
+                    });
+                    courseSelect.disabled = false;
+                    return;
                 }
             } catch (error) {
-                console.error('API error for Institutional:', error);
+                console.error('API error for Academic:', error);
             }
 
             // Use fallback data
-            console.log('Using fallback courses for Institutional department:', selectedDepartment);
+            console.log('Using fallback courses for Academic department:', selectedDepartment);
             if (fallbackCourses[selectedDepartment]) {
                 fallbackCourses[selectedDepartment].forEach(course => {
                     const option = document.createElement('option');
@@ -1376,9 +1541,9 @@
                     courseSelect.appendChild(option);
                 });
                 courseSelect.disabled = false;
-                console.log('Institutional courses loaded successfully from fallback');
+                console.log('Academic courses loaded successfully from fallback');
             } else {
-                console.error('No courses found for Institutional department:', selectedDepartment);
+                console.error('No courses found for Academic department:', selectedDepartment);
             }
         }
 
@@ -1396,9 +1561,8 @@
             if (!selectedCourse) return;
 
             try {
-                // Get course duration to determine available year levels
-                const response = await fetch(`/api/scholarship/course-durations`);
-                const courseDurations = await response.json();
+                // Get course duration directly from helper data
+                const courseDurations = @json(\App\Helpers\ScholarshipDataHelper::getCourseDuration());
 
                 // Find the course duration
                 let duration = 4; // Default to 4 years
@@ -1446,27 +1610,26 @@
             const selectedYearLevel = yearLevelSelect.value;
 
             if (selectedCourse && selectedSemester && selectedYearLevel) {
-                loadSubjectsFromAPI(selectedCourse, selectedYearLevel, selectedSemester);
+                loadSubjectsDirectlyFromHelper(selectedCourse, selectedYearLevel, selectedSemester);
             } else {
                 hideSubjectsSection();
             }
         }
 
-        async function loadSubjectsFromAPI(courseName, yearLevel, semester) {
+        function loadSubjectsDirectlyFromHelper(courseName, yearLevel, semester) {
             try {
-                // Convert year level to number for API
-                const yearLevelNumber = parseInt(yearLevel.replace(/\D/g, ''));
+                // Get subjects data from ScholarshipDataHelper
+                const subjectsData = @json(\App\Helpers\ScholarshipDataHelper::getSubjects());
 
-                const response = await fetch(
-                    `/api/scholarship/subjects/${encodeURIComponent(courseName)}/${yearLevelNumber}/${encodeURIComponent(semester)}`
+                // Use shared function to load subjects
+                loadSubjectsDirectly(
+                    courseName,
+                    yearLevel,
+                    semester,
+                    subjectsData,
+                    showSubjectsFromAPI, // Success callback
+                    showNoSubjectsMessage // Error callback
                 );
-                const data = await response.json();
-
-                if (response.ok && data.subjects && data.subjects.length > 0) {
-                    showSubjectsFromAPI(data.subjects);
-                } else {
-                    showNoSubjectsMessage(courseName, yearLevel, semester);
-                }
             } catch (error) {
                 console.error('Error loading subjects:', error);
                 showNoSubjectsMessage(courseName, yearLevel, semester);
@@ -1496,7 +1659,8 @@
                                    min="1.0"
                                    max="4.0"
                                    step="0.01"
-                                   onchange="calculateGWA()"
+                                   onchange="calculateGWA(); validateAcademicGrades();"
+                                   oninput="validateIndividualGrade(this)"
                                    data-units="${subject.units}">
                         </div>
                     </div>
@@ -1538,6 +1702,7 @@
             let totalGradePoints = 0;
             let totalUnits = 0;
             let hasAllGrades = true;
+            let hasDisqualifyingGrade = false;
 
             gradeInputs.forEach(input => {
                 const grade = parseFloat(input.value);
@@ -1546,6 +1711,11 @@
                 if (!isNaN(grade) && grade > 0) {
                     totalGradePoints += grade * units;
                     totalUnits += units;
+
+                    // Check for disqualifying grade (2.0 and above)
+                    if (grade >= 2.0) {
+                        hasDisqualifyingGrade = true;
+                    }
                 } else {
                     hasAllGrades = false;
                 }
@@ -1557,38 +1727,238 @@
             } else {
                 gwaInput.value = '';
             }
+
+            // Check for disqualifying grades and show notification
+            if (hasDisqualifyingGrade) {
+                showGradeDisqualificationNotification();
+            } else {
+                removeGradeDisqualificationNotification();
+            }
         }
 
-        function saveNewStudent(event) {
-            event.preventDefault();
+        // Show grade disqualification notification
+        function showGradeDisqualificationNotification() {
+            // Remove any existing grade disqualification notifications
+            removeGradeDisqualificationNotification();
 
-            const formData = new FormData(document.getElementById('addStudentForm'));
-            const studentData = Object.fromEntries(formData);
+            // Create grade disqualification notification
+            const notification = document.createElement('div');
+            notification.className = 'main-screen-grade-disqualification-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                    </div>
+                    <div class="notification-text">
+                        <strong>Academic Scholarship Disqualification!</strong><br>
+                        You have entered one or more grades of 2.0 or below, which disqualifies this student from the Academic Scholarship program.<br>
+                        <span class="warning-note">Academic Scholarship requires all grades to be between 1.0 and 1.75 (passing grades). Grades of 2.0 and below are not eligible. Please review the grades and ensure they meet the requirements.</span>
+                    </div>
+                    <button class="notification-close" onclick="removeGradeDisqualificationNotification()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
 
-            // Here you would typically send the data to your backend
-            console.log('Saving new student:', studentData);
+            // Insert notification at the top of the modal content
+            const modalContent = document.querySelector('.modal-content') || document.querySelector('.container') ||
+                document.body;
+            modalContent.insertBefore(notification, modalContent.firstChild);
 
-            // Close the modal
-            closeAddStudentModal();
+            // Auto-scroll to show the notification
+            notification.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
 
-            // TODO: Implement actual save functionality with backend API
-            // TODO: Refresh the table with new student data
+            // Mark form as having disqualifying grades
+            const academicForm = document.querySelector('form input[value="academic"]');
+            if (academicForm) {
+                academicForm.closest('form').setAttribute('data-grade-disqualified', 'true');
+            }
         }
+
+        // Remove grade disqualification notification
+        function removeGradeDisqualificationNotification() {
+            const existingNotification = document.querySelector('.main-screen-grade-disqualification-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Remove disqualification flag from form
+            const academicForm = document.querySelector('form input[value="academic"]');
+            if (academicForm) {
+                academicForm.closest('form').removeAttribute('data-grade-disqualified');
+            }
+        }
+
+        // Validate individual grade input
+        function validateIndividualGrade(input) {
+            const grade = parseFloat(input.value);
+
+            // Remove any existing grade error styling
+            input.classList.remove('grade-disqualified');
+
+            // If grade is entered and is 2.0 or above, mark as disqualified
+            if (!isNaN(grade) && grade > 0 && grade >= 2.0) {
+                input.classList.add('grade-disqualified');
+            }
+        }
+
+        // Validate all academic grades
+        function validateAcademicGrades() {
+            const gradeInputs = document.querySelectorAll('input[name^="subject_grades"]');
+            let hasDisqualifyingGrade = false;
+
+            gradeInputs.forEach(input => {
+                const grade = parseFloat(input.value);
+                if (!isNaN(grade) && grade > 0 && grade >= 2.0) {
+                    hasDisqualifyingGrade = true;
+                }
+            });
+
+            // Show or hide disqualification notification
+            if (hasDisqualifyingGrade) {
+                showGradeDisqualificationNotification();
+            } else {
+                removeGradeDisqualificationNotification();
+            }
+        }
+
+        function validateDynamicFormData(studentData) {
+            // Common required fields for all scholarship types
+            const commonFields = [
+                { key: 'student_id', name: 'Student ID' },
+                { key: 'first_name', name: 'First Name' },
+                { key: 'last_name', name: 'Last Name' },
+                { key: 'scholarship_type', name: 'Scholarship Type' },
+                { key: 'sex', name: 'Sex' },
+                { key: 'birthdate', name: 'Birthdate' },
+                { key: 'contact_number', name: 'Contact Number' },
+                { key: 'street', name: 'Street' },
+                { key: 'barangay', name: 'Barangay' },
+                { key: 'city', name: 'City' },
+                { key: 'province', name: 'Province' },
+                { key: 'zipcode', name: 'Zipcode' }
+            ];
+
+            // Check common required fields
+            for (const field of commonFields) {
+                if (!studentData[field.key] || !studentData[field.key].trim()) {
+                    alert(`Please fill in the ${field.name} field.`);
+                    return false;
+                }
+            }
+
+            // Scholarship-specific validation
+            const scholarshipType = studentData.scholarship_type;
+
+            if (scholarshipType === 'government') {
+                const governmentFields = [
+                    { key: 'government_benefactor_type', name: 'Benefactor Type' },
+                    { key: 'education_stage', name: 'Education Stage' },
+                    { key: 'father_first_name', name: 'Father\'s First Name' },
+                    { key: 'father_middle_name', name: 'Father\'s Middle Name' },
+                    { key: 'father_last_name', name: 'Father\'s Last Name' },
+                    { key: 'mother_first_name', name: 'Mother\'s First Name' },
+                    { key: 'mother_middle_name', name: 'Mother\'s Middle Name' },
+                    { key: 'mother_last_name', name: 'Mother\'s Last Name' }
+                ];
+
+                for (const field of governmentFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+                // Education stage specific validation
+                if (studentData.education_stage === 'BEU') {
+                    if (!studentData.grade_level || !studentData.grade_level.trim()) {
+                        alert('Please select a Grade Level for BEU students.');
+                        return false;
+                    }
+                } else if (studentData.education_stage === 'College') {
+                    const collegeFields = [
+                        { key: 'department', name: 'Department' },
+                        { key: 'course', name: 'Course' },
+                        { key: 'year_level', name: 'Year Level' }
+                    ];
+
+                    for (const field of collegeFields) {
+                        if (!studentData[field.key] || !studentData[field.key].trim()) {
+                            alert(`Please fill in the ${field.name} field.`);
+                            return false;
+                        }
+                    }
+                }
+
+            } else if (scholarshipType === 'academic') {
+                const academicFields = [
+                    { key: 'department', name: 'Department' },
+                    { key: 'course', name: 'Course' },
+                    { key: 'year_level', name: 'Year Level' },
+                    { key: 'gwa', name: 'GWA' }
+                ];
+
+                for (const field of academicFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+            } else if (scholarshipType === 'employees') {
+                const employeeFields = [
+                    { key: 'employee_name', name: 'Employee Name' },
+                    { key: 'employee_relationship', name: 'Employee Relationship' },
+                    { key: 'employee_department', name: 'Employee Department' },
+                    { key: 'employee_position', name: 'Employee Position' }
+                ];
+
+                for (const field of employeeFields) {
+                    if (!studentData[field.key] || !studentData[field.key].trim()) {
+                        alert(`Please fill in the ${field.name} field.`);
+                        return false;
+                    }
+                }
+
+            } else if (scholarshipType === 'alumni') {
+                if (!studentData.scholarship_name || !studentData.scholarship_name.trim()) {
+                    alert('Please fill in the Scholarship Name field.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
 
         function editStudent(applicationId, studentId) {
-            // Get the button that was clicked to access data attributes
+            // Find the grantee data from the table row
             const button = event.target.closest('button');
+            const row = button.closest('tr');
 
-            // Populate modal with student data
-            document.getElementById('editStudentId').value = button.dataset.studentId;
-            document.getElementById('editStudentName').value = button.dataset.studentName;
-            document.getElementById('editStudentEmail').value = button.dataset.studentEmail;
-            document.getElementById('editStudentContact').value = button.dataset.studentContact;
-            document.getElementById('editStudentCourse').value = button.dataset.studentCourse;
-            document.getElementById('editStudentDepartment').value = button.dataset.studentDepartment;
-            document.getElementById('editStudentYear').value = button.dataset.studentYear;
-            document.getElementById('editStudentGwa').value = button.dataset.studentGwa;
-            document.getElementById('editApplicationId').value = button.dataset.applicationId;
+            // Get grantee data from the row
+            const cells = row.querySelectorAll('td');
+            const granteeId = cells[0].textContent.trim();
+            const fullName = cells[1].textContent.trim();
+
+            // Get status from the status badge
+            const statusBadge = row.querySelector('.status-badge');
+            const status = statusBadge ? statusBadge.textContent.trim() : 'Active';
+
+            // Populate modal with grantee data
+            document.getElementById('editStudentId').value = granteeId;
+            document.getElementById('editStudentName').value = fullName;
+            document.getElementById('editStudentStatus').value = status;
+            document.getElementById('editStudentRemarks').value = '';
+            document.getElementById('editApplicationId').value = applicationId;
+            document.getElementById('editGranteeId').value = granteeId;
+
+            // Show/hide remarks field based on status
+            toggleRemarksField();
 
             // Show modal
             document.getElementById('editStudentModal').style.display = 'block';
@@ -1598,11 +1968,41 @@
             document.getElementById('editStudentModal').style.display = 'none';
         }
 
+        function toggleRemarksField() {
+            const statusSelect = document.getElementById('editStudentStatus');
+            const remarksRow = document.getElementById('remarksRow');
+            const remarksSelect = document.getElementById('editStudentRemarks');
+
+            if (statusSelect.value === 'Inactive') {
+                remarksRow.style.display = 'block';
+                remarksSelect.required = true;
+            } else {
+                remarksRow.style.display = 'none';
+                remarksSelect.required = false;
+                remarksSelect.value = '';
+            }
+        }
+
+        // Add event listener for status change
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelect = document.getElementById('editStudentStatus');
+            if (statusSelect) {
+                statusSelect.addEventListener('change', toggleRemarksField);
+            }
+        });
+
         function saveStudentChanges(event) {
             event.preventDefault();
 
             const formData = new FormData(event.target);
             const applicationId = formData.get('application_id');
+            const granteeId = formData.get('grantee_id');
+
+            // Validate required fields
+            if (formData.get('status') === 'Inactive' && !formData.get('notes')) {
+                alert('Please select a reason when setting status to Inactive.');
+                return;
+            }
 
             // Show loading state
             const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -1611,7 +2011,7 @@
             submitBtn.disabled = true;
 
             // Send update request
-            fetch(`/admin/students/${applicationId}/update`, {
+            fetch(`/admin/grantees/${granteeId}/update`, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1622,15 +2022,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update the table row with new data
-                        updateTableRow(formData);
                         closeEditModal();
+                        // Simply reload to show updated data (grantee stays in the list)
+                        window.location.reload();
                     } else {
-                        console.error(data.message || 'Failed to update student information.');
+                        alert(data.message || 'Failed to update grantee information.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('An error occurred while updating grantee information.');
                 })
                 .finally(() => {
                     // Reset button state
@@ -1670,13 +2071,16 @@
         // Close modal when clicking outside of it
         window.onclick = function(event) {
             const editModal = document.getElementById('editStudentModal');
-            const addModal = document.getElementById('addStudentModal');
+            // Temporarily commented out Add Grantee modal handling
+            // const addModal = document.getElementById('addStudentModal');
 
             if (event.target === editModal) {
                 closeEditModal();
-            } else if (event.target === addModal) {
-                closeAddStudentModal();
             }
+            // Temporarily commented out Add Grantee modal handling
+            // else if (event.target === addModal) {
+            //     closeAddStudentModal();
+            // }
         }
 
         function toggleDropdown(event) {
@@ -1696,4 +2100,89 @@
             }
         }
     </script>
+@endpush
+
+@push('styles')
+    <style>
+        .import-options {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .import-option {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .import-option:hover {
+            border-color: #1e5631;
+            background: #f0f8f0;
+        }
+
+        .import-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .import-option input[type="radio"]:checked + label {
+            color: #1e5631;
+            font-weight: bold;
+        }
+
+        .import-option label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .import-option label strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .import-option label p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .import-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-left: 4px solid #1e5631;
+            border-radius: 4px;
+        }
+
+        .import-info p {
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            color: #1e5631;
+        }
+
+        .import-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .import-info li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .import-info a {
+            color: #1e5631;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .import-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
 @endpush

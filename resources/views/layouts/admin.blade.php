@@ -10,7 +10,6 @@
     <!-- Base CSS Files -->
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-components.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/modals.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Page-specific CSS -->
@@ -33,8 +32,8 @@
                 </div>
             </div>
             <div class="user-actions">
-                <a href="{{ route('welcome') }}" class="logout-btn">
-                    <i class="fas fa-home"></i> Back to Home
+                <a href="{{ route('login') }}" class="logout-btn">
+                    <i class="fas fa-sign-out"></i> Logout
                 </a>
             </div>
         </div>
@@ -44,7 +43,7 @@
     <div class="dashboard-banner">
         <div class="banner-container">
             <div class="banner-content">
-                <h2>SCHOLARSHIP MANAGEMENT SYSTEM</h2>
+                <h2>SCHOLARSHIP MONITORING SYSTEM</h2>
                 @yield('breadcrumbs')
             </div>
         </div>
@@ -92,10 +91,11 @@
                     class="nav-item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i> Reports
                 </a>
-                <a href="{{ route('admin.settings') }}"
-                    class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="fas fa-cog"></i> Settings
+                <a href="{{ route('admin.student-register') }}"
+                    class="nav-item {{ request()->routeIs('admin.student-register*') ? 'active' : '' }}">
+                    <i class="fas fa-users-cog"></i> Users Management
                 </a>
+
             </nav>
         </div>
 
@@ -104,6 +104,59 @@
             @yield('content')
         </div>
     </div>
+
+    <!-- Notification Component -->
+    @include('components.notification')
+
+    <!-- Load Chart.js for dashboard charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Load jsPDF only when needed (removed automatic loading to prevent errors) -->
+    <script>
+        // Global jsPDF loading function - only load when actually needed
+        window.loadJsPDF = function() {
+            return new Promise((resolve, reject) => {
+                if (typeof window.jsPDF !== 'undefined') {
+                    console.log('jsPDF already loaded');
+                    resolve();
+                    return;
+                }
+
+                // Try a single reliable CDN source
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+
+                script.onload = function() {
+                    console.log('jsPDF loaded successfully');
+                    // Verify jsPDF is actually available
+                    setTimeout(() => {
+                        if (typeof window.jsPDF !== 'undefined') {
+                            window.jsPDFLoaded = true;
+                            resolve();
+                        } else {
+                            console.warn('jsPDF script loaded but object not available');
+                            reject(new Error('jsPDF not available after loading'));
+                        }
+                    }, 100);
+                };
+
+                script.onerror = function() {
+                    console.warn('Failed to load jsPDF');
+                    reject(new Error('Failed to load jsPDF'));
+                };
+
+                document.head.appendChild(script);
+            });
+        };
+
+        // Don't load jsPDF automatically - only when needed
+        window.jsPDFLoadError = false;
+    </script>
+
+    <!-- Custom Confirm Dialog -->
+    <script src="{{ asset('js/custom-confirm.js') }}"></script>
+    <script src="{{ asset('js/error-handler.js') }}"></script>
+    <script src="{{ asset('js/alert-override.js') }}"></script>
 
     <!-- Base JavaScript -->
     <script>

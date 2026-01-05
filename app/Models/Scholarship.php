@@ -12,6 +12,23 @@ class Scholarship extends Model
         'semester',
         'academic_year',
         'description',
-        'status'
+        'requirements',
+        'benefits',
+        'application_deadline',
+        'is_active',
+        'created_by'
     ];
+
+    protected $casts = [
+        'application_deadline' => 'date',
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * Get active scholarships
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

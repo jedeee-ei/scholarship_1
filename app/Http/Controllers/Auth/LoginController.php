@@ -25,14 +25,38 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validate the form data
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $userType = $request->input('user_type', 'student');
 
-        // Log attempt for debugging
-        Log::info('Login attempt', ['email' => $request->email]);
+        // Different validation rules based on user type
+        if ($userType === 'administrator') {
+            // Admin login with email
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            $loginField = 'email';
+            $loginValue = $request->email;
+
+            Log::info('Admin login attempt', ['email' => $request->email]);
+        } else {
+            // Student login with student ID
+            $request->validate([
+                'student_id' => 'required|string',
+                'password' => 'required',
+            ]);
+
+            $credentials = [
+                'student_id' => $request->student_id,
+                'password' => $request->password,
+                'role' => 'student' // Ensure we only authenticate students
+            ];
+
+            $loginField = 'student_id';
+            $loginValue = $request->student_id;
+
+            Log::info('Student login attempt', ['student_id' => $request->student_id]);
+        }
 
         // Attempt to log the user in
         if (Auth::attempt($credentials)) {
@@ -52,10 +76,15 @@ class LoginController extends Controller
         }
 
         // Authentication failed
-        Log::warning('Authentication failed', ['email' => $request->email]);
+        Log::warning('Authentication failed', [$loginField => $loginValue]);
+
+        $errorField = $userType === 'administrator' ? 'email' : 'student_id';
+        $errorMessage = $userType === 'administrator'
+            ? 'The provided email and password do not match our records.'
+            : 'The provided Student ID and password do not match our records.';
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            $errorField => $errorMessage,
         ])->withInput($request->except('password'));
     }
 

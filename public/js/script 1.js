@@ -267,9 +267,7 @@ document.addEventListener('mouseout', function(e) {
     }
 });
 
-// Console log for debugging
-console.log('St. Paul University Philippines - Registrar Website Loaded Successfully');
-console.log('All navigation and interactive features are now active.');
+
 
 // Bottom buttons functionality
 function initializeBottomButtons() {
@@ -291,10 +289,5 @@ function initializeBottomButtons() {
     }
 }
 
-// Initialize all functionality when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initializeNavigation();
-    initializeServiceButtons();
-    initializeBottomButtons();
-});
+
 

@@ -21,9 +21,9 @@
                 </select>
                 <select name="type" class="filter-select" onchange="this.form.submit()">
                     <option value="">All Types</option>
-                    <option value="ched" {{ $currentType == 'ched' ? 'selected' : '' }}>CHED Scholarship
+                    <option value="government" {{ $currentType == 'government' ? 'selected' : '' }}>Government Scholarship
                     </option>
-                    <option value="presidents" {{ $currentType == 'presidents' ? 'selected' : '' }}>President's
+                    <option value="academic" {{ $currentType == 'academic' ? 'selected' : '' }}>Academic
                         Scholarship</option>
                     <option value="employees" {{ $currentType == 'employees' ? 'selected' : '' }}>Employees
                         Scholar</option>
@@ -34,11 +34,7 @@
         </div>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="table-container">
         <table class="applications-table">
@@ -60,10 +56,13 @@
                         <td>{{ $application->first_name }} {{ $application->last_name }}</td>
                         <td>{{ $application->student_id }}</td>
                         <td>
-                            @if ($application->scholarship_type == 'ched')
-                                CHED Scholarship
-                            @elseif($application->scholarship_type == 'presidents')
-                                President's Scholarship
+                            @if ($application->scholarship_type == 'government')
+                                Government Scholarship
+                                @if ($application->government_benefactor_type)
+                                    <br><small class="text-muted">({{ $application->government_benefactor_type }})</small>
+                                @endif
+                            @elseif($application->scholarship_type == 'academic')
+                                Academic Scholarship
                             @elseif($application->scholarship_type == 'employees')
                                 Employees Scholar
                             @elseif($application->scholarship_type == 'private')
@@ -96,15 +95,7 @@
         </table>
     </div>
 
-    <div class="pagination-container">
-        <div class="pagination-info">
-            Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of
-            {{ $applications->total() }} results
-        </div>
-        <div class="pagination-wrapper">
-            {{ $applications->appends(['status' => $currentStatus, 'type' => $currentType])->links('custom-pagination') }}
-        </div>
-    </div>
+
 @endsection
 
 @push('scripts')

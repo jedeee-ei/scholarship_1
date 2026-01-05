@@ -18,6 +18,8 @@ class ScholarshipApplication extends Model
         //Common Fields
         'application_id',
         'scholarship_type',
+        'scholarship_subtype',
+        'government_benefactor_type',
         'student_id',
         'last_name',
         'first_name',
@@ -33,10 +35,11 @@ class ScholarshipApplication extends Model
 
         //PL and DL
         'gwa',
+        'subject_grades',
         'semester',
         'academic_year',
 
-        //CHED
+        //Government
         'father_last_name',
         'father_first_name',
         'father_middle_name',
@@ -61,11 +64,17 @@ class ScholarshipApplication extends Model
         'employee_position',
         'scholarship_name',
         'other_scholarship',
+        'documents',
         'status',
+
+        // Renewal tracking
+        'is_renewal',
+        'previous_archive_id',
     ];
 
     protected $casts = [
         'documents' => 'array',
+        'subject_grades' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -87,7 +96,3 @@ class ScholarshipApplication extends Model
         });
     }
 }
-
-
-
-

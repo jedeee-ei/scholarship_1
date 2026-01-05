@@ -216,7 +216,7 @@
                 document.body.style.animation = 'fadeOut 0.5s ease-out';
 
                 setTimeout(() => {
-                    window.location.href = '{{ url('/welcome') }}';
+                    window.location.href = '{{ url('/welcome')}}';
                 }, 500);
             }, 2500);
         });

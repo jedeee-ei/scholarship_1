@@ -11,6 +11,9 @@
 @endsection
 
 @section('content')
+    <!-- Include notification component -->
+    <x-notification />
+
     <div class="dashboard-header">
         <h1>Benefactor Management</h1>
     </div>
@@ -30,18 +33,13 @@
     <div class="scholarship-programs">
         <div class="table-header">
             <h3>Scholarship Programs</h3>
-            <div class="table-actions">
-                <button class="update-semester-year-btn" onclick="showUpdateSemesterYearModal()">
-                    <i class="fas fa-calendar-alt"></i> Update Semester/Year
-                </button>
-            </div>
         </div>
         <table class="scholarships-table">
             <thead>
                 <tr>
                     <th>Benefactor Name</th>
                     <th>Type</th>
-                    <th>Status</th>
+                    <th>Active Grantees</th>
                     <th>Semester</th>
                     <th>Academic Year</th>
                     <th>Actions</th>
@@ -68,7 +66,13 @@
                                 @endphp
                                 <span class="scholarship-type {{ $typeClass }}">{{ $scholarship['type'] }}</span>
                             </td>
-                            <td><span class="status-badge active">Active</span></td>
+                            <td>
+                                <div class="grantees-count">
+                                    <span class="count-number">{{ $scholarship['active_grantees'] ?? 0 }}</span>
+                                    <span
+                                        class="count-label">{{ $scholarship['active_grantees'] == 1 ? 'Grantee' : 'Grantees' }}</span>
+                                </div>
+                            </td>
                             <td>
                                 <span class="semester-badge">{{ $scholarship['semester'] ?? '1st Semester' }}</span>
                             </td>
@@ -79,8 +83,8 @@
                                 @php
                                     $scholarshipKey = strtolower($scholarship['type']);
                                 @endphp
-                                <a href="{{ route('admin.students', ['type' => $scholarshipKey]) }}" class="action-btn view"
-                                    title="View Grantees">
+                                <a href="{{ route('admin.students', ['scholarship_type' => $scholarshipKey]) }}"
+                                    class="action-btn view" title="View Grantees">
                                     <i class="fas fa-users"></i>
                                 </a>
                             </td>
@@ -118,26 +122,23 @@
                         <label for="scholarshipType">Type</label>
                         <select id="scholarshipType" name="type" required>
                             <option value="">Select Type</option>
-                            <option value="ched">CHED</option>
-                            <option value="institutional">Institutional</option>
-                            <option value="employee">Employee</option>
-                            <option value="private">Private</option>
+                            <option value="government">Government</option>
+                            <option value="academic">Academic</option>
+                            <option value="employees">Employee</option>
+                            <option value="alumni">Alumni</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="scholarshipSemester">Semester</label>
-                        <select id="scholarshipSemester" name="semester" required>
-                            <option value="">Select Semester</option>
-                            <option value="1st Semester">1st Semester</option>
-                            <option value="2nd Semester">2nd Semester</option>
-                        </select>
+                        <input type="text" id="scholarshipSemester" name="semester" readonly
+                            style="background-color: #f5f5f5; cursor: not-allowed;">
                     </div>
                     <div class="form-group">
                         <label for="scholarshipAcademicYear">Academic Year</label>
-                        <input type="text" id="scholarshipAcademicYear" name="academic_year"
-                            placeholder="e.g., 2024-2025" required>
+                        <input type="text" id="scholarshipAcademicYear" name="academic_year" readonly
+                            style="background-color: #f5f5f5; cursor: not-allowed;">
                     </div>
                 </div>
                 <div class="form-row">
@@ -156,59 +157,7 @@
     </div>
 </div>
 
-<!-- Update Semester/Year Modal -->
-<div id="updateSemesterYearModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Update Semester/Academic Year</h2>
-            <span class="close" onclick="closeUpdateSemesterYearModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="update-selection">
-                <h4>Select Update Type:</h4>
-                <div class="update-options">
-                    <div class="update-option-card" onclick="selectUpdateType('semester')">
-                        <div class="option-icon">
-                            <i class="fas fa-calendar-week"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Update Semester</h3>
-                            <p>Move from <span id="currentSemester">1st Semester</span> to <span id="nextSemester">2nd
-                                    Semester</span></p>
-                            <small style="color: #dc3545; font-weight: 500;">⚠️ Will archive current
-                                students</small>
-                        </div>
-                        <div class="option-radio">
-                            <input type="radio" name="updateType" value="semester" id="semesterRadio">
-                        </div>
-                    </div>
-                    <div class="update-option-card" onclick="selectUpdateType('year')">
-                        <div class="option-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <div class="option-content">
-                            <h3>Update Academic Year</h3>
-                            <p>Move from <span id="currentYear">2024-2025</span> to <span
-                                    id="nextYear">2025-2026</span></p>
-                            <small style="color: #dc3545; font-weight: 500;">⚠️ Will archive current students &
-                                reset
-                                to 1st Semester</small>
-                        </div>
-                        <div class="option-radio">
-                            <input type="radio" name="updateType" value="year" id="yearRadio">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-secondary" onclick="closeUpdateSemesterYearModal()">Cancel</button>
-            <button type="button" class="btn-primary" id="updateBtn" onclick="executeUpdate()" disabled>
-                <i class="fas fa-sync-alt"></i> Update
-            </button>
-        </div>
-    </div>
-</div>
+
 
 @push('scripts')
     <script>
@@ -224,13 +173,13 @@
 
                     // Set current values as defaults
                     const academicYearInput = document.getElementById('scholarshipAcademicYear');
-                    const semesterSelect = document.getElementById('scholarshipSemester');
+                    const semesterInput = document.getElementById('scholarshipSemester');
 
                     if (academicYearInput) {
                         academicYearInput.value = data.current_academic_year;
                     }
-                    if (semesterSelect) {
-                        semesterSelect.value = data.current_semester;
+                    if (semesterInput) {
+                        semesterInput.value = data.current_semester;
                     }
                 } else {
                     // Fallback to calculated values
@@ -271,23 +220,30 @@
             const modal = document.getElementById('addScholarshipModal');
             if (modal) {
                 modal.style.display = 'block';
-                console.log('Modal display set to block'); // Debug log
+                modal.classList.add('modal-show');
+                console.log('Modal opened successfully'); // Debug log
             } else {
                 console.error('Modal not found!');
             }
         }
 
         function closeAddScholarshipModal() {
-            document.getElementById('addScholarshipModal').style.display = 'none';
+            const modal = document.getElementById('addScholarshipModal');
+            modal.style.display = 'none';
+            modal.classList.remove('modal-show');
             document.getElementById('addScholarshipForm').reset();
         }
 
         function saveNewScholarship(event) {
             event.preventDefault();
+            console.log('Form submission started'); // Debug log
 
             const formData = new FormData(event.target);
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
+
+            // Debug: Log form data
+            console.log('Form data:', Object.fromEntries(formData));
 
             // Show loading state
             submitBtn.textContent = 'Adding...';
@@ -297,8 +253,13 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
                 console.error('Security token not found. Please refresh the page.');
+                alert('Security token not found. Please refresh the page.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
                 return;
             }
+
+            console.log('CSRF token found:', csrfToken.getAttribute('content')); // Debug log
 
             // Send request to add scholarship
             fetch('/admin/scholarships/add', {
@@ -311,24 +272,31 @@
                     body: JSON.stringify(Object.fromEntries(formData))
                 })
                 .then(response => {
+                    console.log('Response status:', response.status); // Debug log
                     if (response.status === 419) {
                         throw new Error('Session expired. Please refresh the page and try again.');
                     }
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error('Request failed');
                     }
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Response data:', data); // Debug log
                     if (data.success) {
+                        // Use session flash message instead of alert
                         closeAddScholarshipModal();
-                        window.location.reload();
+                        // Redirect to show success message, then clean URL
+                        const currentUrl = window.location.href.split('?')[0];
+                        window.location.href = currentUrl + '?success=benefactor_added';
                     } else {
+                        alert('Failed to add benefactor: ' + (data.message || 'Unknown error'));
                         console.error(data.message || 'Failed to add scholarship program.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('Failed to add benefactor. Please try again.');
                 })
                 .finally(() => {
                     // Reset button state
@@ -342,234 +310,24 @@
             window.location.href = "{{ route('admin.students') }}?scholarship_type=" + scholarshipType;
         }
 
-        async function showUpdateSemesterYearModal() {
-            try {
-                // Fetch current semester and year from API
-                const response = await fetch('/admin/current-semester-year');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch current semester/year');
-                }
 
-                const data = await response.json();
-                const currentSemester = data.current_semester;
-                const currentYear = data.current_academic_year;
 
-                // Calculate next semester and year
-                const nextSemester = currentSemester === '1st Semester' ? '2nd Semester' : '1st Semester';
-                const yearParts = currentYear.split('-');
-                const nextYear = (parseInt(yearParts[0]) + 1) + '-' + (parseInt(yearParts[1]) + 1);
+        // Add event listeners for radio buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('input[name="updateType"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Radio button selection automatically enables the update button
+                    // No additional logic needed since radio buttons handle selection
+                });
+            });
+        });
 
-                // Update modal content
-                document.getElementById('currentSemester').textContent = currentSemester;
-                document.getElementById('nextSemester').textContent = nextSemester;
-                document.getElementById('currentYear').textContent = currentYear;
-                document.getElementById('nextYear').textContent = nextYear;
 
-                // Show modal
-                document.getElementById('updateSemesterYearModal').style.display = 'block';
-            } catch (error) {
-                console.error('Error fetching current semester/year:', error);
-            }
-        }
 
-        function closeUpdateSemesterYearModal() {
-            document.getElementById('updateSemesterYearModal').style.display = 'none';
-            // Reset selections
-            document.querySelectorAll('input[name="updateType"]').forEach(radio => radio.checked = false);
-            document.querySelectorAll('.update-option-card').forEach(card => card.classList.remove('selected'));
-            document.getElementById('updateBtn').disabled = true;
-        }
 
-        function selectUpdateType(type) {
-            // Clear previous selections
-            document.querySelectorAll('.update-option-card').forEach(card => card.classList.remove('selected'));
-            document.querySelectorAll('input[name="updateType"]').forEach(radio => radio.checked = false);
 
-            // Select the clicked option
-            const selectedCard = event.currentTarget;
-            selectedCard.classList.add('selected');
 
-            if (type === 'semester') {
-                document.getElementById('semesterRadio').checked = true;
-            } else if (type === 'year') {
-                document.getElementById('yearRadio').checked = true;
-            }
-
-            // Enable the update button
-            document.getElementById('updateBtn').disabled = false;
-        }
-
-        function executeUpdate() {
-            const selectedType = document.querySelector('input[name="updateType"]:checked');
-
-            if (!selectedType) {
-                console.error('Please select an update type first.');
-                return;
-            }
-
-            if (selectedType.value === 'semester') {
-                updateSemester();
-            } else if (selectedType.value === 'year') {
-                updateAcademicYear();
-            }
-        }
-
-        function updateSemester() {
-            const currentSemester = document.getElementById('currentSemester').textContent;
-            const nextSemester = document.getElementById('nextSemester').textContent;
-
-            const confirmMessage = `⚠️ IMPORTANT: This action will:\n\n` +
-                `• Update all scholarships from "${currentSemester}" to "${nextSemester}"\n` +
-                `• Archive all current scholarship students\n` +
-                `• Reset all applications (students need to re-apply)\n\n` +
-                `Are you sure you want to proceed?`;
-
-            showConfirmModal(
-                'Update Semester',
-                confirmMessage,
-                'Update Semester',
-                () => {
-                    // Show loading state
-                    const updateBtn = document.getElementById('updateBtn');
-                    const originalText = updateBtn.innerHTML;
-                    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-                    updateBtn.disabled = true;
-
-                    // Get CSRF token
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                    if (!csrfToken) {
-                        console.error('Security token not found. Please refresh the page.');
-                        updateBtn.innerHTML = originalText;
-                        updateBtn.disabled = false;
-                        return;
-                    }
-
-                    // Send request to update semester
-                    console.log('Sending update semester request:', {
-                        current_semester: currentSemester,
-                        new_semester: nextSemester
-                    });
-
-                    fetch('/admin/scholarships/update-semester', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                current_semester: currentSemester,
-                                new_semester: nextSemester
-                            })
-                        })
-                        .then(response => {
-                            console.log('Response status:', response.status);
-                            if (response.status === 419) {
-                                throw new Error('Session expired. Please refresh the page and try again.');
-                            }
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log('Response data:', data);
-                            if (data.success) {
-                                closeUpdateSemesterYearModal();
-                                window.location.reload();
-                            } else {
-                                console.error(data.message || 'Failed to update semester.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Fetch error:', error);
-                        })
-                        .finally(() => {
-                            // Reset button state
-                            updateBtn.innerHTML = originalText;
-                            updateBtn.disabled = false;
-                        });
-                }
-            );
-        }
-
-        function updateAcademicYear() {
-            const currentYear = document.getElementById('currentYear').textContent;
-            const nextYear = document.getElementById('nextYear').textContent;
-
-            const confirmMessage = `⚠️ IMPORTANT: This action will:\n\n` +
-                `• Update all scholarships from "${currentYear}" to "${nextYear}"\n` +
-                `• Reset semester to "1st Semester"\n` +
-                `• Archive all current scholarship students\n` +
-                `• Reset all applications (students need to re-apply)\n\n` +
-                `Are you sure you want to proceed?`;
-
-            showConfirmModal(
-                'Update Academic Year',
-                confirmMessage,
-                'Update Year',
-                () => {
-                    // Show loading state
-                    const updateBtn = document.getElementById('updateBtn');
-                    const originalText = updateBtn.innerHTML;
-                    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-                    updateBtn.disabled = true;
-
-                    // Get CSRF token
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                    if (!csrfToken) {
-                        console.error('Security token not found. Please refresh the page.');
-                        updateBtn.innerHTML = originalText;
-                        updateBtn.disabled = false;
-                        return;
-                    }
-
-                    // Send request to update academic year
-                    console.log('Sending update year request:', {
-                        current_year: currentYear,
-                        new_year: nextYear
-                    });
-
-                    fetch('/admin/scholarships/update-year', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                current_year: currentYear,
-                                new_year: nextYear
-                            })
-                        })
-                        .then(response => {
-                            if (response.status === 419) {
-                                throw new Error('Session expired. Please refresh the page and try again.');
-                            }
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                closeUpdateSemesterYearModal();
-                                window.location.reload();
-                            } else {
-                                console.error(data.message || 'Failed to update academic year.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        })
-                        .finally(() => {
-                            // Reset button state
-                            updateBtn.innerHTML = originalText;
-                            updateBtn.disabled = false;
-                        });
-                }
-            );
-        }
 
 
 
@@ -736,7 +494,7 @@
 @endpush
 
 <!-- Custom Confirmation Modal -->
-<div id="confirmModal" class="modal">
+<div id="confirmModal" class="modal" style="display: none;">
     <div class="modal-content confirmation-modal">
         <div class="modal-header">
             <h2 id="confirmTitle">Confirm Action</h2>

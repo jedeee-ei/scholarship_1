@@ -12,11 +12,20 @@ class Announcement extends Model
     protected $fillable = [
         'title',
         'content',
+        'type',
+        'priority',
+        'is_published',
+        'publish_date',
+        'expiry_date',
         'created_by',
+        'updated_by',
         'published_at'
     ];
 
     protected $casts = [
+        'is_published' => 'boolean',
+        'publish_date' => 'datetime',
+        'expiry_date' => 'datetime',
         'published_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
@@ -29,7 +38,14 @@ class Announcement extends Model
      */
     public function scopePublished($query)
     {
-        return $query->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+        return $query->where('is_published', true)
+            ->where(function($q) {
+                $q->whereNull('publish_date')
+                  ->orWhere('publish_date', '<=', now());
+            })
+            ->where(function($q) {
+                $q->whereNull('expiry_date')
+                  ->orWhere('expiry_date', '>=', now());
+            });
     }
 }

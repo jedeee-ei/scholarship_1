@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('scholarship_type');
             $table->string('archived_semester');
             $table->string('archived_academic_year');
+            $table->enum('archive_type', ['masterlist', 'inactive'])->default('masterlist'); // Type of archive
+            $table->text('remarks')->nullable(); // Reason for archiving (e.g., Transferred, Graduated, etc.)
             $table->timestamp('archived_at');
             $table->string('archived_by')->nullable(); // Admin who archived
             $table->timestamps();

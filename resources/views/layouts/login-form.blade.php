@@ -134,7 +134,31 @@
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1);
+            box-shadow: 0 0 0 3px rgba(5, 47, 17, 0.1);
+        }
+
+        /* Special styling for student ID field */
+        #student_id {
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* Login type indicator */
+        .login-title {
+            position: relative;
+        }
+
+        .login-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
         }
 
         .login-submit-btn {
@@ -227,16 +251,26 @@
                     @csrf
                     <input type="hidden" name="user_type" value="{{ $type }}">
 
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email"
-                            placeholder="{{ $type === 'administrator' ? 'Admin Email (admin@spup.edu.ph)' : 'Student Email (student@spup.edu.ph)' }}"
-                            value="{{ old('email') }}" required>
-                    </div>
+                    @if($type === 'administrator')
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email"
+                                placeholder="Admin Email (admin@spup.edu.ph)"
+                                value="{{ old('email') }}" required>
+                        </div>
+                    @else
+                        <div class="form-group">
+                            <label for="student_id">Student ID</label>
+                            <input type="text" id="student_id" name="student_id"
+                                placeholder="Enter your Student ID (e.g., 2024-001234)"
+                                value="{{ old('student_id') }}" required>
+                        </div>
+                    @endif
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Enter your password"
+                        <input type="password" id="password" name="password"
+                            placeholder="{{ $type === 'student' ? 'Default: student123 (change after first login)' : 'Enter your password' }}"
                             required>
                     </div>
 
@@ -258,6 +292,41 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-format student ID input if it exists
+            const studentIdInput = document.getElementById('student_id');
+            if (studentIdInput) {
+                studentIdInput.addEventListener('input', function(e) {
+                    // Allow numbers, letters, and hyphens only
+                    let value = e.target.value.replace(/[^a-zA-Z0-9-]/g, '');
+                    e.target.value = value;
+                });
+
+                // Add helpful styling for student login
+                studentIdInput.addEventListener('focus', function() {
+                    this.style.borderColor = '#052F11';
+                });
+            }
+
+            // Form submission validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const userType = document.querySelector('input[name="user_type"]').value;
+
+                if (userType === 'student') {
+                    const studentId = document.getElementById('student_id').value.trim();
+                    if (studentId.length < 3) {
+                        e.preventDefault();
+                        alert('Please enter a valid Student ID');
+                        document.getElementById('student_id').focus();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
