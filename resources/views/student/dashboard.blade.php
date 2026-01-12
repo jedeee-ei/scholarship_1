@@ -14,37 +14,6 @@
     <div class="page-container">
 
         <div class="container">
-            <!-- Welcome Section -->
-            <div class="welcome-section">
-                <div class="welcome-text">
-                    <div class="welcome-greeting">Welcome, {{ $student->full_name ?? ($student->name ?? 'Student') }}!</div>
-                    @if ($student->student_id)
-                        <div class="student-id-display">Student ID: {{ $student->student_id }}</div>
-                    @endif
-                </div>
-                <div class="user-actions">
-                    @if ($applications && $applications->count() > 0)
-                        <a href="{{ route('scholarship.tracker', ['id' => $applications->first()->application_id]) }}"
-                            class="action-link">
-                            <i class="fas fa-search"></i> Track Application
-                        </a>
-                    @else
-                        <a href="{{ route('scholarship.tracker') }}" class="action-link">
-                            <i class="fas fa-search"></i> Track Application
-                        </a>
-                    @endif
-                    <a href="#" class="action-link notification-link" onclick="showAnnouncementsModal(); return false;">
-                        <i class="fas fa-bell"></i> Notifications
-                        @if (isset($announcements) && $announcements->count() > 0)
-                            <span class="notification-badge" id="notificationBadge">{{ $announcements->count() }}</span>
-                        @endif
-                    </a>
-                    <a href="#" class="action-link" onclick="showSettingsModal(); return false;">
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                </div>
-            </div>
-
             <!-- Backend Error Notifications -->
             @if ($errors->has('student_id'))
                 <div class="main-screen-duplicate-notification">
@@ -164,6 +133,11 @@
 
             <!-- Main Content -->
             <div class="main-content">
+                <!-- Page Title -->
+                <div class="page-title-section">
+                    <h1 class="page-title">SCHOLARSHIP APPLICATION</h1>
+                </div>
+
                 <!-- Scholarship Opportunities -->
                 <div class="row">
                     <div class="col-lg-8">
@@ -175,6 +149,9 @@
                                 <div class="scholarship-grid">
                                     <!-- Government Scholarship -->
                                     <div class="scholarship-card" data-scholarship="government">
+                                        <div class="scholarship-icon">
+                                            <i class="fas fa-landmark"></i>
+                                        </div>
                                         <h3 class="scholarship-title">Government Scholarship</h3>
                                         <p class="scholarship-description">Government scholarship for qualified students.
                                         </p>
@@ -196,6 +173,9 @@
 
                                     <!-- Academic Scholarship -->
                                     <div class="scholarship-card" data-scholarship="academic">
+                                        <div class="scholarship-icon">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
                                         <h3 class="scholarship-title">Academic Scholarship</h3>
                                         <p class="scholarship-description">For students with exceptional academic
                                             performance.
@@ -218,6 +198,9 @@
 
                                     <!-- Employee's Scholarship -->
                                     <div class="scholarship-card" data-scholarship="employees">
+                                        <div class="scholarship-icon">
+                                            <i class="fas fa-briefcase"></i>
+                                        </div>
                                         <h3 class="scholarship-title">Employee's Scholarship</h3>
                                         <p class="scholarship-description">For children of university employees.</p>
                                         @if($applicationsOpen && $canApplyForScholarship)
@@ -238,6 +221,9 @@
 
                                     <!-- Alumni Scholarship -->
                                     <div class="scholarship-card" data-scholarship="alumni">
+                                        <div class="scholarship-icon">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
                                         <h3 class="scholarship-title">Alumni Scholarship</h3>
                                         <p class="scholarship-description">For students with alumni scholarship
                                             opportunities.</p>
@@ -306,7 +292,7 @@
                                     </div>
 
                                     <!-- Government Benefactor Type Selection -->
-                                    <div class="form-section-title">Government Benefactor Type</div>
+                                    <div class="form-section-title"><i class="fas fa-building"></i> Government Benefactor Type</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="government_benefactor_type">Benefactor Type *</label>
@@ -322,14 +308,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-section-title">Personal Information</div>
+                                    <div class="form-section-title"><i class="fas fa-user"></i> Personal Information</div>
                                     <div class="form-row">
                                         <div class="form-group student-id-group">
                                             <label for="student_id">Student ID *</label>
                                             <input type="text" id="student_id" name="student_id"
                                                 value="{{ $student->student_id }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -337,7 +323,7 @@
                                             <input type="text" id="last_name" name="last_name"
                                                 value="{{ $student->last_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -345,7 +331,7 @@
                                             <input type="text" id="first_name" name="first_name"
                                                 value="{{ $student->first_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
@@ -378,7 +364,7 @@
                                     </div>
 
                                     <!-- Academic Information Section -->
-                                    <div class="form-section-title">Academic Information</div>
+                                    <div class="form-section-title"><i class="fas fa-book"></i> Academic Information</div>
                                     <div class="form-row">
                                         <div class="form-group full-width">
                                             <label>Education Stage *</label>
@@ -462,7 +448,7 @@
                                     </div>
 
                                     <!-- Father's Name -->
-                                    <div class="form-section-title">Father's Name</div>
+                                    <div class="form-section-title"><i class="fas fa-male"></i> Father's Name</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="father_last_name">Last name *</label>
@@ -481,7 +467,7 @@
                                     </div>
 
                                     <!-- Mother's Maiden Name -->
-                                    <div class="form-section-title">Mother's Maiden Name</div>
+                                    <div class="form-section-title"><i class="fas fa-female"></i> Mother's Maiden Name</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="mother_last_name">Last name *</label>
@@ -500,7 +486,7 @@
                                     </div>
 
                                     <!-- Permanent Address -->
-                                    <div class="form-section-title">Permanent Address</div>
+                                    <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Permanent Address</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="street">Street *</label>
@@ -548,7 +534,7 @@
                                                     <option value="Visual Disability">Visual Disability</option>
                                                 </select>
                                                 <div class="disability-info">
-                                                    <i class="fas fa-info-circle"></i>
+                                                    <i class="fas fa-exclamation-circle"></i>
                                                     <span>Spell out. Possible values <strong>(Communication Disability,
                                                             Disability due to Chronic Illness, Learning Disability,
                                                             Intellectual
@@ -576,7 +562,7 @@
                                             <input type="email" id="email" name="email"
                                                 value="{{ $student->email }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
@@ -662,14 +648,14 @@
                                     <!-- Academic Scholarship Type Selection -->
 
 
-                                    <div class="form-section-title">Personal Information</div>
+                                    <div class="form-section-title"><i class="fas fa-user"></i> Personal Information</div>
                                     <div class="form-row">
                                         <div class="form-group student-id-group">
                                             <label for="academic_student_id">Student ID *</label>
                                             <input type="text" id="academic_student_id" name="student_id"
                                                 value="{{ $student->student_id }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -677,7 +663,7 @@
                                             <input type="text" id="academic_last_name" name="last_name"
                                                 value="{{ $student->last_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -685,7 +671,7 @@
                                             <input type="text" id="academic_first_name" name="first_name"
                                                 value="{{ $student->first_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
@@ -743,7 +729,7 @@
                                     <!-- Subjects and Grades Section -->
                                     <div class="subjects-section" id="academic-subjects-section"
                                         style="display: none;">
-                                        <div class="form-section-title">Academic Performance - Subjects and Grades</div>
+                                        <div class="form-section-title"><i class="fas fa-chart-line"></i> Academic Performance - Subjects and Grades</div>
                                         <div class="subjects-container">
                                             <div class="subjects-header">
                                                 <div class="subject-code-header">Subject Code & Course Title</div>
@@ -811,7 +797,7 @@
                                             <input type="email" id="inst_email" name="email"
                                                 value="{{ $student->email }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                     </div>
@@ -844,7 +830,7 @@
                                     </div>
 
                                     <!-- Document Publication -->
-                                    <div class="form-section-title">Document Publication</div>
+                                    <div class="form-section-title"><i class="fas fa-file-alt"></i> Document Publication</div>
                                     <div class="form-row">
                                         <div class="form-group full-width">
                                             <label for="inst_document_upload">Upload Required Documents *</label>
@@ -901,14 +887,14 @@
                                             information is accurate and complete before submitting your application.</p>
                                     </div>
 
-                                    <div class="form-section-title">Personal Information</div>
+                                    <div class="form-section-title"><i class="fas fa-user"></i> Personal Information</div>
                                     <div class="form-row">
                                         <div class="form-group student-id-group">
                                             <label for="employees_student_id">Student ID *</label>
                                             <input type="text" id="employees_student_id" name="student_id"
                                                 value="{{ $student->student_id }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -916,7 +902,7 @@
                                             <input type="text" id="employees_last_name" name="last_name"
                                                 value="{{ $student->last_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -924,7 +910,7 @@
                                             <input type="text" id="employees_first_name" name="first_name"
                                                 value="{{ $student->first_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
@@ -933,7 +919,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-section-title">Employee Information</div>
+                                    <div class="form-section-title"><i class="fas fa-id-badge"></i> Employee Information</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="employee_name">Employee Name *</label>
@@ -976,7 +962,7 @@
                                             <input type="email" id="employees_email" name="email"
                                                 value="{{ $student->email }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                     </div>
@@ -1080,14 +1066,14 @@
                                             information is accurate and complete before submitting your application.</p>
                                     </div>
 
-                                    <div class="form-section-title">Personal Information</div>
+                                    <div class="form-section-title"><i class="fas fa-user"></i> Personal Information</div>
                                     <div class="form-row">
                                         <div class="form-group student-id-group">
                                             <label for="private_student_id">Student ID *</label>
                                             <input type="text" id="private_student_id" name="student_id"
                                                 value="{{ $student->student_id }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -1095,7 +1081,7 @@
                                             <input type="text" id="private_last_name" name="last_name"
                                                 value="{{ $student->last_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group auto-filled-group">
@@ -1103,7 +1089,7 @@
                                             <input type="text" id="private_first_name" name="first_name"
                                                 value="{{ $student->first_name }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                         <div class="form-group">
@@ -1127,13 +1113,13 @@
                                             <input type="email" id="private_email" name="email"
                                                 value="{{ $student->email }}" readonly required>
                                             <small class="form-help-text">
-                                                <i class="fas fa-info-circle"></i> Automatically filled based on your login
+                                                <i class="fas fa-exclamation-circle"></i> Automatically filled based on your login
                                             </small>
                                         </div>
                                     </div>
 
                                     <!-- Alumni Scholarship Information -->
-                                    <div class="form-section-title">Alumni Scholarship Information</div>
+                                    <div class="form-section-title"><i class="fas fa-graduation-cap"></i> Alumni Scholarship Information</div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="alumni_scholarship_name">Scholarship Name *</label>
@@ -1207,9 +1193,41 @@
 
                     </div>
                     <div class="col-lg-4">
-
-
-
+                        <!-- Quick Access Tools -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <i class="fas fa-bolt"></i> Quick Access
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-access-links">
+                                    @if ($applications && $applications->count() > 0)
+                                        <a href="{{ route('scholarship.tracker', ['id' => $applications->first()->application_id]) }}"
+                                            class="quick-link">
+                                            <i class="fas fa-search"></i>
+                                            <span>Track Application</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('scholarship.tracker') }}" class="quick-link">
+                                            <i class="fas fa-search"></i>
+                                            <span>Track Application</span>
+                                        </a>
+                                    @endif
+                                    <a href="#" class="quick-link" onclick="showAnnouncementsModal(); return false;">
+                                        <div class="icon-with-badge">
+                                            <i class="fas fa-bell"></i>
+                                            @if (isset($announcements) && $announcements->count() > 0)
+                                                <span class="notification-badge-inline">{{ $announcements->count() }}</span>
+                                            @endif
+                                        </div>
+                                        <span>Notifications</span>
+                                    </a>
+                                    <a href="#" class="quick-link" onclick="showSettingsModal(); return false;">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- FAQ Section -->
                         <div class="dashboard-card">
@@ -2702,6 +2720,46 @@
                 document.body.style.overflow = 'auto';
             }
 
+            // Filter announcements by category
+            function filterAnnouncements(category) {
+                const items = document.querySelectorAll('.announcement-modal-item');
+                const tabs = document.querySelectorAll('.announcement-tab');
+
+                // Update active tab
+                tabs.forEach(tab => tab.classList.remove('active'));
+                event.target.classList.add('active');
+
+                // Filter items
+                items.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (category === 'all' || itemCategory === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Toggle full announcement content
+            function toggleAnnouncement(event, link) {
+                event.preventDefault();
+                const item = link.closest('.announcement-modal-item');
+                const excerpt = item.querySelector('.announcement-excerpt');
+                const full = item.querySelector('.announcement-full');
+
+                if (full.style.display === 'none') {
+                    excerpt.style.display = 'none';
+                    full.style.display = 'block';
+                    item.classList.add('expanded');
+                    link.textContent = link.textContent.includes('→') ? 'Show less ←' : 'View Less';
+                } else {
+                    excerpt.style.display = 'block';
+                    full.style.display = 'none';
+                    item.classList.remove('expanded');
+                    link.textContent = link.textContent.includes('←') ? 'Read details →' : 'View More';
+                }
+            }
+
             // Check for new announcements periodically
             function checkForNewAnnouncements() {
                 fetch('/api/announcements')
@@ -2772,7 +2830,7 @@
                     modalBody.innerHTML = `
                         <div class="no-announcements-modal">
                             <div class="no-announcements-modal-icon">
-                                <i class="fas fa-info-circle"></i>
+                                <i class="fas fa-exclamation-circle"></i>
                             </div>
                             <h3>No Announcements</h3>
                             <p>There are no announcements at this time.</p>
@@ -2832,28 +2890,56 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+
                 <div class="announcements-modal-body">
                     @if (isset($announcements) && $announcements->count() > 0)
                         <div class="announcements-list">
                             @foreach ($announcements as $announcement)
-                                <div class="announcement-modal-item">
-                                    <div class="announcement-modal-header">
-                                        <h4 class="announcement-modal-title">{{ $announcement->title }}</h4>
-                                        <span class="announcement-modal-date">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            {{ $announcement->created_at->format('M d, Y') }}
-                                        </span>
+                                <div class="announcement-modal-item" data-category="{{ $announcement->category ?? 'general' }}">
+                                    <div class="announcement-badges">
+                                        @php
+                                            $isNew = $announcement->created_at->diffInDays(now()) <= 7;
+                                            $isUrgent = isset($announcement->priority) && $announcement->priority === 'urgent';
+                                        @endphp
+                                        @if ($isNew)
+                                            <span class="badge-new">NEW</span>
+                                        @endif
+                                        @if ($isUrgent)
+                                            <span class="badge-urgent">URGENT</span>
+                                        @endif
                                     </div>
-                                    <div class="announcement-modal-content">
-                                        <p>{{ $announcement->content }}</p>
+
+                                    <div class="announcement-date">
+                                        <i class="far fa-calendar"></i>
+                                        {{ $announcement->created_at->format('M d, Y') }}
                                     </div>
+
+                                    <h3 class="announcement-title">{{ $announcement->title }}</h3>
+
+                                    <div class="announcement-content">
+                                        <p class="announcement-excerpt">
+                                            {{ Str::limit($announcement->content, 150) }}
+                                        </p>
+                                        <p class="announcement-full" style="display: none;">
+                                            {{ $announcement->content }}
+                                        </p>
+                                    </div>
+
+                                    @if (isset($announcement->category))
+                                        <div class="announcement-footer">
+                                            <span class="announcement-category">{{ ucfirst($announcement->category) }}</span>
+                                            <a href="#" class="announcement-link" onclick="toggleAnnouncement(event, this)">Read details →</a>
+                                        </div>
+                                    @else
+                                        <a href="#" class="announcement-link" onclick="toggleAnnouncement(event, this)">View More</a>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
                     @else
                         <div class="no-announcements-modal">
                             <div class="no-announcements-modal-icon">
-                                <i class="fas fa-info-circle"></i>
+                                <i class="fas fa-exclamation-circle"></i>
                             </div>
                             <h3>No Announcements</h3>
                             <p>There are no announcements at this time.</p>
@@ -2887,33 +2973,56 @@
                     <!-- Profile Details Tab -->
                     <div id="profile-tab-content" class="settings-tab-content">
                         <div class="settings-section">
-                            <h3>Personal Information</h3>
+                            <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
                             <div class="profile-details">
-                                <div class="detail-row">
-                                    <label>Full Name:</label>
-                                    <span>{{ $student->full_name ?? ($student->name ?? 'Not Set') }}</span>
+                                <div class="detail-card">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <label>Full Name</label>
+                                        <span>{{ $student->full_name ?? ($student->name ?? 'Not Set') }}</span>
+                                    </div>
                                 </div>
-                                <div class="detail-row">
-                                    <label>Student ID:</label>
-                                    <span class="student-id-badge">{{ $student->student_id ?? 'Not Set' }}</span>
+                                <div class="detail-card">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <label>Student ID</label>
+                                        <span class="student-id-badge">{{ $student->student_id ?? 'Not Set' }}</span>
+                                    </div>
                                 </div>
-                                <div class="detail-row">
-                                    <label>Email Address:</label>
-                                    <span>{{ $student->email ?? 'Not Set' }}</span>
+                                <div class="detail-card">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <label>Email Address</label>
+                                        <span>{{ $student->email ?? 'Not Set' }}</span>
+                                    </div>
                                 </div>
-                                <div class="detail-row">
-                                    <label>Account Status:</label>
-                                    <span
-                                        class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
-                                        {{ ucfirst($student->status ?? 'Unknown') }}
-                                    </span>
+                                <div class="detail-card">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <label>Account Status</label>
+                                        <span class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
+                                            {{ ucfirst($student->status ?? 'Unknown') }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="detail-row">
-                                    <label>Password Status:</label>
-                                    <span
-                                        class="password-status {{ $student->password_changed ? 'changed' : 'default' }}">
-                                        {{ $student->password_changed ? 'Custom Password Set' : 'Using Default Password' }}
-                                    </span>
+                                <div class="detail-card">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <label>Password Status</label>
+                                        <span class="password-status {{ $student->password_changed ? 'changed' : 'default' }}">
+                                            {{ $student->password_changed ? 'Custom Password Set' : 'Using Default Password' }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -2930,12 +3039,12 @@
                     <!-- Change Password Tab -->
                     <div id="password-tab-content" class="settings-tab-content" style="display: none;">
                         <div class="settings-section">
-                            <h3>Change Password</h3>
+                            <h3><i class="fas fa-lock"></i> Change Password</h3>
                             <form id="changePasswordForm" action="{{ route('student.change-password') }}"
                                 method="POST">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="current_password">Current Password</label>
+                                    <label for="current_password"><i class="fas fa-key"></i> Current Password</label>
                                     <div class="password-input-container">
                                         <input type="password" id="current_password" name="current_password"
                                             placeholder="Enter your current password" required>
@@ -2947,7 +3056,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="new_password">New Password</label>
+                                    <label for="new_password"><i class="fas fa-lock"></i> New Password</label>
                                     <div class="password-input-container">
                                         <input type="password" id="new_password" name="new_password"
                                             placeholder="Enter your new password" required minlength="8">
@@ -2960,7 +3069,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="new_password_confirmation">Confirm New Password</label>
+                                    <label for="new_password_confirmation"><i class="fas fa-check-circle"></i> Confirm New Password</label>
                                     <div class="password-input-container">
                                         <input type="password" id="new_password_confirmation"
                                             name="new_password_confirmation" placeholder="Confirm your new password"
